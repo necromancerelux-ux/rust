@@ -278,6 +278,7 @@ fn build(
                 .collect();
             if !st.is_empty() {
                 v2 = v2.select("lookup:player:board:state", "Open a state board…", &st);
+                v2 = v2.select("lookup:player:board:global", "Open a global board…", &st);
             }
         }
         "heroes" => {

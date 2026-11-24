@@ -12526,7 +12526,7 @@ async fn lookup_session_action(
             };
         }
     }
-    if rest == "board" || rest == "sort" {
+    if rest == "board" || rest == "sort" || rest == "board:state" || rest == "board:global" {
         // board: rankings board key; sort: alliance members sort key (power|furnace|role|name)
         if !value.is_empty() {
             session.board = Some(value.clone());
@@ -12614,7 +12614,7 @@ async fn lookup_session_action(
     }
 
     let tab = if let Some(tab) = rest.strip_prefix("tab:") {
-        tab.to_string()
+        if tab == "joined" { "members".to_string() } else { tab.to_string() }
     } else if rest == "tab" {
         value
     } else {

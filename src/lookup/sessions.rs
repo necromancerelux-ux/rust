@@ -416,18 +416,21 @@ pub async fn render(
             }
             let pages = boards.len().div_ceil(15).max(1);
             if pages > 1 {
+                let last = pages.saturating_sub(1);
+                let prev = session.page.saturating_sub(1);
+                let next = (session.page + 1).min(last);
                 rows.push(CreateActionRow::Buttons(vec![
                     action_button(
-                        "lookup:player:pg:p:prev",
+                        &format!("lookup:player:pg:p:{prev}:prev"),
                         "Previous",
                         "◀️",
                         serenity::ButtonStyle::Secondary,
                     )
                     .disabled(session.page == 0),
                     action_button(
-                        "lookup:player:pg:p:next",
+                        &format!("lookup:player:pg:p:{next}:next"),
                         format!("Page {} / {pages}", session.page + 1),
-                        "📄",
+                        "▶️",
                         serenity::ButtonStyle::Secondary,
                     )
                     .disabled(session.page + 1 >= pages),
@@ -890,22 +893,25 @@ pub async fn render(
             if let Some(total) = selected_rows.map(|rows| rows.len()) {
                 let pages = total.div_ceil(15).max(1);
                 if pages > 1 {
-                    rows.push(CreateActionRow::Buttons(vec![
-                        action_button(
-                            "lookup:state:pg:p:prev",
-                            "Previous",
-                            "◀️",
-                            serenity::ButtonStyle::Secondary,
-                        )
-                        .disabled(session.page == 0),
-                        action_button(
-                            "lookup:state:pg:p:next",
-                            format!("Page {} / {pages}", session.page + 1),
-                            "📄",
-                            serenity::ButtonStyle::Secondary,
-                        )
-                        .disabled(session.page + 1 >= pages),
-                    ]));
+                    let last = pages.saturating_sub(1);
+                        let prev = session.page.saturating_sub(1);
+                        let next = (session.page + 1).min(last);
+                        rows.push(CreateActionRow::Buttons(vec![
+                            action_button(
+                                &format!("lookup:state:pg:p:{prev}:prev"),
+                                "Previous",
+                                "◀️",
+                                serenity::ButtonStyle::Secondary,
+                            )
+                            .disabled(session.page == 0),
+                            action_button(
+                                &format!("lookup:state:pg:p:{next}:next"),
+                                format!("Page {} / {pages}", session.page + 1),
+                                "▶️",
+                                serenity::ButtonStyle::Secondary,
+                            )
+                            .disabled(session.page + 1 >= pages),
+                        ]));
                 }
             }
         }
