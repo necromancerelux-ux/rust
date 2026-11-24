@@ -1,0 +1,88 @@
+[package]
+name = "omnicore"
+version = "2.0.0"
+edition = "2021"
+rust-version = "1.85"
+description = "OmniCore — the community Discord bot, rewritten in Rust"
+license = "MIT"
+publish = false
+
+[[bin]]
+name = "omnicore"
+path = "src/main.rs"
+
+[dependencies]
+serenity = { version = "0.12.5", default-features = false, features = [
+    "builder",
+    "cache",
+    "client",
+    "gateway",
+    "http",
+    "model",
+    "rustls_backend",
+    "utils",
+] }
+poise = { version = "0.7.1", default-features = false, features = [
+    "cache",
+    "chrono",
+    "handle_panics",
+] }
+tokio = { version = "1", features = ["full"] }
+tokio-tungstenite = { version = "0.21", features = ["rustls-tls-webpki-roots"] }
+futures = "0.3"
+
+sqlx = { version = "0.9.1", default-features = false, features = [
+    "macros",
+    "runtime-tokio",
+    "sqlite",
+] }
+
+lavalink-rs = { version = "0.15.0", default-features = false, features = [
+    "macros",
+    "tungstenite-rustls-webpki-roots",
+] }
+
+reqwest = { version = "0.12", default-features = false, features = [
+    "brotli",
+    "cookies",
+    "gzip",
+    "json",
+    "rustls-tls",
+] }
+
+resvg = { version = "0.50.0", default-features = false, features = [
+    "raster-images",
+    "text",
+] }
+tiny-skia = "0.12.0"
+ab_glyph = "0.2"
+rust_xlsxwriter = "0.80"
+zip = { version = "2.6.1", default-features = false, features = ["deflate"] }
+image = { version = "0.25", default-features = false, features = [
+    "png",
+    "jpeg",
+    "webp",
+] }
+
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+anyhow = "1"
+thiserror = "2"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+dotenvy = "0.15"
+chrono = { version = "0.4", features = ["serde"] }
+once_cell = "1"
+regex = "1"
+rand = "0.8"
+base64 = "0.22"
+aes-gcm = "0.10"
+sha2 = "0.10"
+md-5 = "0.11"
+urlencoding = "2"
+chrono-tz = "0.10.4"
+
+[dev-dependencies]
+tempfile = "3"
+
+[package.metadata.release]

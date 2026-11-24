@@ -1,0 +1,2157 @@
+{
+  "pets": {
+    "cave_hyena": {
+      "key": "cave_hyena",
+      "label": "Cave Hyena",
+      "rarity": "Common",
+      "maxLevel": 50,
+      "generation": 1,
+      "skill": "Builder's Aide",
+      "unlockIndex": 0,
+      "milestones": {
+        "10": {
+          "food": 1715,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "10.1": {
+          "food": 0,
+          "manual": 15,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 500
+        },
+        "20": {
+          "food": 3180,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "20.1": {
+          "food": 0,
+          "manual": 30,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 1000
+        },
+        "30": {
+          "food": 5010,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "30.1": {
+          "food": 0,
+          "manual": 45,
+          "potion": 10,
+          "serum": 0,
+          "advancementScore": 2000
+        },
+        "40": {
+          "food": 7660,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "40.1": {
+          "food": 0,
+          "manual": 60,
+          "potion": 20,
+          "serum": 0,
+          "advancementScore": 3000
+        },
+        "50": {
+          "food": 11310,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "50.1": {
+          "food": 0,
+          "manual": 90,
+          "potion": 30,
+          "serum": 10,
+          "advancementScore": 4500
+        },
+        "60.1": {
+          "food": 0,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 6750
+        },
+        "70.1": {
+          "food": 0,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 10000
+        },
+        "80.1": {
+          "food": 0,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 12000
+        },
+        "90.1": {
+          "food": 0,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 14500
+        },
+        "100.1": {
+          "food": 0,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 17500
+        }
+      }
+    },
+    "arctic_wolf": {
+      "key": "arctic_wolf",
+      "label": "Arctic Wolf",
+      "rarity": "Common",
+      "maxLevel": 60,
+      "generation": 1,
+      "skill": "Unknown",
+      "unlockIndex": 1,
+      "milestones": {
+        "10": {
+          "food": 2530,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "10.1": {
+          "food": 0,
+          "manual": 20,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 500
+        },
+        "20": {
+          "food": 5360,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "20.1": {
+          "food": 0,
+          "manual": 40,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 1000
+        },
+        "30": {
+          "food": 9020,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "30.1": {
+          "food": 0,
+          "manual": 60,
+          "potion": 10,
+          "serum": 0,
+          "advancementScore": 2000
+        },
+        "40": {
+          "food": 14320,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "40.1": {
+          "food": 0,
+          "manual": 90,
+          "potion": 20,
+          "serum": 0,
+          "advancementScore": 3000
+        },
+        "50": {
+          "food": 21620,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "50.1": {
+          "food": 0,
+          "manual": 130,
+          "potion": 30,
+          "serum": 10,
+          "advancementScore": 4500
+        },
+        "60": {
+          "food": 30920,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "60.1": {
+          "food": 0,
+          "manual": 175,
+          "potion": 50,
+          "serum": 20,
+          "advancementScore": 6750
+        },
+        "70.1": {
+          "food": 0,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 10000
+        },
+        "80.1": {
+          "food": 0,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 12000
+        },
+        "90.1": {
+          "food": 0,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 14500
+        },
+        "100.1": {
+          "food": 0,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 17500
+        }
+      }
+    },
+    "musk_ox": {
+      "key": "musk_ox",
+      "label": "Musk Ox",
+      "rarity": "Rare",
+      "maxLevel": 60,
+      "generation": 1,
+      "skill": "Unknown",
+      "unlockIndex": 2,
+      "milestones": {
+        "10": {
+          "food": 2530,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "10.1": {
+          "food": 0,
+          "manual": 20,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 500
+        },
+        "20": {
+          "food": 5360,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "20.1": {
+          "food": 0,
+          "manual": 40,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 1000
+        },
+        "30": {
+          "food": 9020,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "30.1": {
+          "food": 0,
+          "manual": 60,
+          "potion": 10,
+          "serum": 0,
+          "advancementScore": 2000
+        },
+        "40": {
+          "food": 14320,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "40.1": {
+          "food": 0,
+          "manual": 90,
+          "potion": 20,
+          "serum": 0,
+          "advancementScore": 3000
+        },
+        "50": {
+          "food": 21620,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "50.1": {
+          "food": 0,
+          "manual": 130,
+          "potion": 30,
+          "serum": 10,
+          "advancementScore": 4500
+        },
+        "60": {
+          "food": 30920,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "60.1": {
+          "food": 0,
+          "manual": 175,
+          "potion": 50,
+          "serum": 20,
+          "advancementScore": 6750
+        },
+        "70.1": {
+          "food": 0,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 10000
+        },
+        "80.1": {
+          "food": 0,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 12000
+        },
+        "90.1": {
+          "food": 0,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 14500
+        },
+        "100.1": {
+          "food": 0,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 17500
+        }
+      }
+    },
+    "giant_tapir": {
+      "key": "giant_tapir",
+      "label": "Giant Tapir",
+      "rarity": "Rare",
+      "maxLevel": 70,
+      "generation": 1,
+      "skill": "Unknown",
+      "unlockIndex": 3,
+      "milestones": {
+        "10": {
+          "food": 3795,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "10.1": {
+          "food": 0,
+          "manual": 25,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 500
+        },
+        "20": {
+          "food": 8040,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "20.1": {
+          "food": 0,
+          "manual": 50,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 1000
+        },
+        "30": {
+          "food": 13530,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "30.1": {
+          "food": 0,
+          "manual": 75,
+          "potion": 10,
+          "serum": 0,
+          "advancementScore": 2000
+        },
+        "40": {
+          "food": 21480,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "40.1": {
+          "food": 0,
+          "manual": 100,
+          "potion": 20,
+          "serum": 0,
+          "advancementScore": 3000
+        },
+        "50": {
+          "food": 32430,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "50.1": {
+          "food": 0,
+          "manual": 155,
+          "potion": 30,
+          "serum": 10,
+          "advancementScore": 4500
+        },
+        "60": {
+          "food": 46380,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "60.1": {
+          "food": 0,
+          "manual": 200,
+          "potion": 50,
+          "serum": 20,
+          "advancementScore": 6750
+        },
+        "70": {
+          "food": 63300,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "70.1": {
+          "food": 0,
+          "manual": 255,
+          "potion": 80,
+          "serum": 40,
+          "advancementScore": 10000
+        },
+        "80.1": {
+          "food": 0,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 12000
+        },
+        "90.1": {
+          "food": 0,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 14500
+        },
+        "100.1": {
+          "food": 0,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 17500
+        }
+      }
+    },
+    "titan_roc": {
+      "key": "titan_roc",
+      "label": "Titan Roc",
+      "rarity": "Rare",
+      "maxLevel": 70,
+      "generation": 1,
+      "skill": "Unknown",
+      "unlockIndex": 4,
+      "milestones": {
+        "10": {
+          "food": 3795,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "10.1": {
+          "food": 0,
+          "manual": 25,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 500
+        },
+        "20": {
+          "food": 8040,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "20.1": {
+          "food": 0,
+          "manual": 50,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 1000
+        },
+        "30": {
+          "food": 13530,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "30.1": {
+          "food": 0,
+          "manual": 75,
+          "potion": 10,
+          "serum": 0,
+          "advancementScore": 2000
+        },
+        "40": {
+          "food": 21480,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "40.1": {
+          "food": 0,
+          "manual": 100,
+          "potion": 20,
+          "serum": 0,
+          "advancementScore": 3000
+        },
+        "50": {
+          "food": 32430,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "50.1": {
+          "food": 0,
+          "manual": 155,
+          "potion": 30,
+          "serum": 10,
+          "advancementScore": 4500
+        },
+        "60": {
+          "food": 46380,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "60.1": {
+          "food": 0,
+          "manual": 200,
+          "potion": 50,
+          "serum": 20,
+          "advancementScore": 6750
+        },
+        "70": {
+          "food": 63300,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "70.1": {
+          "food": 0,
+          "manual": 255,
+          "potion": 80,
+          "serum": 40,
+          "advancementScore": 10000
+        },
+        "80.1": {
+          "food": 0,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 12000
+        },
+        "90.1": {
+          "food": 0,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 14500
+        },
+        "100.1": {
+          "food": 0,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 17500
+        }
+      }
+    },
+    "giant_elk": {
+      "key": "giant_elk",
+      "label": "Giant Elk",
+      "rarity": "Epic",
+      "maxLevel": 80,
+      "generation": 1,
+      "skill": "Unknown",
+      "unlockIndex": 5,
+      "milestones": {
+        "10": {
+          "food": 5060,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "10.1": {
+          "food": 0,
+          "manual": 30,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 500
+        },
+        "20": {
+          "food": 10720,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "20.1": {
+          "food": 0,
+          "manual": 60,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 1000
+        },
+        "30": {
+          "food": 18040,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "30.1": {
+          "food": 0,
+          "manual": 95,
+          "potion": 10,
+          "serum": 0,
+          "advancementScore": 2000
+        },
+        "40": {
+          "food": 28640,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "40.1": {
+          "food": 0,
+          "manual": 125,
+          "potion": 20,
+          "serum": 0,
+          "advancementScore": 3000
+        },
+        "50": {
+          "food": 43240,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "50.1": {
+          "food": 0,
+          "manual": 190,
+          "potion": 30,
+          "serum": 10,
+          "advancementScore": 4500
+        },
+        "60": {
+          "food": 61840,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "60.1": {
+          "food": 0,
+          "manual": 250,
+          "potion": 50,
+          "serum": 20,
+          "advancementScore": 6750
+        },
+        "70": {
+          "food": 84400,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "70.1": {
+          "food": 0,
+          "manual": 310,
+          "potion": 80,
+          "serum": 40,
+          "advancementScore": 10000
+        },
+        "80": {
+          "food": 108480,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "80.1": {
+          "food": 0,
+          "manual": 380,
+          "potion": 100,
+          "serum": 60,
+          "advancementScore": 12000
+        },
+        "90.1": {
+          "food": 0,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 14500
+        },
+        "100.1": {
+          "food": 0,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 17500
+        }
+      }
+    },
+    "snow_leopard": {
+      "key": "snow_leopard",
+      "label": "Snow Leopard",
+      "rarity": "Epic",
+      "maxLevel": 80,
+      "generation": 1,
+      "skill": "Unknown",
+      "unlockIndex": 6,
+      "milestones": {
+        "10": {
+          "food": 5060,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "10.1": {
+          "food": 0,
+          "manual": 30,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 500
+        },
+        "20": {
+          "food": 10720,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "20.1": {
+          "food": 0,
+          "manual": 60,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 1000
+        },
+        "30": {
+          "food": 18040,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "30.1": {
+          "food": 0,
+          "manual": 95,
+          "potion": 10,
+          "serum": 0,
+          "advancementScore": 2000
+        },
+        "40": {
+          "food": 28640,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "40.1": {
+          "food": 0,
+          "manual": 125,
+          "potion": 20,
+          "serum": 0,
+          "advancementScore": 3000
+        },
+        "50": {
+          "food": 43240,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "50.1": {
+          "food": 0,
+          "manual": 190,
+          "potion": 30,
+          "serum": 10,
+          "advancementScore": 4500
+        },
+        "60": {
+          "food": 61840,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "60.1": {
+          "food": 0,
+          "manual": 250,
+          "potion": 50,
+          "serum": 20,
+          "advancementScore": 6750
+        },
+        "70": {
+          "food": 84400,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "70.1": {
+          "food": 0,
+          "manual": 310,
+          "potion": 80,
+          "serum": 40,
+          "advancementScore": 10000
+        },
+        "80": {
+          "food": 108480,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "80.1": {
+          "food": 0,
+          "manual": 380,
+          "potion": 100,
+          "serum": 60,
+          "advancementScore": 12000
+        },
+        "90.1": {
+          "food": 0,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 14500
+        },
+        "100.1": {
+          "food": 0,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 17500
+        }
+      }
+    },
+    "cave_lion": {
+      "key": "cave_lion",
+      "label": "Cave Lion",
+      "rarity": "Epic",
+      "maxLevel": 100,
+      "generation": 1,
+      "skill": "Unknown",
+      "unlockIndex": 7,
+      "milestones": {
+        "10": {
+          "food": 6325,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "10.1": {
+          "food": 0,
+          "manual": 35,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 500
+        },
+        "20": {
+          "food": 13400,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "20.1": {
+          "food": 0,
+          "manual": 70,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 1000
+        },
+        "30": {
+          "food": 22550,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "30.1": {
+          "food": 0,
+          "manual": 110,
+          "potion": 15,
+          "serum": 0,
+          "advancementScore": 2000
+        },
+        "40": {
+          "food": 35800,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "40.1": {
+          "food": 0,
+          "manual": 145,
+          "potion": 35,
+          "serum": 0,
+          "advancementScore": 3000
+        },
+        "50": {
+          "food": 54050,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "50.1": {
+          "food": 0,
+          "manual": 220,
+          "potion": 50,
+          "serum": 10,
+          "advancementScore": 4500
+        },
+        "60": {
+          "food": 77300,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "60.1": {
+          "food": 0,
+          "manual": 290,
+          "potion": 65,
+          "serum": 20,
+          "advancementScore": 6750
+        },
+        "70": {
+          "food": 105500,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "70.1": {
+          "food": 0,
+          "manual": 365,
+          "potion": 85,
+          "serum": 40,
+          "advancementScore": 10000
+        },
+        "80": {
+          "food": 135600,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "80.1": {
+          "food": 0,
+          "manual": 440,
+          "potion": 100,
+          "serum": 60,
+          "advancementScore": 12000
+        },
+        "90": {
+          "food": 172000,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "90.1": {
+          "food": 0,
+          "manual": 585,
+          "potion": 115,
+          "serum": 80,
+          "advancementScore": 14500
+        },
+        "100": {
+          "food": 212100,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "100.1": {
+          "food": 0,
+          "manual": 730,
+          "potion": 135,
+          "serum": 100,
+          "advancementScore": 17500
+        }
+      }
+    },
+    "snow_ape": {
+      "key": "snow_ape",
+      "label": "Snow Ape",
+      "rarity": "Legendary",
+      "maxLevel": 100,
+      "generation": 2,
+      "skill": "Unknown",
+      "unlockIndex": 8,
+      "milestones": {
+        "10": {
+          "food": 6325,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "10.1": {
+          "food": 0,
+          "manual": 35,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 500
+        },
+        "20": {
+          "food": 13400,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "20.1": {
+          "food": 0,
+          "manual": 70,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 1000
+        },
+        "30": {
+          "food": 22550,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "30.1": {
+          "food": 0,
+          "manual": 110,
+          "potion": 15,
+          "serum": 0,
+          "advancementScore": 2000
+        },
+        "40": {
+          "food": 35800,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "40.1": {
+          "food": 0,
+          "manual": 145,
+          "potion": 35,
+          "serum": 0,
+          "advancementScore": 3000
+        },
+        "50": {
+          "food": 54050,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "50.1": {
+          "food": 0,
+          "manual": 220,
+          "potion": 50,
+          "serum": 10,
+          "advancementScore": 4500
+        },
+        "60": {
+          "food": 77300,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "60.1": {
+          "food": 0,
+          "manual": 290,
+          "potion": 65,
+          "serum": 20,
+          "advancementScore": 6750
+        },
+        "70": {
+          "food": 105500,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "70.1": {
+          "food": 0,
+          "manual": 365,
+          "potion": 85,
+          "serum": 40,
+          "advancementScore": 10000
+        },
+        "80": {
+          "food": 135600,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "80.1": {
+          "food": 0,
+          "manual": 440,
+          "potion": 100,
+          "serum": 60,
+          "advancementScore": 12000
+        },
+        "90": {
+          "food": 172000,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "90.1": {
+          "food": 0,
+          "manual": 585,
+          "potion": 115,
+          "serum": 80,
+          "advancementScore": 14500
+        },
+        "100": {
+          "food": 212100,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "100.1": {
+          "food": 0,
+          "manual": 730,
+          "potion": 135,
+          "serum": 100,
+          "advancementScore": 17500
+        }
+      }
+    },
+    "iron_rhino": {
+      "key": "iron_rhino",
+      "label": "Iron Rhino",
+      "rarity": "Legendary",
+      "maxLevel": 100,
+      "generation": 2,
+      "skill": "Unknown",
+      "unlockIndex": 9,
+      "milestones": {
+        "10": {
+          "food": 6325,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "10.1": {
+          "food": 0,
+          "manual": 35,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 500
+        },
+        "20": {
+          "food": 13400,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "20.1": {
+          "food": 0,
+          "manual": 70,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 1000
+        },
+        "30": {
+          "food": 22550,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "30.1": {
+          "food": 0,
+          "manual": 110,
+          "potion": 15,
+          "serum": 0,
+          "advancementScore": 2000
+        },
+        "40": {
+          "food": 35800,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "40.1": {
+          "food": 0,
+          "manual": 145,
+          "potion": 35,
+          "serum": 0,
+          "advancementScore": 3000
+        },
+        "50": {
+          "food": 54050,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "50.1": {
+          "food": 0,
+          "manual": 220,
+          "potion": 50,
+          "serum": 10,
+          "advancementScore": 4500
+        },
+        "60": {
+          "food": 77300,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "60.1": {
+          "food": 0,
+          "manual": 290,
+          "potion": 65,
+          "serum": 20,
+          "advancementScore": 6750
+        },
+        "70": {
+          "food": 105500,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "70.1": {
+          "food": 0,
+          "manual": 365,
+          "potion": 85,
+          "serum": 40,
+          "advancementScore": 10000
+        },
+        "80": {
+          "food": 135600,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "80.1": {
+          "food": 0,
+          "manual": 440,
+          "potion": 100,
+          "serum": 60,
+          "advancementScore": 12000
+        },
+        "90": {
+          "food": 172000,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "90.1": {
+          "food": 0,
+          "manual": 585,
+          "potion": 115,
+          "serum": 80,
+          "advancementScore": 14500
+        },
+        "100": {
+          "food": 212100,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "100.1": {
+          "food": 0,
+          "manual": 730,
+          "potion": 135,
+          "serum": 100,
+          "advancementScore": 17500
+        }
+      }
+    },
+    "sabertooth_tiger": {
+      "key": "sabertooth_tiger",
+      "label": "Sabertooth Tiger",
+      "rarity": "Legendary",
+      "maxLevel": 100,
+      "generation": 2,
+      "skill": "Unknown",
+      "unlockIndex": 10,
+      "milestones": {
+        "10": {
+          "food": 6325,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "10.1": {
+          "food": 0,
+          "manual": 35,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 500
+        },
+        "20": {
+          "food": 13400,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "20.1": {
+          "food": 0,
+          "manual": 70,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 1000
+        },
+        "30": {
+          "food": 22550,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "30.1": {
+          "food": 0,
+          "manual": 110,
+          "potion": 15,
+          "serum": 0,
+          "advancementScore": 2000
+        },
+        "40": {
+          "food": 35800,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "40.1": {
+          "food": 0,
+          "manual": 145,
+          "potion": 35,
+          "serum": 0,
+          "advancementScore": 3000
+        },
+        "50": {
+          "food": 54050,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "50.1": {
+          "food": 0,
+          "manual": 220,
+          "potion": 50,
+          "serum": 10,
+          "advancementScore": 4500
+        },
+        "60": {
+          "food": 77300,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "60.1": {
+          "food": 0,
+          "manual": 290,
+          "potion": 65,
+          "serum": 20,
+          "advancementScore": 6750
+        },
+        "70": {
+          "food": 105500,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "70.1": {
+          "food": 0,
+          "manual": 365,
+          "potion": 85,
+          "serum": 40,
+          "advancementScore": 10000
+        },
+        "80": {
+          "food": 135600,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "80.1": {
+          "food": 0,
+          "manual": 440,
+          "potion": 100,
+          "serum": 60,
+          "advancementScore": 12000
+        },
+        "90": {
+          "food": 172000,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "90.1": {
+          "food": 0,
+          "manual": 585,
+          "potion": 115,
+          "serum": 80,
+          "advancementScore": 14500
+        },
+        "100": {
+          "food": 212100,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "100.1": {
+          "food": 0,
+          "manual": 730,
+          "potion": 135,
+          "serum": 100,
+          "advancementScore": 17500
+        }
+      }
+    },
+    "mammoth": {
+      "key": "mammoth",
+      "label": "Mammoth",
+      "rarity": "Legendary",
+      "maxLevel": 100,
+      "generation": 2,
+      "skill": "Unknown",
+      "unlockIndex": 11,
+      "milestones": {
+        "10": {
+          "food": 6325,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "10.1": {
+          "food": 0,
+          "manual": 35,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 500
+        },
+        "20": {
+          "food": 13400,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "20.1": {
+          "food": 0,
+          "manual": 70,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 1000
+        },
+        "30": {
+          "food": 22550,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "30.1": {
+          "food": 0,
+          "manual": 110,
+          "potion": 15,
+          "serum": 0,
+          "advancementScore": 2000
+        },
+        "40": {
+          "food": 35800,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "40.1": {
+          "food": 0,
+          "manual": 145,
+          "potion": 35,
+          "serum": 0,
+          "advancementScore": 3000
+        },
+        "50": {
+          "food": 54050,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "50.1": {
+          "food": 0,
+          "manual": 220,
+          "potion": 50,
+          "serum": 10,
+          "advancementScore": 4500
+        },
+        "60": {
+          "food": 77300,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "60.1": {
+          "food": 0,
+          "manual": 290,
+          "potion": 65,
+          "serum": 20,
+          "advancementScore": 6750
+        },
+        "70": {
+          "food": 105500,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "70.1": {
+          "food": 0,
+          "manual": 365,
+          "potion": 85,
+          "serum": 40,
+          "advancementScore": 10000
+        },
+        "80": {
+          "food": 135600,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "80.1": {
+          "food": 0,
+          "manual": 440,
+          "potion": 100,
+          "serum": 60,
+          "advancementScore": 12000
+        },
+        "90": {
+          "food": 172000,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "90.1": {
+          "food": 0,
+          "manual": 585,
+          "potion": 115,
+          "serum": 80,
+          "advancementScore": 14500
+        },
+        "100": {
+          "food": 212100,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "100.1": {
+          "food": 0,
+          "manual": 730,
+          "potion": 135,
+          "serum": 100,
+          "advancementScore": 17500
+        }
+      }
+    },
+    "frost_gorilla": {
+      "key": "frost_gorilla",
+      "label": "Frost Gorilla",
+      "rarity": "Legendary",
+      "maxLevel": 100,
+      "generation": 2,
+      "skill": "Unknown",
+      "unlockIndex": 12,
+      "milestones": {
+        "10": {
+          "food": 6325,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "10.1": {
+          "food": 0,
+          "manual": 35,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 500
+        },
+        "20": {
+          "food": 13400,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "20.1": {
+          "food": 0,
+          "manual": 70,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 1000
+        },
+        "30": {
+          "food": 22550,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "30.1": {
+          "food": 0,
+          "manual": 110,
+          "potion": 15,
+          "serum": 0,
+          "advancementScore": 2000
+        },
+        "40": {
+          "food": 35800,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "40.1": {
+          "food": 0,
+          "manual": 145,
+          "potion": 35,
+          "serum": 0,
+          "advancementScore": 3000
+        },
+        "50": {
+          "food": 54050,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "50.1": {
+          "food": 0,
+          "manual": 220,
+          "potion": 50,
+          "serum": 10,
+          "advancementScore": 4500
+        },
+        "60": {
+          "food": 77300,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "60.1": {
+          "food": 0,
+          "manual": 290,
+          "potion": 65,
+          "serum": 20,
+          "advancementScore": 6750
+        },
+        "70": {
+          "food": 105500,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "70.1": {
+          "food": 0,
+          "manual": 365,
+          "potion": 85,
+          "serum": 40,
+          "advancementScore": 10000
+        },
+        "80": {
+          "food": 135600,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "80.1": {
+          "food": 0,
+          "manual": 440,
+          "potion": 100,
+          "serum": 60,
+          "advancementScore": 12000
+        },
+        "90": {
+          "food": 172000,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "90.1": {
+          "food": 0,
+          "manual": 585,
+          "potion": 115,
+          "serum": 80,
+          "advancementScore": 14500
+        },
+        "100": {
+          "food": 212100,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "100.1": {
+          "food": 0,
+          "manual": 730,
+          "potion": 135,
+          "serum": 100,
+          "advancementScore": 17500
+        }
+      }
+    },
+    "frostscale_chameleon": {
+      "key": "frostscale_chameleon",
+      "label": "Frostscale Chameleon",
+      "rarity": "Legendary",
+      "maxLevel": 100,
+      "generation": 2,
+      "skill": "Unknown",
+      "unlockIndex": 13,
+      "milestones": {
+        "10": {
+          "food": 6325,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "10.1": {
+          "food": 0,
+          "manual": 35,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 500
+        },
+        "20": {
+          "food": 13400,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "20.1": {
+          "food": 0,
+          "manual": 70,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 1000
+        },
+        "30": {
+          "food": 22550,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "30.1": {
+          "food": 0,
+          "manual": 110,
+          "potion": 15,
+          "serum": 0,
+          "advancementScore": 2000
+        },
+        "40": {
+          "food": 35800,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "40.1": {
+          "food": 0,
+          "manual": 145,
+          "potion": 35,
+          "serum": 0,
+          "advancementScore": 3000
+        },
+        "50": {
+          "food": 54050,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "50.1": {
+          "food": 0,
+          "manual": 220,
+          "potion": 50,
+          "serum": 10,
+          "advancementScore": 4500
+        },
+        "60": {
+          "food": 77300,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "60.1": {
+          "food": 0,
+          "manual": 290,
+          "potion": 65,
+          "serum": 20,
+          "advancementScore": 6750
+        },
+        "70": {
+          "food": 105500,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "70.1": {
+          "food": 0,
+          "manual": 365,
+          "potion": 85,
+          "serum": 40,
+          "advancementScore": 10000
+        },
+        "80": {
+          "food": 135600,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "80.1": {
+          "food": 0,
+          "manual": 440,
+          "potion": 100,
+          "serum": 60,
+          "advancementScore": 12000
+        },
+        "90": {
+          "food": 172000,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "90.1": {
+          "food": 0,
+          "manual": 585,
+          "potion": 115,
+          "serum": 80,
+          "advancementScore": 14500
+        },
+        "100": {
+          "food": 212100,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "100.1": {
+          "food": 0,
+          "manual": 730,
+          "potion": 135,
+          "serum": 100,
+          "advancementScore": 17500
+        }
+      }
+    },
+    "abyssal_shelldragon": {
+      "key": "abyssal_shelldragon",
+      "label": "Abyssal Shelldragon",
+      "rarity": "Legendary",
+      "maxLevel": 100,
+      "generation": 2,
+      "skill": "Unknown",
+      "unlockIndex": 14,
+      "milestones": {
+        "10": {
+          "food": 6325,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "10.1": {
+          "food": 0,
+          "manual": 35,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 500
+        },
+        "20": {
+          "food": 13400,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "20.1": {
+          "food": 0,
+          "manual": 70,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 1000
+        },
+        "30": {
+          "food": 22550,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "30.1": {
+          "food": 0,
+          "manual": 110,
+          "potion": 15,
+          "serum": 0,
+          "advancementScore": 2000
+        },
+        "40": {
+          "food": 35800,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "40.1": {
+          "food": 0,
+          "manual": 145,
+          "potion": 35,
+          "serum": 0,
+          "advancementScore": 3000
+        },
+        "50": {
+          "food": 54050,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "50.1": {
+          "food": 0,
+          "manual": 220,
+          "potion": 50,
+          "serum": 10,
+          "advancementScore": 4500
+        },
+        "60": {
+          "food": 77300,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "60.1": {
+          "food": 0,
+          "manual": 290,
+          "potion": 65,
+          "serum": 20,
+          "advancementScore": 6750
+        },
+        "70": {
+          "food": 105500,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "70.1": {
+          "food": 0,
+          "manual": 365,
+          "potion": 85,
+          "serum": 40,
+          "advancementScore": 10000
+        },
+        "80": {
+          "food": 135600,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "80.1": {
+          "food": 0,
+          "manual": 440,
+          "potion": 100,
+          "serum": 60,
+          "advancementScore": 12000
+        },
+        "90": {
+          "food": 172000,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "90.1": {
+          "food": 0,
+          "manual": 585,
+          "potion": 115,
+          "serum": 80,
+          "advancementScore": 14500
+        },
+        "100": {
+          "food": 212100,
+          "manual": 0,
+          "potion": 0,
+          "serum": 0,
+          "advancementScore": 0
+        },
+        "100.1": {
+          "food": 0,
+          "manual": 730,
+          "potion": 135,
+          "serum": 100,
+          "advancementScore": 17500
+        }
+      }
+    }
+  },
+  "order": [
+    "cave_hyena",
+    "arctic_wolf",
+    "musk_ox",
+    "giant_tapir",
+    "titan_roc",
+    "giant_elk",
+    "snow_leopard",
+    "cave_lion",
+    "snow_ape",
+    "iron_rhino",
+    "sabertooth_tiger",
+    "mammoth",
+    "frost_gorilla",
+    "frostscale_chameleon",
+    "abyssal_shelldragon"
+  ],
+  "refinement": {
+    "tiers": [
+      "none",
+      "green",
+      "blue",
+      "purple",
+      "gold"
+    ],
+    "labels": {
+      "none": "None (no tier)",
+      "green": "Tier 1 \u2014 Green",
+      "blue": "Tier 2 \u2014 Blue",
+      "purple": "Tier 3 \u2014 Purple",
+      "gold": "Tier 4 \u2014 Gold"
+    },
+    "kipVersion": {
+      "common": {
+        "totalAttempts": 3354,
+        "totalPositives": 440,
+        "marksPerPositive": 7.6227,
+        "positiveRate": 0.1312
+      },
+      "advanced": {
+        "totalAttempts": 890,
+        "totalPositives": 568,
+        "marksPerPositive": 1.5669,
+        "positiveRate": 0.6382
+      },
+      "source": "Nerds - Pet Refinement.xlsx / Kip Version"
+    }
+  },
+  "unlockLevelRequired": 15
+}

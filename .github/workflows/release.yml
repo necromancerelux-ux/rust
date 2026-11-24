@@ -1,0 +1,83 @@
+name: Automatic Linux release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build-x86_64:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-unknown-linux-musl
+      - name: Install musl tools
+        run: sudo apt-get update && sudo apt-get install -y musl-tools
+      - uses: Swatinem/rust-cache@v2
+      - name: Build Linux x86_64 binary
+        run: cargo build --locked --release --no-default-features --target x86_64-unknown-linux-musl
+      - name: Package
+        run: |
+          cp target/x86_64-unknown-linux-musl/release/omnicore omnicore-linux-x86_64
+          chmod +x omnicore-linux-x86_64
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-x86_64
+          path: omnicore-linux-x86_64
+
+  build-aarch64:
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-unknown-linux-gnu
+      - uses: Swatinem/rust-cache@v2
+      - name: Build Linux ARM64 binary
+        run: cargo build --locked --release --no-default-features --target aarch64-unknown-linux-gnu
+      - name: Package
+        run: |
+          cp target/aarch64-unknown-linux-gnu/release/omnicore omnicore-linux-aarch64
+          chmod +x omnicore-linux-aarch64
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-aarch64
+          path: omnicore-linux-aarch64
+
+  release:
+    needs: [build-x86_64, build-aarch64]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+          merge-multiple: true
+      - name: Package release assets
+        working-directory: release-assets
+        run: |
+          tar -czf omnicore-linux-x86_64.tar.gz omnicore-linux-x86_64
+          tar -czf omnicore-linux-aarch64.tar.gz omnicore-linux-aarch64
+          sha256sum omnicore-linux-x86_64 omnicore-linux-aarch64 > SHA256SUMS.txt
+      - name: Publish commit release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: auto-${{ github.sha }}
+          name: Automated build ${{ github.sha }}
+          target_commitish: ${{ github.sha }}
+          generate_release_notes: true
+          make_latest: true
+          overwrite_files: true
+          files: |
+            release-assets/omnicore-linux-x86_64
+            release-assets/omnicore-linux-x86_64.tar.gz
+            release-assets/omnicore-linux-aarch64
+            release-assets/omnicore-linux-aarch64.tar.gz
+            release-assets/SHA256SUMS.txt

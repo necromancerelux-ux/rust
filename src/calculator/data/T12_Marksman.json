@@ -1,0 +1,3555 @@
+{
+  "skills": {
+    "T12 Marksman Research I": {
+      "levels": {
+        "1": {
+          "cost": {
+            "steel": 15000,
+            "refinedFireCrystal": 2,
+            "fc_shards": 16,
+            "meat": 500000,
+            "wood": 500000,
+            "coal": 100000,
+            "iron": 25000
+          },
+          "time": {
+            "raw-seconds": 36000,
+            "minutes": 600
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 50000
+          }
+        },
+        "2": {
+          "cost": {
+            "steel": 15750,
+            "refinedFireCrystal": 2,
+            "fc_shards": 17,
+            "meat": 520000,
+            "wood": 520000,
+            "coal": 100000,
+            "iron": 26000
+          },
+          "time": {
+            "raw-seconds": 37800,
+            "minutes": 630
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 100000
+          }
+        },
+        "3": {
+          "cost": {
+            "steel": 16500,
+            "refinedFireCrystal": 2,
+            "fc_shards": 17,
+            "meat": 550000,
+            "wood": 550000,
+            "coal": 110000,
+            "iron": 27000
+          },
+          "time": {
+            "raw-seconds": 39600,
+            "minutes": 660
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 150000
+          }
+        },
+        "4": {
+          "cost": {
+            "steel": 17250,
+            "refinedFireCrystal": 2,
+            "fc_shards": 18,
+            "meat": 570000,
+            "wood": 570000,
+            "coal": 110000,
+            "iron": 28000
+          },
+          "time": {
+            "raw-seconds": 41400,
+            "minutes": 690
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 200000
+          }
+        },
+        "5": {
+          "cost": {
+            "steel": 18000,
+            "refinedFireCrystal": 3,
+            "fc_shards": 19,
+            "meat": 600000,
+            "wood": 600000,
+            "coal": 120000,
+            "iron": 30000
+          },
+          "time": {
+            "raw-seconds": 43200,
+            "minutes": 720
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 250000
+          }
+        },
+        "6": {
+          "cost": {
+            "steel": 18750,
+            "refinedFireCrystal": 3,
+            "fc_shards": 20,
+            "meat": 620000,
+            "wood": 620000,
+            "coal": 120000,
+            "iron": 31000
+          },
+          "time": {
+            "raw-seconds": 45000,
+            "minutes": 750
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 300000
+          }
+        },
+        "7": {
+          "cost": {
+            "steel": 19500,
+            "refinedFireCrystal": 3,
+            "fc_shards": 21,
+            "meat": 650000,
+            "wood": 650000,
+            "coal": 130000,
+            "iron": 32000
+          },
+          "time": {
+            "raw-seconds": 46800,
+            "minutes": 780
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 350000
+          }
+        },
+        "8": {
+          "cost": {
+            "steel": 21000,
+            "refinedFireCrystal": 3,
+            "fc_shards": 22,
+            "meat": 700000,
+            "wood": 700000,
+            "coal": 140000,
+            "iron": 35000
+          },
+          "time": {
+            "raw-seconds": 50400,
+            "minutes": 840
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 400000
+          }
+        },
+        "9": {
+          "cost": {
+            "steel": 22500,
+            "refinedFireCrystal": 3,
+            "fc_shards": 24,
+            "meat": 750000,
+            "wood": 750000,
+            "coal": 150000,
+            "iron": 37000
+          },
+          "time": {
+            "raw-seconds": 54000,
+            "minutes": 900
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 450000
+          }
+        },
+        "10": {
+          "cost": {
+            "steel": 24000,
+            "refinedFireCrystal": 4,
+            "fc_shards": 26,
+            "meat": 800000,
+            "wood": 800000,
+            "coal": 160000,
+            "iron": 40000
+          },
+          "time": {
+            "raw-seconds": 57600,
+            "minutes": 960
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 500000
+          }
+        },
+        "11": {
+          "cost": {
+            "steel": 25500,
+            "refinedFireCrystal": 4,
+            "fc_shards": 27,
+            "meat": 850000,
+            "wood": 850000,
+            "coal": 170000,
+            "iron": 42000
+          },
+          "time": {
+            "raw-seconds": 61200,
+            "minutes": 1020
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 550000
+          }
+        },
+        "12": {
+          "cost": {
+            "steel": 27000,
+            "refinedFireCrystal": 4,
+            "fc_shards": 29,
+            "meat": 900000,
+            "wood": 900000,
+            "coal": 180000,
+            "iron": 45000
+          },
+          "time": {
+            "raw-seconds": 64800,
+            "minutes": 1080
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 600000
+          }
+        },
+        "13": {
+          "cost": {
+            "steel": 28500,
+            "refinedFireCrystal": 4,
+            "fc_shards": 30,
+            "meat": 950000,
+            "wood": 950000,
+            "coal": 190000,
+            "iron": 47000
+          },
+          "time": {
+            "raw-seconds": 68400,
+            "minutes": 1140
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 650000
+          }
+        },
+        "14": {
+          "cost": {
+            "steel": 30000,
+            "refinedFireCrystal": 5,
+            "fc_shards": 32,
+            "meat": 1000000,
+            "wood": 1000000,
+            "coal": 200000,
+            "iron": 50000
+          },
+          "time": {
+            "raw-seconds": 72000,
+            "minutes": 1200
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 700000
+          }
+        },
+        "15": {
+          "cost": {
+            "steel": 31500,
+            "refinedFireCrystal": 5,
+            "fc_shards": 34,
+            "meat": 1000000,
+            "wood": 1000000,
+            "coal": 210000,
+            "iron": 52000
+          },
+          "time": {
+            "raw-seconds": 75600,
+            "minutes": 1260
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 750000
+          }
+        },
+        "16": {
+          "cost": {
+            "steel": 33000,
+            "refinedFireCrystal": 5,
+            "fc_shards": 35,
+            "meat": 1100000,
+            "wood": 1100000,
+            "coal": 220000,
+            "iron": 55000
+          },
+          "time": {
+            "raw-seconds": 79200,
+            "minutes": 1320
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 800000
+          }
+        },
+        "17": {
+          "cost": {
+            "steel": 34500,
+            "refinedFireCrystal": 5,
+            "fc_shards": 37,
+            "meat": 1100000,
+            "wood": 1100000,
+            "coal": 230000,
+            "iron": 57000
+          },
+          "time": {
+            "raw-seconds": 82800,
+            "minutes": 1380
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 850000
+          }
+        },
+        "18": {
+          "cost": {
+            "steel": 36000,
+            "refinedFireCrystal": 6,
+            "fc_shards": 39,
+            "meat": 1200000,
+            "wood": 1200000,
+            "coal": 240000,
+            "iron": 60000
+          },
+          "time": {
+            "raw-seconds": 86400,
+            "minutes": 1440
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 900000
+          }
+        },
+        "19": {
+          "cost": {
+            "steel": 37500,
+            "refinedFireCrystal": 6,
+            "fc_shards": 40,
+            "meat": 1200000,
+            "wood": 1200000,
+            "coal": 250000,
+            "iron": 62000
+          },
+          "time": {
+            "raw-seconds": 90000,
+            "minutes": 1500
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 950000
+          }
+        },
+        "20": {
+          "cost": {
+            "steel": 39000,
+            "refinedFireCrystal": 6,
+            "fc_shards": 42,
+            "meat": 1300000,
+            "wood": 1300000,
+            "coal": 260000,
+            "iron": 65000
+          },
+          "time": {
+            "raw-seconds": 93600,
+            "minutes": 1560
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1000000
+          }
+        }
+      }
+    },
+    "Starfire": {
+      "levels": {
+        "1": {
+          "cost": {
+            "steel": 200000,
+            "refinedFireCrystal": 50,
+            "fc_shards": 325,
+            "meat": 15000000,
+            "wood": 15000000,
+            "coal": 3000000,
+            "iron": 750000
+          },
+          "time": {
+            "raw-seconds": 1728000,
+            "minutes": 28800
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 350000
+          }
+        },
+        "2": {
+          "cost": {
+            "steel": 200000,
+            "refinedFireCrystal": 50,
+            "fc_shards": 325,
+            "meat": 15000000,
+            "wood": 15000000,
+            "coal": 3000000,
+            "iron": 750000
+          },
+          "time": {
+            "raw-seconds": 1728000,
+            "minutes": 28800
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 700000
+          }
+        },
+        "3": {
+          "cost": {
+            "steel": 200000,
+            "refinedFireCrystal": 50,
+            "fc_shards": 325,
+            "meat": 15000000,
+            "wood": 15000000,
+            "coal": 3000000,
+            "iron": 750000
+          },
+          "time": {
+            "raw-seconds": 1728000,
+            "minutes": 28800
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1050000
+          }
+        }
+      }
+    },
+    "T12 Marksman Research II": {
+      "levels": {
+        "1": {
+          "cost": {
+            "steel": 18000,
+            "refinedFireCrystal": 5,
+            "fc_shards": 75,
+            "meat": 500000,
+            "wood": 500000,
+            "coal": 100000,
+            "iron": 25000
+          },
+          "time": {
+            "raw-seconds": 43200,
+            "minutes": 720
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 50000
+          }
+        },
+        "2": {
+          "cost": {
+            "steel": 18000,
+            "refinedFireCrystal": 5,
+            "fc_shards": 75,
+            "meat": 500000,
+            "wood": 500000,
+            "coal": 100000,
+            "iron": 25000
+          },
+          "time": {
+            "raw-seconds": 43200,
+            "minutes": 720
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 100000
+          }
+        },
+        "3": {
+          "cost": {
+            "steel": 18000,
+            "refinedFireCrystal": 5,
+            "fc_shards": 75,
+            "meat": 500000,
+            "wood": 500000,
+            "coal": 100000,
+            "iron": 25000
+          },
+          "time": {
+            "raw-seconds": 43200,
+            "minutes": 720
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 150000
+          }
+        },
+        "4": {
+          "cost": {
+            "steel": 18000,
+            "refinedFireCrystal": 5,
+            "fc_shards": 75,
+            "meat": 500000,
+            "wood": 500000,
+            "coal": 100000,
+            "iron": 25000
+          },
+          "time": {
+            "raw-seconds": 43200,
+            "minutes": 720
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 200000
+          }
+        },
+        "5": {
+          "cost": {
+            "steel": 18000,
+            "refinedFireCrystal": 5,
+            "fc_shards": 75,
+            "meat": 500000,
+            "wood": 500000,
+            "coal": 100000,
+            "iron": 25000
+          },
+          "time": {
+            "raw-seconds": 43200,
+            "minutes": 720
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 250000
+          }
+        },
+        "6": {
+          "cost": {
+            "steel": 18000,
+            "refinedFireCrystal": 5,
+            "fc_shards": 75,
+            "meat": 500000,
+            "wood": 500000,
+            "coal": 100000,
+            "iron": 25000
+          },
+          "time": {
+            "raw-seconds": 43200,
+            "minutes": 720
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 300000
+          }
+        },
+        "7": {
+          "cost": {
+            "steel": 18000,
+            "refinedFireCrystal": 5,
+            "fc_shards": 75,
+            "meat": 500000,
+            "wood": 500000,
+            "coal": 100000,
+            "iron": 25000
+          },
+          "time": {
+            "raw-seconds": 43200,
+            "minutes": 720
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 350000
+          }
+        },
+        "8": {
+          "cost": {
+            "steel": 18000,
+            "refinedFireCrystal": 5,
+            "fc_shards": 75,
+            "meat": 500000,
+            "wood": 500000,
+            "coal": 100000,
+            "iron": 25000
+          },
+          "time": {
+            "raw-seconds": 43200,
+            "minutes": 720
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 400000
+          }
+        },
+        "9": {
+          "cost": {
+            "steel": 18000,
+            "refinedFireCrystal": 5,
+            "fc_shards": 75,
+            "meat": 500000,
+            "wood": 500000,
+            "coal": 100000,
+            "iron": 25000
+          },
+          "time": {
+            "raw-seconds": 43200,
+            "minutes": 720
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 450000
+          }
+        },
+        "10": {
+          "cost": {
+            "steel": 18000,
+            "refinedFireCrystal": 5,
+            "fc_shards": 75,
+            "meat": 500000,
+            "wood": 500000,
+            "coal": 100000,
+            "iron": 25000
+          },
+          "time": {
+            "raw-seconds": 43200,
+            "minutes": 720
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 500000
+          }
+        },
+        "11": {
+          "cost": {
+            "steel": 22500,
+            "refinedFireCrystal": 6,
+            "fc_shards": 93,
+            "meat": 620000,
+            "wood": 620000,
+            "coal": 120000,
+            "iron": 31000
+          },
+          "time": {
+            "raw-seconds": 54000,
+            "minutes": 900
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 550000
+          }
+        },
+        "12": {
+          "cost": {
+            "steel": 22500,
+            "refinedFireCrystal": 6,
+            "fc_shards": 93,
+            "meat": 620000,
+            "wood": 620000,
+            "coal": 120000,
+            "iron": 31000
+          },
+          "time": {
+            "raw-seconds": 54000,
+            "minutes": 900
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 600000
+          }
+        },
+        "13": {
+          "cost": {
+            "steel": 22500,
+            "refinedFireCrystal": 6,
+            "fc_shards": 93,
+            "meat": 620000,
+            "wood": 620000,
+            "coal": 120000,
+            "iron": 31000
+          },
+          "time": {
+            "raw-seconds": 54000,
+            "minutes": 900
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 650000
+          }
+        },
+        "14": {
+          "cost": {
+            "steel": 22500,
+            "refinedFireCrystal": 6,
+            "fc_shards": 93,
+            "meat": 620000,
+            "wood": 620000,
+            "coal": 120000,
+            "iron": 31000
+          },
+          "time": {
+            "raw-seconds": 54000,
+            "minutes": 900
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 700000
+          }
+        },
+        "15": {
+          "cost": {
+            "steel": 22500,
+            "refinedFireCrystal": 6,
+            "fc_shards": 93,
+            "meat": 620000,
+            "wood": 620000,
+            "coal": 120000,
+            "iron": 31000
+          },
+          "time": {
+            "raw-seconds": 54000,
+            "minutes": 900
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 750000
+          }
+        },
+        "16": {
+          "cost": {
+            "steel": 22500,
+            "refinedFireCrystal": 6,
+            "fc_shards": 93,
+            "meat": 620000,
+            "wood": 620000,
+            "coal": 120000,
+            "iron": 31000
+          },
+          "time": {
+            "raw-seconds": 54000,
+            "minutes": 900
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 800000
+          }
+        },
+        "17": {
+          "cost": {
+            "steel": 22500,
+            "refinedFireCrystal": 6,
+            "fc_shards": 93,
+            "meat": 620000,
+            "wood": 620000,
+            "coal": 120000,
+            "iron": 31000
+          },
+          "time": {
+            "raw-seconds": 54000,
+            "minutes": 900
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 850000
+          }
+        },
+        "18": {
+          "cost": {
+            "steel": 22500,
+            "refinedFireCrystal": 6,
+            "fc_shards": 93,
+            "meat": 620000,
+            "wood": 620000,
+            "coal": 120000,
+            "iron": 31000
+          },
+          "time": {
+            "raw-seconds": 54000,
+            "minutes": 900
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 900000
+          }
+        },
+        "19": {
+          "cost": {
+            "steel": 22500,
+            "refinedFireCrystal": 6,
+            "fc_shards": 93,
+            "meat": 620000,
+            "wood": 620000,
+            "coal": 120000,
+            "iron": 31000
+          },
+          "time": {
+            "raw-seconds": 54000,
+            "minutes": 900
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 950000
+          }
+        },
+        "20": {
+          "cost": {
+            "steel": 22500,
+            "refinedFireCrystal": 6,
+            "fc_shards": 93,
+            "meat": 620000,
+            "wood": 620000,
+            "coal": 120000,
+            "iron": 31000
+          },
+          "time": {
+            "raw-seconds": 54000,
+            "minutes": 900
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1000000
+          }
+        },
+        "21": {
+          "cost": {
+            "steel": 27000,
+            "refinedFireCrystal": 7,
+            "fc_shards": 112,
+            "meat": 750000,
+            "wood": 750000,
+            "coal": 150000,
+            "iron": 37000
+          },
+          "time": {
+            "raw-seconds": 64800,
+            "minutes": 1080
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1050000
+          }
+        },
+        "22": {
+          "cost": {
+            "steel": 27000,
+            "refinedFireCrystal": 7,
+            "fc_shards": 112,
+            "meat": 750000,
+            "wood": 750000,
+            "coal": 150000,
+            "iron": 37000
+          },
+          "time": {
+            "raw-seconds": 64800,
+            "minutes": 1080
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1100000
+          }
+        },
+        "23": {
+          "cost": {
+            "steel": 27000,
+            "refinedFireCrystal": 7,
+            "fc_shards": 112,
+            "meat": 750000,
+            "wood": 750000,
+            "coal": 150000,
+            "iron": 37000
+          },
+          "time": {
+            "raw-seconds": 64800,
+            "minutes": 1080
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1150000
+          }
+        },
+        "24": {
+          "cost": {
+            "steel": 27000,
+            "refinedFireCrystal": 7,
+            "fc_shards": 112,
+            "meat": 750000,
+            "wood": 750000,
+            "coal": 150000,
+            "iron": 37000
+          },
+          "time": {
+            "raw-seconds": 64800,
+            "minutes": 1080
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1200000
+          }
+        },
+        "25": {
+          "cost": {
+            "steel": 27000,
+            "refinedFireCrystal": 7,
+            "fc_shards": 112,
+            "meat": 750000,
+            "wood": 750000,
+            "coal": 150000,
+            "iron": 37000
+          },
+          "time": {
+            "raw-seconds": 64800,
+            "minutes": 1080
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1250000
+          }
+        },
+        "26": {
+          "cost": {
+            "steel": 27000,
+            "refinedFireCrystal": 7,
+            "fc_shards": 112,
+            "meat": 750000,
+            "wood": 750000,
+            "coal": 150000,
+            "iron": 37000
+          },
+          "time": {
+            "raw-seconds": 64800,
+            "minutes": 1080
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1300000
+          }
+        },
+        "27": {
+          "cost": {
+            "steel": 27000,
+            "refinedFireCrystal": 7,
+            "fc_shards": 112,
+            "meat": 750000,
+            "wood": 750000,
+            "coal": 150000,
+            "iron": 37000
+          },
+          "time": {
+            "raw-seconds": 64800,
+            "minutes": 1080
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1350000
+          }
+        },
+        "28": {
+          "cost": {
+            "steel": 27000,
+            "refinedFireCrystal": 7,
+            "fc_shards": 112,
+            "meat": 750000,
+            "wood": 750000,
+            "coal": 150000,
+            "iron": 37000
+          },
+          "time": {
+            "raw-seconds": 64800,
+            "minutes": 1080
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1400000
+          }
+        },
+        "29": {
+          "cost": {
+            "steel": 27000,
+            "refinedFireCrystal": 7,
+            "fc_shards": 112,
+            "meat": 750000,
+            "wood": 750000,
+            "coal": 150000,
+            "iron": 37000
+          },
+          "time": {
+            "raw-seconds": 64800,
+            "minutes": 1080
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1450000
+          }
+        },
+        "30": {
+          "cost": {
+            "steel": 27000,
+            "refinedFireCrystal": 7,
+            "fc_shards": 112,
+            "meat": 750000,
+            "wood": 750000,
+            "coal": 150000,
+            "iron": 37000
+          },
+          "time": {
+            "raw-seconds": 64800,
+            "minutes": 1080
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1500000
+          }
+        },
+        "31": {
+          "cost": {
+            "steel": 31500,
+            "refinedFireCrystal": 8,
+            "fc_shards": 131,
+            "meat": 870000,
+            "wood": 870000,
+            "coal": 170000,
+            "iron": 43000
+          },
+          "time": {
+            "raw-seconds": 75600,
+            "minutes": 1260
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1550000
+          }
+        },
+        "32": {
+          "cost": {
+            "steel": 31500,
+            "refinedFireCrystal": 8,
+            "fc_shards": 131,
+            "meat": 870000,
+            "wood": 870000,
+            "coal": 170000,
+            "iron": 43000
+          },
+          "time": {
+            "raw-seconds": 75600,
+            "minutes": 1260
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1600000
+          }
+        },
+        "33": {
+          "cost": {
+            "steel": 31500,
+            "refinedFireCrystal": 8,
+            "fc_shards": 131,
+            "meat": 870000,
+            "wood": 870000,
+            "coal": 170000,
+            "iron": 43000
+          },
+          "time": {
+            "raw-seconds": 75600,
+            "minutes": 1260
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1650000
+          }
+        },
+        "34": {
+          "cost": {
+            "steel": 31500,
+            "refinedFireCrystal": 8,
+            "fc_shards": 131,
+            "meat": 870000,
+            "wood": 870000,
+            "coal": 170000,
+            "iron": 43000
+          },
+          "time": {
+            "raw-seconds": 75600,
+            "minutes": 1260
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1700000
+          }
+        },
+        "35": {
+          "cost": {
+            "steel": 31500,
+            "refinedFireCrystal": 8,
+            "fc_shards": 131,
+            "meat": 870000,
+            "wood": 870000,
+            "coal": 170000,
+            "iron": 43000
+          },
+          "time": {
+            "raw-seconds": 75600,
+            "minutes": 1260
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1750000
+          }
+        },
+        "36": {
+          "cost": {
+            "steel": 31500,
+            "refinedFireCrystal": 8,
+            "fc_shards": 131,
+            "meat": 870000,
+            "wood": 870000,
+            "coal": 170000,
+            "iron": 43000
+          },
+          "time": {
+            "raw-seconds": 75600,
+            "minutes": 1260
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1800000
+          }
+        },
+        "37": {
+          "cost": {
+            "steel": 31500,
+            "refinedFireCrystal": 8,
+            "fc_shards": 131,
+            "meat": 870000,
+            "wood": 870000,
+            "coal": 170000,
+            "iron": 43000
+          },
+          "time": {
+            "raw-seconds": 75600,
+            "minutes": 1260
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1850000
+          }
+        },
+        "38": {
+          "cost": {
+            "steel": 31500,
+            "refinedFireCrystal": 8,
+            "fc_shards": 131,
+            "meat": 870000,
+            "wood": 870000,
+            "coal": 170000,
+            "iron": 43000
+          },
+          "time": {
+            "raw-seconds": 75600,
+            "minutes": 1260
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1900000
+          }
+        },
+        "39": {
+          "cost": {
+            "steel": 31500,
+            "refinedFireCrystal": 8,
+            "fc_shards": 131,
+            "meat": 870000,
+            "wood": 870000,
+            "coal": 170000,
+            "iron": 43000
+          },
+          "time": {
+            "raw-seconds": 75600,
+            "minutes": 1260
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1950000
+          }
+        },
+        "40": {
+          "cost": {
+            "steel": 31500,
+            "refinedFireCrystal": 8,
+            "fc_shards": 131,
+            "meat": 870000,
+            "wood": 870000,
+            "coal": 170000,
+            "iron": 43000
+          },
+          "time": {
+            "raw-seconds": 75600,
+            "minutes": 1260
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 2000000
+          }
+        },
+        "41": {
+          "cost": {
+            "steel": 36000,
+            "refinedFireCrystal": 10,
+            "fc_shards": 150,
+            "meat": 1000000,
+            "wood": 1000000,
+            "coal": 200000,
+            "iron": 50000
+          },
+          "time": {
+            "raw-seconds": 86400,
+            "minutes": 1440
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 2050000
+          }
+        },
+        "42": {
+          "cost": {
+            "steel": 36000,
+            "refinedFireCrystal": 10,
+            "fc_shards": 150,
+            "meat": 1000000,
+            "wood": 1000000,
+            "coal": 200000,
+            "iron": 50000
+          },
+          "time": {
+            "raw-seconds": 86400,
+            "minutes": 1440
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 2100000
+          }
+        },
+        "43": {
+          "cost": {
+            "steel": 36000,
+            "refinedFireCrystal": 10,
+            "fc_shards": 150,
+            "meat": 1000000,
+            "wood": 1000000,
+            "coal": 200000,
+            "iron": 50000
+          },
+          "time": {
+            "raw-seconds": 86400,
+            "minutes": 1440
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 2150000
+          }
+        },
+        "44": {
+          "cost": {
+            "steel": 36000,
+            "refinedFireCrystal": 10,
+            "fc_shards": 150,
+            "meat": 1000000,
+            "wood": 1000000,
+            "coal": 200000,
+            "iron": 50000
+          },
+          "time": {
+            "raw-seconds": 86400,
+            "minutes": 1440
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 2200000
+          }
+        },
+        "45": {
+          "cost": {
+            "steel": 36000,
+            "refinedFireCrystal": 10,
+            "fc_shards": 150,
+            "meat": 1000000,
+            "wood": 1000000,
+            "coal": 200000,
+            "iron": 50000
+          },
+          "time": {
+            "raw-seconds": 86400,
+            "minutes": 1440
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 2250000
+          }
+        },
+        "46": {
+          "cost": {
+            "steel": 36000,
+            "refinedFireCrystal": 10,
+            "fc_shards": 150,
+            "meat": 1000000,
+            "wood": 1000000,
+            "coal": 200000,
+            "iron": 50000
+          },
+          "time": {
+            "raw-seconds": 86400,
+            "minutes": 1440
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 2300000
+          }
+        },
+        "47": {
+          "cost": {
+            "steel": 36000,
+            "refinedFireCrystal": 10,
+            "fc_shards": 150,
+            "meat": 1000000,
+            "wood": 1000000,
+            "coal": 200000,
+            "iron": 50000
+          },
+          "time": {
+            "raw-seconds": 86400,
+            "minutes": 1440
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 2350000
+          }
+        },
+        "48": {
+          "cost": {
+            "steel": 36000,
+            "refinedFireCrystal": 10,
+            "fc_shards": 150,
+            "meat": 1000000,
+            "wood": 1000000,
+            "coal": 200000,
+            "iron": 50000
+          },
+          "time": {
+            "raw-seconds": 86400,
+            "minutes": 1440
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 2400000
+          }
+        },
+        "49": {
+          "cost": {
+            "steel": 36000,
+            "refinedFireCrystal": 10,
+            "fc_shards": 150,
+            "meat": 1000000,
+            "wood": 1000000,
+            "coal": 200000,
+            "iron": 50000
+          },
+          "time": {
+            "raw-seconds": 86400,
+            "minutes": 1440
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 2450000
+          }
+        },
+        "50": {
+          "cost": {
+            "steel": 36000,
+            "refinedFireCrystal": 10,
+            "fc_shards": 150,
+            "meat": 1000000,
+            "wood": 1000000,
+            "coal": 200000,
+            "iron": 50000
+          },
+          "time": {
+            "raw-seconds": 86400,
+            "minutes": 1440
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 2500000
+          }
+        }
+      }
+    },
+    "Marksman Solar Supremacy": {
+      "levels": {
+        "1": {
+          "cost": {
+            "steel": 25000,
+            "refinedFireCrystal": 5,
+            "fc_shards": 75,
+            "meat": 500000,
+            "wood": 500000,
+            "coal": 100000,
+            "iron": 25000
+          },
+          "time": {
+            "raw-seconds": 43200,
+            "minutes": 720
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 60000
+          }
+        },
+        "2": {
+          "cost": {
+            "steel": 26250,
+            "refinedFireCrystal": 5,
+            "fc_shards": 78,
+            "meat": 520000,
+            "wood": 520000,
+            "coal": 100000,
+            "iron": 26000
+          },
+          "time": {
+            "raw-seconds": 45360,
+            "minutes": 756
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 120000
+          }
+        },
+        "3": {
+          "cost": {
+            "steel": 27500,
+            "refinedFireCrystal": 5,
+            "fc_shards": 82,
+            "meat": 550000,
+            "wood": 550000,
+            "coal": 110000,
+            "iron": 27000
+          },
+          "time": {
+            "raw-seconds": 47520,
+            "minutes": 792
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 180000
+          }
+        },
+        "4": {
+          "cost": {
+            "steel": 30000,
+            "refinedFireCrystal": 6,
+            "fc_shards": 90,
+            "meat": 600000,
+            "wood": 600000,
+            "coal": 120000,
+            "iron": 30000
+          },
+          "time": {
+            "raw-seconds": 51840,
+            "minutes": 864
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 240000
+          }
+        },
+        "5": {
+          "cost": {
+            "steel": 32500,
+            "refinedFireCrystal": 6,
+            "fc_shards": 97,
+            "meat": 650000,
+            "wood": 650000,
+            "coal": 130000,
+            "iron": 32000
+          },
+          "time": {
+            "raw-seconds": 56160,
+            "minutes": 936
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 300000
+          }
+        },
+        "6": {
+          "cost": {
+            "steel": 35000,
+            "refinedFireCrystal": 7,
+            "fc_shards": 105,
+            "meat": 700000,
+            "wood": 700000,
+            "coal": 140000,
+            "iron": 35000
+          },
+          "time": {
+            "raw-seconds": 60480,
+            "minutes": 1008
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 360000
+          }
+        },
+        "7": {
+          "cost": {
+            "steel": 37500,
+            "refinedFireCrystal": 7,
+            "fc_shards": 112,
+            "meat": 750000,
+            "wood": 750000,
+            "coal": 150000,
+            "iron": 37000
+          },
+          "time": {
+            "raw-seconds": 64800,
+            "minutes": 1080
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 420000
+          }
+        },
+        "8": {
+          "cost": {
+            "steel": 40000,
+            "refinedFireCrystal": 8,
+            "fc_shards": 120,
+            "meat": 800000,
+            "wood": 800000,
+            "coal": 160000,
+            "iron": 40000
+          },
+          "time": {
+            "raw-seconds": 69120,
+            "minutes": 1152
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 480000
+          }
+        },
+        "9": {
+          "cost": {
+            "steel": 42500,
+            "refinedFireCrystal": 8,
+            "fc_shards": 127,
+            "meat": 850000,
+            "wood": 850000,
+            "coal": 170000,
+            "iron": 42000
+          },
+          "time": {
+            "raw-seconds": 73440,
+            "minutes": 1224
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 540000
+          }
+        },
+        "10": {
+          "cost": {
+            "steel": 45000,
+            "refinedFireCrystal": 9,
+            "fc_shards": 135,
+            "meat": 900000,
+            "wood": 900000,
+            "coal": 180000,
+            "iron": 45000
+          },
+          "time": {
+            "raw-seconds": 77760,
+            "minutes": 1296
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 600000
+          }
+        },
+        "11": {
+          "cost": {
+            "steel": 47500,
+            "refinedFireCrystal": 9,
+            "fc_shards": 142,
+            "meat": 950000,
+            "wood": 950000,
+            "coal": 190000,
+            "iron": 47000
+          },
+          "time": {
+            "raw-seconds": 82080,
+            "minutes": 1368
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 660000
+          }
+        },
+        "12": {
+          "cost": {
+            "steel": 50000,
+            "refinedFireCrystal": 10,
+            "fc_shards": 150,
+            "meat": 1000000,
+            "wood": 1000000,
+            "coal": 200000,
+            "iron": 50000
+          },
+          "time": {
+            "raw-seconds": 86400,
+            "minutes": 1440
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 720000
+          }
+        },
+        "13": {
+          "cost": {
+            "steel": 52500,
+            "refinedFireCrystal": 10,
+            "fc_shards": 157,
+            "meat": 1000000,
+            "wood": 1000000,
+            "coal": 210000,
+            "iron": 52000
+          },
+          "time": {
+            "raw-seconds": 90720,
+            "minutes": 1512
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 780000
+          }
+        },
+        "14": {
+          "cost": {
+            "steel": 57500,
+            "refinedFireCrystal": 11,
+            "fc_shards": 172,
+            "meat": 1100000,
+            "wood": 1100000,
+            "coal": 230000,
+            "iron": 57000
+          },
+          "time": {
+            "raw-seconds": 99360,
+            "minutes": 1656
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 840000
+          }
+        },
+        "15": {
+          "cost": {
+            "steel": 62500,
+            "refinedFireCrystal": 12,
+            "fc_shards": 187,
+            "meat": 1200000,
+            "wood": 1200000,
+            "coal": 250000,
+            "iron": 62000
+          },
+          "time": {
+            "raw-seconds": 108000,
+            "minutes": 1800
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 900000
+          }
+        }
+      }
+    },
+    "T12 Marksman Research III": {
+      "levels": {
+        "1": {
+          "cost": {
+            "steel": 25000,
+            "refinedFireCrystal": 5,
+            "fc_shards": 125,
+            "meat": 1000000,
+            "wood": 1000000,
+            "coal": 200000,
+            "iron": 50000
+          },
+          "time": {
+            "raw-seconds": 172800,
+            "minutes": 2880
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 50000
+          }
+        },
+        "2": {
+          "cost": {
+            "steel": 25000,
+            "refinedFireCrystal": 5,
+            "fc_shards": 125,
+            "meat": 1000000,
+            "wood": 1000000,
+            "coal": 200000,
+            "iron": 50000
+          },
+          "time": {
+            "raw-seconds": 172800,
+            "minutes": 2880
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 100000
+          }
+        },
+        "3": {
+          "cost": {
+            "steel": 25000,
+            "refinedFireCrystal": 5,
+            "fc_shards": 125,
+            "meat": 1000000,
+            "wood": 1000000,
+            "coal": 200000,
+            "iron": 50000
+          },
+          "time": {
+            "raw-seconds": 172800,
+            "minutes": 2880
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 150000
+          }
+        },
+        "4": {
+          "cost": {
+            "steel": 25000,
+            "refinedFireCrystal": 5,
+            "fc_shards": 125,
+            "meat": 1000000,
+            "wood": 1000000,
+            "coal": 200000,
+            "iron": 50000
+          },
+          "time": {
+            "raw-seconds": 172800,
+            "minutes": 2880
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 200000
+          }
+        },
+        "5": {
+          "cost": {
+            "steel": 25000,
+            "refinedFireCrystal": 5,
+            "fc_shards": 125,
+            "meat": 1000000,
+            "wood": 1000000,
+            "coal": 200000,
+            "iron": 50000
+          },
+          "time": {
+            "raw-seconds": 172800,
+            "minutes": 2880
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 250000
+          }
+        },
+        "6": {
+          "cost": {
+            "steel": 25000,
+            "refinedFireCrystal": 5,
+            "fc_shards": 125,
+            "meat": 1000000,
+            "wood": 1000000,
+            "coal": 200000,
+            "iron": 50000
+          },
+          "time": {
+            "raw-seconds": 172800,
+            "minutes": 2880
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 300000
+          }
+        },
+        "7": {
+          "cost": {
+            "steel": 25000,
+            "refinedFireCrystal": 5,
+            "fc_shards": 125,
+            "meat": 1000000,
+            "wood": 1000000,
+            "coal": 200000,
+            "iron": 50000
+          },
+          "time": {
+            "raw-seconds": 172800,
+            "minutes": 2880
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 350000
+          }
+        },
+        "8": {
+          "cost": {
+            "steel": 25000,
+            "refinedFireCrystal": 5,
+            "fc_shards": 125,
+            "meat": 1000000,
+            "wood": 1000000,
+            "coal": 200000,
+            "iron": 50000
+          },
+          "time": {
+            "raw-seconds": 172800,
+            "minutes": 2880
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 400000
+          }
+        },
+        "9": {
+          "cost": {
+            "steel": 25000,
+            "refinedFireCrystal": 5,
+            "fc_shards": 125,
+            "meat": 1000000,
+            "wood": 1000000,
+            "coal": 200000,
+            "iron": 50000
+          },
+          "time": {
+            "raw-seconds": 172800,
+            "minutes": 2880
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 450000
+          }
+        },
+        "10": {
+          "cost": {
+            "steel": 25000,
+            "refinedFireCrystal": 5,
+            "fc_shards": 125,
+            "meat": 1000000,
+            "wood": 1000000,
+            "coal": 200000,
+            "iron": 50000
+          },
+          "time": {
+            "raw-seconds": 172800,
+            "minutes": 2880
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 500000
+          }
+        },
+        "11": {
+          "cost": {
+            "steel": 31250,
+            "refinedFireCrystal": 6,
+            "fc_shards": 156,
+            "meat": 1200000,
+            "wood": 1200000,
+            "coal": 250000,
+            "iron": 62000
+          },
+          "time": {
+            "raw-seconds": 216000,
+            "minutes": 3600
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 550000
+          }
+        },
+        "12": {
+          "cost": {
+            "steel": 31250,
+            "refinedFireCrystal": 6,
+            "fc_shards": 156,
+            "meat": 1200000,
+            "wood": 1200000,
+            "coal": 250000,
+            "iron": 62000
+          },
+          "time": {
+            "raw-seconds": 216000,
+            "minutes": 3600
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 600000
+          }
+        },
+        "13": {
+          "cost": {
+            "steel": 31250,
+            "refinedFireCrystal": 6,
+            "fc_shards": 156,
+            "meat": 1200000,
+            "wood": 1200000,
+            "coal": 250000,
+            "iron": 62000
+          },
+          "time": {
+            "raw-seconds": 216000,
+            "minutes": 3600
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 650000
+          }
+        },
+        "14": {
+          "cost": {
+            "steel": 31250,
+            "refinedFireCrystal": 6,
+            "fc_shards": 156,
+            "meat": 1200000,
+            "wood": 1200000,
+            "coal": 250000,
+            "iron": 62000
+          },
+          "time": {
+            "raw-seconds": 216000,
+            "minutes": 3600
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 700000
+          }
+        },
+        "15": {
+          "cost": {
+            "steel": 31250,
+            "refinedFireCrystal": 6,
+            "fc_shards": 156,
+            "meat": 1200000,
+            "wood": 1200000,
+            "coal": 250000,
+            "iron": 62000
+          },
+          "time": {
+            "raw-seconds": 216000,
+            "minutes": 3600
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 750000
+          }
+        },
+        "16": {
+          "cost": {
+            "steel": 31250,
+            "refinedFireCrystal": 6,
+            "fc_shards": 156,
+            "meat": 1200000,
+            "wood": 1200000,
+            "coal": 250000,
+            "iron": 62000
+          },
+          "time": {
+            "raw-seconds": 216000,
+            "minutes": 3600
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 800000
+          }
+        },
+        "17": {
+          "cost": {
+            "steel": 31250,
+            "refinedFireCrystal": 6,
+            "fc_shards": 156,
+            "meat": 1200000,
+            "wood": 1200000,
+            "coal": 250000,
+            "iron": 62000
+          },
+          "time": {
+            "raw-seconds": 216000,
+            "minutes": 3600
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 850000
+          }
+        },
+        "18": {
+          "cost": {
+            "steel": 31250,
+            "refinedFireCrystal": 6,
+            "fc_shards": 156,
+            "meat": 1200000,
+            "wood": 1200000,
+            "coal": 250000,
+            "iron": 62000
+          },
+          "time": {
+            "raw-seconds": 216000,
+            "minutes": 3600
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 900000
+          }
+        },
+        "19": {
+          "cost": {
+            "steel": 31250,
+            "refinedFireCrystal": 6,
+            "fc_shards": 156,
+            "meat": 1200000,
+            "wood": 1200000,
+            "coal": 250000,
+            "iron": 62000
+          },
+          "time": {
+            "raw-seconds": 216000,
+            "minutes": 3600
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 950000
+          }
+        },
+        "20": {
+          "cost": {
+            "steel": 31250,
+            "refinedFireCrystal": 6,
+            "fc_shards": 156,
+            "meat": 1200000,
+            "wood": 1200000,
+            "coal": 250000,
+            "iron": 62000
+          },
+          "time": {
+            "raw-seconds": 216000,
+            "minutes": 3600
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1000000
+          }
+        },
+        "21": {
+          "cost": {
+            "steel": 37500,
+            "refinedFireCrystal": 7,
+            "fc_shards": 187,
+            "meat": 1500000,
+            "wood": 1500000,
+            "coal": 300000,
+            "iron": 75000
+          },
+          "time": {
+            "raw-seconds": 259200,
+            "minutes": 4320
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1050000
+          }
+        },
+        "22": {
+          "cost": {
+            "steel": 37500,
+            "refinedFireCrystal": 7,
+            "fc_shards": 187,
+            "meat": 1500000,
+            "wood": 1500000,
+            "coal": 300000,
+            "iron": 75000
+          },
+          "time": {
+            "raw-seconds": 259200,
+            "minutes": 4320
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1100000
+          }
+        },
+        "23": {
+          "cost": {
+            "steel": 37500,
+            "refinedFireCrystal": 7,
+            "fc_shards": 187,
+            "meat": 1500000,
+            "wood": 1500000,
+            "coal": 300000,
+            "iron": 75000
+          },
+          "time": {
+            "raw-seconds": 259200,
+            "minutes": 4320
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1150000
+          }
+        },
+        "24": {
+          "cost": {
+            "steel": 37500,
+            "refinedFireCrystal": 7,
+            "fc_shards": 187,
+            "meat": 1500000,
+            "wood": 1500000,
+            "coal": 300000,
+            "iron": 75000
+          },
+          "time": {
+            "raw-seconds": 259200,
+            "minutes": 4320
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1200000
+          }
+        },
+        "25": {
+          "cost": {
+            "steel": 37500,
+            "refinedFireCrystal": 7,
+            "fc_shards": 187,
+            "meat": 1500000,
+            "wood": 1500000,
+            "coal": 300000,
+            "iron": 75000
+          },
+          "time": {
+            "raw-seconds": 259200,
+            "minutes": 4320
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1250000
+          }
+        },
+        "26": {
+          "cost": {
+            "steel": 37500,
+            "refinedFireCrystal": 7,
+            "fc_shards": 187,
+            "meat": 1500000,
+            "wood": 1500000,
+            "coal": 300000,
+            "iron": 75000
+          },
+          "time": {
+            "raw-seconds": 259200,
+            "minutes": 4320
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1300000
+          }
+        },
+        "27": {
+          "cost": {
+            "steel": 37500,
+            "refinedFireCrystal": 7,
+            "fc_shards": 187,
+            "meat": 1500000,
+            "wood": 1500000,
+            "coal": 300000,
+            "iron": 75000
+          },
+          "time": {
+            "raw-seconds": 259200,
+            "minutes": 4320
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1350000
+          }
+        },
+        "28": {
+          "cost": {
+            "steel": 37500,
+            "refinedFireCrystal": 7,
+            "fc_shards": 187,
+            "meat": 1500000,
+            "wood": 1500000,
+            "coal": 300000,
+            "iron": 75000
+          },
+          "time": {
+            "raw-seconds": 259200,
+            "minutes": 4320
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1400000
+          }
+        },
+        "29": {
+          "cost": {
+            "steel": 37500,
+            "refinedFireCrystal": 7,
+            "fc_shards": 187,
+            "meat": 1500000,
+            "wood": 1500000,
+            "coal": 300000,
+            "iron": 75000
+          },
+          "time": {
+            "raw-seconds": 259200,
+            "minutes": 4320
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1450000
+          }
+        },
+        "30": {
+          "cost": {
+            "steel": 37500,
+            "refinedFireCrystal": 7,
+            "fc_shards": 187,
+            "meat": 1500000,
+            "wood": 1500000,
+            "coal": 300000,
+            "iron": 75000
+          },
+          "time": {
+            "raw-seconds": 259200,
+            "minutes": 4320
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1500000
+          }
+        },
+        "31": {
+          "cost": {
+            "steel": 43750,
+            "refinedFireCrystal": 8,
+            "fc_shards": 218,
+            "meat": 1700000,
+            "wood": 1700000,
+            "coal": 350000,
+            "iron": 87000
+          },
+          "time": {
+            "raw-seconds": 302400,
+            "minutes": 5040
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1550000
+          }
+        },
+        "32": {
+          "cost": {
+            "steel": 43750,
+            "refinedFireCrystal": 8,
+            "fc_shards": 218,
+            "meat": 1700000,
+            "wood": 1700000,
+            "coal": 350000,
+            "iron": 87000
+          },
+          "time": {
+            "raw-seconds": 302400,
+            "minutes": 5040
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1600000
+          }
+        },
+        "33": {
+          "cost": {
+            "steel": 43750,
+            "refinedFireCrystal": 8,
+            "fc_shards": 218,
+            "meat": 1700000,
+            "wood": 1700000,
+            "coal": 350000,
+            "iron": 87000
+          },
+          "time": {
+            "raw-seconds": 302400,
+            "minutes": 5040
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1650000
+          }
+        },
+        "34": {
+          "cost": {
+            "steel": 43750,
+            "refinedFireCrystal": 8,
+            "fc_shards": 218,
+            "meat": 1700000,
+            "wood": 1700000,
+            "coal": 350000,
+            "iron": 87000
+          },
+          "time": {
+            "raw-seconds": 302400,
+            "minutes": 5040
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1700000
+          }
+        },
+        "35": {
+          "cost": {
+            "steel": 43750,
+            "refinedFireCrystal": 8,
+            "fc_shards": 218,
+            "meat": 1700000,
+            "wood": 1700000,
+            "coal": 350000,
+            "iron": 87000
+          },
+          "time": {
+            "raw-seconds": 302400,
+            "minutes": 5040
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1750000
+          }
+        },
+        "36": {
+          "cost": {
+            "steel": 43750,
+            "refinedFireCrystal": 8,
+            "fc_shards": 218,
+            "meat": 1700000,
+            "wood": 1700000,
+            "coal": 350000,
+            "iron": 87000
+          },
+          "time": {
+            "raw-seconds": 302400,
+            "minutes": 5040
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1800000
+          }
+        },
+        "37": {
+          "cost": {
+            "steel": 43750,
+            "refinedFireCrystal": 8,
+            "fc_shards": 218,
+            "meat": 1700000,
+            "wood": 1700000,
+            "coal": 350000,
+            "iron": 87000
+          },
+          "time": {
+            "raw-seconds": 302400,
+            "minutes": 5040
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1850000
+          }
+        },
+        "38": {
+          "cost": {
+            "steel": 43750,
+            "refinedFireCrystal": 8,
+            "fc_shards": 218,
+            "meat": 1700000,
+            "wood": 1700000,
+            "coal": 350000,
+            "iron": 87000
+          },
+          "time": {
+            "raw-seconds": 302400,
+            "minutes": 5040
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1900000
+          }
+        },
+        "39": {
+          "cost": {
+            "steel": 43750,
+            "refinedFireCrystal": 8,
+            "fc_shards": 218,
+            "meat": 1700000,
+            "wood": 1700000,
+            "coal": 350000,
+            "iron": 87000
+          },
+          "time": {
+            "raw-seconds": 302400,
+            "minutes": 5040
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 1950000
+          }
+        },
+        "40": {
+          "cost": {
+            "steel": 43750,
+            "refinedFireCrystal": 8,
+            "fc_shards": 218,
+            "meat": 1700000,
+            "wood": 1700000,
+            "coal": 350000,
+            "iron": 87000
+          },
+          "time": {
+            "raw-seconds": 302400,
+            "minutes": 5040
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 2000000
+          }
+        },
+        "41": {
+          "cost": {
+            "steel": 50000,
+            "refinedFireCrystal": 10,
+            "fc_shards": 250,
+            "meat": 2000000,
+            "wood": 2000000,
+            "coal": 400000,
+            "iron": 100000
+          },
+          "time": {
+            "raw-seconds": 345600,
+            "minutes": 5760
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 2050000
+          }
+        },
+        "42": {
+          "cost": {
+            "steel": 50000,
+            "refinedFireCrystal": 10,
+            "fc_shards": 250,
+            "meat": 2000000,
+            "wood": 2000000,
+            "coal": 400000,
+            "iron": 100000
+          },
+          "time": {
+            "raw-seconds": 345600,
+            "minutes": 5760
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 2100000
+          }
+        },
+        "43": {
+          "cost": {
+            "steel": 50000,
+            "refinedFireCrystal": 10,
+            "fc_shards": 250,
+            "meat": 2000000,
+            "wood": 2000000,
+            "coal": 400000,
+            "iron": 100000
+          },
+          "time": {
+            "raw-seconds": 345600,
+            "minutes": 5760
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 2150000
+          }
+        },
+        "44": {
+          "cost": {
+            "steel": 50000,
+            "refinedFireCrystal": 10,
+            "fc_shards": 250,
+            "meat": 2000000,
+            "wood": 2000000,
+            "coal": 400000,
+            "iron": 100000
+          },
+          "time": {
+            "raw-seconds": 345600,
+            "minutes": 5760
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 2200000
+          }
+        },
+        "45": {
+          "cost": {
+            "steel": 50000,
+            "refinedFireCrystal": 10,
+            "fc_shards": 250,
+            "meat": 2000000,
+            "wood": 2000000,
+            "coal": 400000,
+            "iron": 100000
+          },
+          "time": {
+            "raw-seconds": 345600,
+            "minutes": 5760
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 2250000
+          }
+        },
+        "46": {
+          "cost": {
+            "steel": 50000,
+            "refinedFireCrystal": 10,
+            "fc_shards": 250,
+            "meat": 2000000,
+            "wood": 2000000,
+            "coal": 400000,
+            "iron": 100000
+          },
+          "time": {
+            "raw-seconds": 345600,
+            "minutes": 5760
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 2300000
+          }
+        },
+        "47": {
+          "cost": {
+            "steel": 50000,
+            "refinedFireCrystal": 10,
+            "fc_shards": 250,
+            "meat": 2000000,
+            "wood": 2000000,
+            "coal": 400000,
+            "iron": 100000
+          },
+          "time": {
+            "raw-seconds": 345600,
+            "minutes": 5760
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 2350000
+          }
+        },
+        "48": {
+          "cost": {
+            "steel": 50000,
+            "refinedFireCrystal": 10,
+            "fc_shards": 250,
+            "meat": 2000000,
+            "wood": 2000000,
+            "coal": 400000,
+            "iron": 100000
+          },
+          "time": {
+            "raw-seconds": 345600,
+            "minutes": 5760
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 2400000
+          }
+        },
+        "49": {
+          "cost": {
+            "steel": 50000,
+            "refinedFireCrystal": 10,
+            "fc_shards": 250,
+            "meat": 2000000,
+            "wood": 2000000,
+            "coal": 400000,
+            "iron": 100000
+          },
+          "time": {
+            "raw-seconds": 345600,
+            "minutes": 5760
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 2450000
+          }
+        },
+        "50": {
+          "cost": {
+            "steel": 50000,
+            "refinedFireCrystal": 10,
+            "fc_shards": 250,
+            "meat": 2000000,
+            "wood": 2000000,
+            "coal": 400000,
+            "iron": 100000
+          },
+          "time": {
+            "raw-seconds": 345600,
+            "minutes": 5760
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Power",
+            "amount": 2500000
+          }
+        }
+      }
+    },
+    "Exalted Veil (Unlock)": {
+      "levels": {
+        "1": {
+          "cost": {
+            "steel": 40000,
+            "refinedFireCrystal": 10,
+            "fc_shards": 70,
+            "meat": 0,
+            "wood": 0,
+            "coal": 0,
+            "iron": 0
+          },
+          "time": {
+            "raw-seconds": 0,
+            "minutes": 0
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Deploy Capacity",
+            "amount": 600.0
+          }
+        },
+        "2": {
+          "cost": {
+            "steel": 60000,
+            "refinedFireCrystal": 15,
+            "fc_shards": 105,
+            "meat": 0,
+            "wood": 0,
+            "coal": 0,
+            "iron": 0
+          },
+          "time": {
+            "raw-seconds": 0,
+            "minutes": 0
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Deploy Capacity",
+            "amount": 600.0
+          }
+        },
+        "3": {
+          "cost": {
+            "steel": 80000,
+            "refinedFireCrystal": 20,
+            "fc_shards": 140,
+            "meat": 0,
+            "wood": 0,
+            "coal": 0,
+            "iron": 0
+          },
+          "time": {
+            "raw-seconds": 0,
+            "minutes": 0
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Deploy Capacity",
+            "amount": 600.0
+          }
+        },
+        "4": {
+          "cost": {
+            "steel": 100000,
+            "refinedFireCrystal": 25,
+            "fc_shards": 175,
+            "meat": 0,
+            "wood": 0,
+            "coal": 0,
+            "iron": 0
+          },
+          "time": {
+            "raw-seconds": 0,
+            "minutes": 0
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Deploy Capacity",
+            "amount": 600.0
+          }
+        },
+        "5": {
+          "cost": {
+            "steel": 120000,
+            "refinedFireCrystal": 30,
+            "fc_shards": 210,
+            "meat": 0,
+            "wood": 0,
+            "coal": 0,
+            "iron": 0
+          },
+          "time": {
+            "raw-seconds": 0,
+            "minutes": 0
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Deploy Capacity",
+            "amount": 600.0
+          }
+        }
+      }
+    },
+    "Exalted Mantle (Unlock)": {
+      "levels": {
+        "1": {
+          "cost": {
+            "steel": 36000,
+            "refinedFireCrystal": 10,
+            "fc_shards": 70,
+            "meat": 0,
+            "wood": 0,
+            "coal": 0,
+            "iron": 0
+          },
+          "time": {
+            "raw-seconds": 0,
+            "minutes": 0
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Marksman Attack",
+            "amount": 0.03
+          }
+        },
+        "2": {
+          "cost": {
+            "steel": 36000,
+            "refinedFireCrystal": 10,
+            "fc_shards": 70,
+            "meat": 0,
+            "wood": 0,
+            "coal": 0,
+            "iron": 0
+          },
+          "time": {
+            "raw-seconds": 0,
+            "minutes": 0
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Marksman Attack",
+            "amount": 0.03
+          }
+        },
+        "3": {
+          "cost": {
+            "steel": 54000,
+            "refinedFireCrystal": 15,
+            "fc_shards": 105,
+            "meat": 0,
+            "wood": 0,
+            "coal": 0,
+            "iron": 0
+          },
+          "time": {
+            "raw-seconds": 0,
+            "minutes": 0
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Marksman Attack",
+            "amount": 0.03
+          }
+        },
+        "4": {
+          "cost": {
+            "steel": 72000,
+            "refinedFireCrystal": 20,
+            "fc_shards": 140,
+            "meat": 0,
+            "wood": 0,
+            "coal": 0,
+            "iron": 0
+          },
+          "time": {
+            "raw-seconds": 0,
+            "minutes": 0
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Marksman Attack",
+            "amount": 0.03
+          }
+        },
+        "5": {
+          "cost": {
+            "steel": 108000,
+            "refinedFireCrystal": 30,
+            "fc_shards": 210,
+            "meat": 0,
+            "wood": 0,
+            "coal": 0,
+            "iron": 0
+          },
+          "time": {
+            "raw-seconds": 0,
+            "minutes": 0
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Marksman Attack",
+            "amount": 0.03
+          }
+        }
+      }
+    },
+    "Exalted War Garb (Unlock)": {
+      "levels": {
+        "1": {
+          "cost": {
+            "steel": 36000,
+            "refinedFireCrystal": 10,
+            "fc_shards": 70,
+            "meat": 0,
+            "wood": 0,
+            "coal": 0,
+            "iron": 0
+          },
+          "time": {
+            "raw-seconds": 0,
+            "minutes": 0
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Stat",
+            "amount": 0.03
+          }
+        },
+        "2": {
+          "cost": {
+            "steel": 36000,
+            "refinedFireCrystal": 10,
+            "fc_shards": 70,
+            "meat": 0,
+            "wood": 0,
+            "coal": 0,
+            "iron": 0
+          },
+          "time": {
+            "raw-seconds": 0,
+            "minutes": 0
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Stat",
+            "amount": 0.03
+          }
+        },
+        "3": {
+          "cost": {
+            "steel": 54000,
+            "refinedFireCrystal": 15,
+            "fc_shards": 105,
+            "meat": 0,
+            "wood": 0,
+            "coal": 0,
+            "iron": 0
+          },
+          "time": {
+            "raw-seconds": 0,
+            "minutes": 0
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Stat",
+            "amount": 0.03
+          }
+        },
+        "4": {
+          "cost": {
+            "steel": 72000,
+            "refinedFireCrystal": 20,
+            "fc_shards": 140,
+            "meat": 0,
+            "wood": 0,
+            "coal": 0,
+            "iron": 0
+          },
+          "time": {
+            "raw-seconds": 0,
+            "minutes": 0
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Stat",
+            "amount": 0.03
+          }
+        },
+        "5": {
+          "cost": {
+            "steel": 108000,
+            "refinedFireCrystal": 30,
+            "fc_shards": 210,
+            "meat": 0,
+            "wood": 0,
+            "coal": 0,
+            "iron": 0
+          },
+          "time": {
+            "raw-seconds": 0,
+            "minutes": 0
+          },
+          "requirements": {
+            "other-skill": {},
+            "war-academy": 0
+          },
+          "buff": {
+            "name": "Stat",
+            "amount": 0.03
+          }
+        }
+      }
+    }
+  }
+}

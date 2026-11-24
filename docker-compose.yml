@@ -1,0 +1,16 @@
+services:
+  omnicore:
+    build: .
+    container_name: omnicore
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_PATH: /data/bot.sqlite
+      RUST_LOG: info
+    volumes:
+      - omnicore-data:/data
+      # Optional: mount emoji icons if you update them without rebuild
+      # - ./assets/emoji-icons:/app/assets/emoji-icons:ro
+
+volumes:
+  omnicore-data:
