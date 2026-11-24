@@ -1,21 +1,22 @@
 //! Player Lookup — Components V2 panel (matches JS `playerPanel.js` 1:1).
 //!
 //! Layout target (same as JS):
-//!   ┃ [ tab dropdown — placeholder = current tab ]
+//!   ┃ [ tab dropdown — placeholder = current tab, defaults to Overview ]
 //!   ┃ ───────────────
-//!   ┃ ## Title
-//!   ┃ body / rendered image card
+//!  ┃ ## Title
+//!   ┃ body / rendered image card(s)
 //!   ┃ [ action buttons / selects ]
 //!   ┃ ───────────────
-//!   ┃ -# OmniCore · <label> as of <relative>
+//!   ┃ -# OmniCore · <label> <t:…:R>
 //!
 //! Tabs: Overview · Standings · Heroes & Gear · Progression · Crowns
 //! Extra views (via buttons): map · trail
 
-use serde_json::Value;
 use crate::ui::v2::V2Edit;
+use serde_json::Value;
 
 use crate::lookup::sessions::LookupSession;
+use crate::lookup::view::{self, BoardRow};
 use crate::ui::v2::{self, ButtonDef, SelectOpt, V2};
 
 pub const PLAYER_TABS: &[(&str, &str)] = &[
@@ -31,11 +32,17 @@ fn tab_label(key: &str) -> &str {
         .iter()
         .find(|(k, _)| *k == key)
         .map(|(_, l)| *l)
-        .unwrap_or(match key {
-            "map" => "Location",
-            "trail" => "Trails",
-            _ => "Overview",
-        })
+        .unwrap_or("Overview")
+}
+
+/// JS `tabSelect`: only main tabs are selectable — sub-views fall back to
+/// Overview for the dropdown placeholder/default.
+fn select_key(tab: &str) -> &str {
+    if PLAYER_TABS.iter().any(|(k, _)| *k == tab) {
+        tab
+    } else {
+        "overview"
+    }
 }
 
 fn valid_tab(tab: &str) -> &str {
@@ -46,112 +53,40 @@ fn valid_tab(tab: &str) -> &str {
     }
 }
 
-// ---- raw field helpers (same aliases as sessions.rs / JS lookupData) ------
-
-fn pick_str<'a>(raw: &'a Value, keys: &[&str]) -> Option<&'a str> {
-    let obj = raw.as_object()?;
-    for key in keys {
-        if let Some(Value::String(s)) = obj.get(*key) {
-            if !s.trim().is_empty() {
-                return Some(s.as_str());
-            }
-        }
-    }
-    None
-}
-
-fn pick_i64(raw: &Value, keys: &[&str]) -> Option<i64> {
-    let obj = raw.as_object()?;
-    for key in keys {
-        match obj.get(*key) {
-            Some(Value::Number(n)) => return n.as_i64().or_else(|| n.as_f64().map(|f| f as i64)),
-            Some(Value::String(s)) => {
-                let cleaned: String = s.chars().filter(|c| *c != ',' && *c != '_').collect();
-                if let Ok(f) = cleaned.parse::<f64>() {
-                    return Some(f as i64);
-                }
-            }
-            _ => {}
-        }
-    }
-    None
-}
-
 fn fmt_num(n: Option<i64>) -> String {
     v2::fmt(n)
 }
 
-fn field_block(raw: &Value, pairs: &[(&str, &[&str])]) -> String {
-    let mut lines = Vec::new();
-    for (label, keys) in pairs {
-        if let Some(n) = pick_i64(raw, keys) {
-            lines.push(format!("**{label}** `{}`", fmt_num(Some(n))));
-        } else if let Some(s) = pick_str(raw, keys) {
-            lines.push(format!("**{label}** `{s}`"));
-        }
-    }
-    if lines.is_empty() {
-        "_No data for this section._".into()
-    } else {
-        lines.join(" · ")
-    }
-}
+/// Images the caller rendered for this tab (JS `files` array).
+type Images = Vec<(String, Vec<u8>)>;
 
-fn boards(raw: &Value) -> Vec<&Value> {
-    raw.get("boards")
-        .or_else(|| raw.get("leaderboards"))
-        .and_then(Value::as_array)
-        .map(|a| a.iter().collect())
-        .unwrap_or_default()
-}
-
-/// Primary image name used when a card PNG is supplied.
-fn image_name_for(tab: &str) -> &'static str {
-    match tab {
-        "overview" => "player.png",
-        "standings" => "standings.png",
-        "heroes" => "chief-gear.png",
-        "progression" => "progression.png",
-        "crowns" => "crowns.png",
-        "map" => "player-map.png",
-        _ => "player.png",
-    }
-}
-
-fn build(
-    session: &LookupSession,
-    tab: &str,
-    source_note: Option<&str>,
-    card_png: Option<Vec<u8>>,
-) -> (V2, Option<Vec<u8>>, &'static str) {
+fn build(session: &LookupSession, tab: &str, images: Images) -> (V2, Images) {
     let tab = valid_tab(tab);
     let raw = &session.raw;
-    let view = crate::lookup::view::player_view(raw);
+    let pv = view::player_view(raw);
     let name = if !session.name.trim().is_empty() {
         session.name.clone()
-    } else if !view.name.trim().is_empty() && view.name != "Unknown" {
-        view.name.clone()
+    } else if !pv.name.trim().is_empty() && pv.name != "Unknown" {
+        pv.name.clone()
     } else {
         session.fid.clone().unwrap_or_else(|| "Player".into())
     };
 
-    // Main tab dropdown (JS uses select whose placeholder shows the current tab)
+    // Main tab dropdown (JS: placeholder = current tab, default = current tab)
+    let active = select_key(tab);
     let opts: Vec<SelectOpt> = PLAYER_TABS
         .iter()
         .map(|(k, l)| SelectOpt {
             label: l.to_string(),
             value: k.to_string(),
             description: None,
-            is_default: *k == tab,
+            is_default: *k == active,
         })
         .collect();
 
     let mut v2 = V2::new()
-        .select("lookup:player:tab", tab_label(tab), &opts)
+        .select("lookup:player:tab", tab_label(active), &opts)
         .sep(true);
-
-    let mut keep_png = card_png;
-    let img_name = image_name_for(tab);
 
     let footer_label = match tab {
         "overview" => "profile as of",
@@ -167,26 +102,51 @@ fn build(
     match tab {
         "overview" => {
             v2 = v2.title(&name);
-            if keep_png.is_some() {
-                v2 = v2.image(img_name);
-            } else {
+            if images.is_empty() {
                 // Text fallback when no card was rendered
-                let fid = session.fid.as_deref().or(view.fid.as_deref()).unwrap_or("â€”");
-                let state_txt = session.state.or(view.state_id).map(|s| format!("S{s}")).unwrap_or_else(|| "â€”".into());
-                let alliance_txt = session.alliance.as_deref().or(view.alliance_tag.as_deref()).map(|t| format!("[{t}]")).unwrap_or_else(|| "â€”".into());
-                let role = if view.role.trim().is_empty() { "â€”".to_string() } else { view.role.clone() };
-                v2 = v2.text(format!("**FID** `{fid}` Â· **State** `{state_txt}` Â· **Alliance** `{alliance_txt}` Â· **Role** `{role}`"));
+                let fid = session.fid.as_deref().or(pv.fid.as_deref()).unwrap_or("—");
+                let state_txt = session
+                    .state
+                    .or(pv.state_id)
+                    .map(|s| format!("S{s}"))
+                    .unwrap_or_else(|| "—".into());
+                let alliance_txt = session
+                    .alliance
+                    .as_deref()
+                    .or(pv.alliance_tag.as_deref())
+                    .map(|t| format!("[{t}]"))
+                    .unwrap_or_else(|| "—".into());
+                let role = if pv.role.trim().is_empty() || pv.role == "—" {
+                    "—".to_string()
+                } else {
+                    pv.role.clone()
+                };
+                v2 = v2.text(format!(
+                    "**FID** `{fid}` · **State** `{state_txt}` · **Alliance** `{alliance_txt}` · **Role** `{role}`"
+                ));
                 let mut bits = Vec::new();
-                if let Some(p) = view.power { bits.push(format!("**Power** `{}`", v2::fmt(Some(p)))); }
-                if let Some(k) = view.kills { bits.push(format!("**Kills** `{}`", v2::fmt(Some(k)))); }
-                if let Some(f) = view.furnace { bits.push(format!("**Furnace** `FC {f}`")); }
-                if !bits.is_empty() { v2 = v2.text(bits.join(" Â· ")); }
+                if let Some(p) = pv.power {
+                    bits.push(format!("**Power** `{}`", v2::fmt(Some(p))));
+                }
+                if let Some(k) = pv.kills {
+                    bits.push(format!("**Kills** `{}`", v2::fmt(Some(k))));
+                }
+                if let Some(f) = pv.furnace {
+                    bits.push(format!("**Furnace** `FC {f}`"));
+                }
+                if !bits.is_empty() {
+                    v2 = v2.text(bits.join(" · "));
+                }
+            } else {
+                for (image, _) in images.iter() {
+                    v2 = v2.image(image);
+                }
             }
 
             // Action buttons matching JS order & labels
             let mut buttons = Vec::new();
-            let state_id = session.state.or(view.state_id);
-            let alliance_tag = session.alliance.clone().or(view.alliance_tag.clone());
+            let state_id = session.state.or(pv.state_id);
+            let alliance_tag = session.alliance.clone().or_else(|| pv.alliance_tag.clone());
             if let Some(state) = state_id {
                 buttons.push(ButtonDef {
                     id: "lookup:player:go:state".into(),
@@ -203,12 +163,15 @@ fn build(
                     ..Default::default()
                 });
             }
-            buttons.push(ButtonDef {
-                id: "lookup:player:go:map".into(),
-                label: "Locate on map".into(),
-                emoji: Some("🗺️".into()),
-                ..Default::default()
-            });
+            // JS only offers the map jump when coordinates are known.
+            if pv.x.is_some() && pv.y.is_some() {
+                buttons.push(ButtonDef {
+                    id: "lookup:player:go:map".into(),
+                    label: "Locate on map".into(),
+                    emoji: Some("🗺️".into()),
+                    ..Default::default()
+                });
+            }
             buttons.push(ButtonDef {
                 id: "lookup:player:go:trail".into(),
                 label: "Trails".into(),
@@ -218,10 +181,8 @@ fn build(
         }
         "standings" => {
             v2 = v2.title(format!("{name} — Leaderboard standings"));
-            if keep_png.is_some() {
-                v2 = v2.image(img_name);
-            } else {
-                let list = boards(raw);
+            if images.is_empty() {
+                let list = view::player_boards(raw);
                 let per = 15usize;
                 let total_pages = list.len().div_ceil(per).max(1);
                 let page = session.page.min(total_pages - 1);
@@ -229,115 +190,151 @@ fn build(
                     .iter()
                     .skip(page * per)
                     .take(per)
-                    .map(|board| {
-                        let bname = pick_str(board, &["name", "key"]).unwrap_or("Board");
-                        let rank = pick_i64(board, &["rank"])
+                    .map(|b| {
+                        let rank = b
+                            .rank
                             .map(|r| format!("#{r}"))
                             .unwrap_or_else(|| "—".into());
-                        format!("• **{bname}** — `{rank}`")
+                        format!("• **{}** — `{rank}`", b.name)
                     })
                     .collect();
                 if slice.is_empty() {
                     v2 = v2.text("_No leaderboard standings stored for this chief._");
                 } else {
                     v2 = v2.text(slice.join("\n"));
-                    if total_pages > 1 {
-                        v2 = v2.pager("lookup:player:pg", page, total_pages);
-                    }
+                }
+            } else {
+                for (image, _) in images.iter() {
+                    v2 = v2.image(image);
                 }
             }
 
-            // Board open selects (JS has state + global selects)
-            let st: Vec<SelectOpt> = boards(raw)
+            // Board open selects (JS: state boards + global boards)
+            let boards = view::player_boards(raw);
+            let state_id = session.state.or(pv.state_id);
+            let st: Vec<SelectOpt> = boards
                 .iter()
-                .filter(|b| pick_i64(b, &["rank"]).is_some())
+                .filter(|b| b.rank.is_some())
                 .take(25)
-                .map(|b| {
-                    let bname = pick_str(b, &["name", "key"]).unwrap_or("Board");
-                    let rank = pick_i64(b, &["rank"]).unwrap_or(0);
-                    let score = pick_str(b, &["score", "value"]).unwrap_or("");
-                    SelectOpt {
-                        label: bname.to_string(),
-                        value: pick_str(b, &["key", "name"]).unwrap_or(bname).to_string(),
-                        description: Some(format!("#{rank} · {score}")),
-                        is_default: false,
-                    }
+                .map(|b| SelectOpt {
+                    label: b.name.clone(),
+                    value: if b.key.is_empty() {
+                        b.name.clone()
+                    } else {
+                        b.key.clone()
+                    },
+                    description: Some(format!(
+                        "#{} in S{} · {}",
+                        b.rank.unwrap_or(0),
+                        state_id.map(|s| s.to_string()).unwrap_or_default(),
+                        b.score_label()
+                    )),
+                    is_default: false,
                 })
                 .collect();
             if !st.is_empty() {
                 v2 = v2.select("lookup:player:board:state", "Open a state board…", &st);
-                v2 = v2.select("lookup:player:board:global", "Open a global board…", &st);
+            }
+            let gl: Vec<SelectOpt> = boards
+                .iter()
+                .filter_map(|b| {
+                    let global = b.global.clone()?;
+                    Some(SelectOpt {
+                        label: b.name.clone(),
+                        value: if b.key.is_empty() {
+                            b.name.clone()
+                        } else {
+                            b.key.clone()
+                        },
+                        description: Some(global),
+                        is_default: false,
+                    })
+                })
+                .take(25)
+                .collect();
+            if !gl.is_empty() {
+                v2 = v2.select("lookup:player:board:global", "Open a global board…", &gl);
             }
         }
         "heroes" => {
             v2 = v2.title(format!("{name} — Heroes & Gear"));
-            // Quick bits line (TG / VIP / level) matching JS
-            let mut bits = Vec::new();
-            if let Some(tg) = pick_str(raw, &["tg_label", "level_label"]) {
-                bits.push(tg.to_string());
-            } else if let Some(lvl) = pick_i64(raw, &["tg_level"]) {
-                bits.push(format!("TG{lvl}"));
-            }
-            if let Some(vip) = pick_i64(raw, &["vip", "vip_level", "vipLevel"]) {
-                let active = raw
-                    .get("vip_active")
-                    .or_else(|| raw.get("vipActive"))
-                    .and_then(Value::as_bool)
-                    .unwrap_or(true);
-                bits.push(if active {
-                    format!("VIP {vip}")
-                } else {
-                    format!("VIP {vip} (inactive)")
-                });
-            }
-            if !bits.is_empty() {
-                v2 = v2.text(bits.join(" · "));
+            let has_gear = raw
+                .get("chiefGear")
+                .or_else(|| raw.get("chief_gear"))
+                .map(|g| {
+                    g.as_array().map(|a| !a.is_empty()).unwrap_or_else(|| {
+                        g.get("pieces")
+                            .and_then(Value::as_array)
+                            .map(|a| !a.is_empty())
+                            .unwrap_or_else(|| {
+                                g.as_object().map(|o| !o.is_empty()).unwrap_or(false)
+                            })
+                    })
+                })
+                .unwrap_or(false)
+                || images.iter().any(|(n, _)| n == "chief-gear.png");
+            let heroes = raw
+                .get("heroes")
+                .or_else(|| raw.get("hero_list"))
+                .and_then(Value::as_array)
+                .map(|a| !a.is_empty())
+                .unwrap_or(false)
+                || images.iter().any(|(n, _)| n == "arena.png");
+
+            if !has_gear && !heroes {
+                v2 = v2.text("No chief gear or arena heroes stored for this chief yet.");
+            } else {
+                // Quick bits line: TG · VIP · level (JS order)
+                let mut bits = Vec::new();
+                if let Some(tg) = pv.tg_label.as_deref() {
+                    bits.push(tg.to_string());
+                } else if let Some(lvl) = pv.tg_level {
+                    bits.push(format!("TG{lvl}"));
+                }
+                if let Some(vip) = pv.vip {
+                    bits.push(match pv.vip_active {
+                        Some(false) => format!("VIP {vip} (inactive)"),
+                        _ => format!("VIP {vip}"),
+                    });
+                }
+                if let Some(level) = view::pick_str(raw, &["level_label"]) {
+                    bits.push(level.to_string());
+                }
+                if !bits.is_empty() {
+                    v2 = v2.text(bits.join(" · "));
+                }
             }
 
-            if keep_png.is_some() {
-                v2 = v2.image(img_name);
-            } else {
-                if view.gear_privacy {
-                    v2 = v2.text(view.gear_privacy_message.clone().unwrap_or_else(|| "Chief Gear privacy is active — equipment is hidden on the public site.".to_string()));
-                } else {
-                    v2 = v2.text(field_block(
-                        raw,
-                        &[
-                            ("Hero power", &["hero_power", "heroes_power", "heroPower"]),
-                            ("Pet power", &["pet_power", "pets_power", "petPower"]),
-                        ],
-                    ));
-                    // List a few hero names if present
-                    if let Some(heroes) = raw
-                        .get("heroes")
-                        .or_else(|| raw.get("hero_list"))
-                        .and_then(Value::as_array)
-                    {
-                        let lines: Vec<String> = heroes
-                            .iter()
-                            .take(12)
-                            .filter_map(|h| {
-                                let hname = pick_str(h, &["name", "hero_name", "label"])?;
-                                let lvl = pick_i64(h, &["level", "lvl", "star"]);
-                                Some(match lvl {
-                                    Some(l) => format!("• **{hname}** `{l}`"),
-                                    None => format!("• **{hname}**"),
-                                })
-                            })
-                            .collect();
-                        if !lines.is_empty() {
-                            v2 = v2.text(lines.join("\n"));
-                        }
-                    }
+            // Chief gear + charms image (JS `chief-gear.png`)
+            let rendered_chief = images.iter().any(|(n, _)| n == "chief-gear.png");
+            if rendered_chief {
+                for (image, _) in images.iter().filter(|(n, _)| n == "chief-gear.png") {
+                    v2 = v2.image(image);
                 }
+            } else if has_gear || !heroes {
+                if pv.gear_privacy {
+                    v2 = v2.text(format!(
+                        "🔒 {}",
+                        pv.gear_privacy_message
+                            .clone()
+                            .unwrap_or_else(|| "Chief Gear privacy is active — equipment is hidden on the public site.".to_string())
+                    ));
+                } else {
+                    v2 = v2.text(
+                        "Chief gear & charms are not available for this chief right now. If the website recently added gear data, try again in a moment.",
+                    );
+                }
+            }
+
+            // Arena lineup image (JS `arena.png`)
+            for (image, _) in images.iter().filter(|(n, _)| n == "arena.png") {
+                v2 = v2.image(image);
             }
         }
         "progression" => {
             v2 = v2.title(format!("{name} — Progression"));
-            if keep_png.is_some() {
-                v2 = v2.image(img_name);
-            } else {
-                v2 = v2.text(field_block(
+            if images.is_empty() {
+                v2 = v2.text(view_field_block(
                     raw,
                     &[
                         (
@@ -349,124 +346,157 @@ fn build(
                         ("Troops", &["troop_power", "troops_power", "troopPower"]),
                     ],
                 ));
+            } else {
+                for (image, _) in images.iter() {
+                    v2 = v2.image(image);
+                }
             }
         }
         "crowns" => {
             v2 = v2.title(format!("{name} — Crowns"));
-            if keep_png.is_some() {
-                v2 = v2.image(img_name);
-            } else {
-                v2 = v2.text(field_block(
+            if images.is_empty() {
+                v2 = v2.text(view_field_block(
                     raw,
                     &[
                         ("Crowns", &["crowns", "crown_count", "conquest_crowns"]),
                         ("Conquests", &["conquests", "king_of_kings", "kok"]),
                     ],
                 ));
+            } else {
+                for (image, _) in images.iter() {
+                    v2 = v2.image(image);
+                }
             }
         }
         "map" => {
             v2 = v2.title(format!("{name} — Location"));
-            if keep_png.is_some() {
-                v2 = v2.image(img_name);
-            }
-            let state = session
-                .state
-                .map(|s| s.to_string())
-                .unwrap_or_else(|| "—".into());
-            let x = pick_i64(raw, &["x", "pos_x"]);
-            let y = pick_i64(raw, &["y", "pos_y"]);
-            match (x, y) {
-                (Some(x), Some(y)) => {
-                    v2 = v2.text(format!("State **{state}** · X **{x}** · Y **{y}**"));
+            let state = session.state.or(pv.state_id);
+            if state.is_none() {
+                v2 = v2.text("No state is linked to this chief, so a map cannot be loaded.");
+            } else {
+                for (image, _) in images.iter() {
+                    v2 = v2.image(image);
                 }
-                _ => {
-                    v2 = v2.text(
-                        "Coordinates are not available for this chief right now.",
-                    );
+                let x = pv.x.or_else(|| view::pick_i64(raw, &["x", "pos_x"]));
+                let y = pv.y.or_else(|| view::pick_i64(raw, &["y", "pos_y"]));
+                match (x, y) {
+                    (Some(x), Some(y)) => {
+                        if images.is_empty() {
+                            v2 = v2.text(format!(
+                                "State **{}** · X **{x}** · Y **{y}**\n\nMap overlay data is not available right now.",
+                                state.unwrap_or(0)
+                            ));
+                        } else {
+                            v2 = v2.text(format!(
+                                "State **{}** · X **{x}** · Y **{y}**",
+                                state.unwrap_or(0)
+                            ));
+                        }
+                    }
+                    _ => {
+                        v2 = v2.text("Coordinates are not available for this chief right now.");
+                    }
                 }
+                let mut buttons = vec![
+                    ButtonDef {
+                        id: "lookup:player:tab:overview".into(),
+                        label: "← Back to overview".into(),
+                        ..Default::default()
+                    },
+                    ButtonDef {
+                        id: "lookup:player:map:refresh".into(),
+                        label: "Refresh map".into(),
+                        emoji: Some("🔄".into()),
+                        ..Default::default()
+                    },
+                ];
+                if let Some(kid) = state {
+                    // Full map link is owner-only in JS; kept as a link button here.
+                    buttons.push(ButtonDef {
+                        id: String::new(),
+                        label: "Open full map".into(),
+                        emoji: Some("🗺️".into()),
+                        url: Some(format!("https://whiteoutstats.com/map?kid={kid}")),
+                        ..Default::default()
+                    });
+                }
+                v2 = v2.buttons(&buttons);
             }
             if let Some(notice) = &session.notice {
                 v2 = v2.text(notice.clone());
             }
-            let mut buttons = vec![
-                ButtonDef {
-                    id: "lookup:player:tab:overview".into(),
-                    label: "← Back to overview".into(),
-                    ..Default::default()
-                },
-                ButtonDef {
-                    id: "lookup:player:map:refresh".into(),
-                    label: "Refresh map".into(),
-                    emoji: Some("🔄".into()),
-                    ..Default::default()
-                },
-            ];
-            if session.state.is_some() {
-                // Full map link is owner-only in JS; we expose a link button for everyone here
-                // (Discord will still respect any server-level restrictions).
-                buttons.push(ButtonDef {
-                    id: String::new(),
-                    label: "Open full map".into(),
-                    emoji: Some("🗺️".into()),
-                    url: Some(format!(
-                        "https://whiteoutstats.com/map?kid={}",
-                        session.state.unwrap_or(0)
-                    )),
-                    ..Default::default()
-                });
-            }
-            v2 = v2.buttons(&buttons);
         }
         "trail" => {
             v2 = v2.title(format!("{name} — Exploration trails"));
             // Prefer dedicated trails payload; fall back to trail-flagged boards
             let mut towers: Vec<String> = Vec::new();
-            if let Some(trails) = raw
+            let trails = raw
                 .get("trails")
                 .or_else(|| raw.get("trails_list"))
-                .or_else(|| raw.get("towers"))
-                .and_then(Value::as_array)
-            {
-                for (i, t) in trails.iter().enumerate().take(20) {
-                    let tname = pick_str(t, &["name", "label"]).unwrap_or("Tower");
-                    let rank = pick_i64(t, &["rank"]).unwrap_or((i + 1) as i64);
-                    let stage = pick_str(t, &["value_label"])
-                        .map(str::to_string)
-                        .or_else(|| {
-                            pick_i64(t, &["stage", "score", "level_id"])
-                                .map(|s| format!("stage {s}"))
-                        });
-                    let score = pick_i64(t, &["score", "rawScore"]);
-                    let mut bits = vec![
-                        format!("{} **{tname}**", v2::rank_chip(rank)),
-                        score.map(|s| v2::int(Some(s))).unwrap_or_else(|| "—".into()),
-                    ];
-                    if let Some(st) = stage {
-                        bits.push(st);
-                    }
-                    if pick_i64(t, &["rank"]).is_some() {
-                        bits.push(format!("#{rank} in state"));
-                    }
-                    towers.push(bits.join(" · "));
+                .or_else(|| raw.get("trails_json"))
+                .or_else(|| raw.get("towers"));
+            let trails: Vec<Value> = match trails {
+                Some(Value::Array(a)) => a.clone(),
+                Some(Value::Object(o)) => o.values().filter(|v| v.is_object()).cloned().collect(),
+                _ => {
+                    // trails_json may be a JSON string
+                    raw.get("trails_json")
+                        .and_then(Value::as_str)
+                        .and_then(|s| serde_json::from_str::<Value>(s).ok())
+                        .map(|v| match v {
+                            Value::Array(a) => a,
+                            Value::Object(o) => {
+                                o.values().filter(|v| v.is_object()).cloned().collect()
+                            }
+                            _ => Vec::new(),
+                        })
+                        .unwrap_or_default()
                 }
+            };
+            for (i, t) in trails.iter().enumerate().take(20) {
+                let tname = view::pick_str(t, &["name", "label"])
+                    .map(str::to_string)
+                    .unwrap_or_else(|| {
+                        format!(
+                            "Tower {}",
+                            view::pick_i64(t, &["tower_id", "id"])
+                                .map(|n| n.to_string())
+                                .unwrap_or_else(|| "?".into())
+                        )
+                    });
+                let rank = view::pick_i64(t, &["rank"]);
+                let stage = view::pick_str(t, &["value_label"])
+                    .map(str::to_string)
+                    .or_else(|| view::pick_i64(t, &["stage"]).map(|s| format!("stage {s}")));
+                let score = view::pick_i64(t, &["score", "level_id"]);
+                let mut bits = vec![
+                    format!(
+                        "{} **{tname}**",
+                        v2::rank_chip(rank.unwrap_or((i + 1) as i64))
+                    ),
+                    score
+                        .map(|s| v2::int(Some(s)))
+                        .unwrap_or_else(|| "—".into()),
+                ];
+                if let Some(st) = stage {
+                    bits.push(st);
+                }
+                if rank.is_some() {
+                    bits.push(format!("#{} in state", rank.unwrap_or(0)));
+                }
+                towers.push(bits.join(" · "));
             }
             if towers.is_empty() {
                 // fallback from boards marked trail
-                for (i, b) in boards(raw).iter().enumerate().take(20) {
-                    let is_trail = b
-                        .get("trail")
-                        .and_then(Value::as_bool)
-                        .unwrap_or(false);
-                    if !is_trail {
+                for (i, b) in view::player_boards(raw).iter().enumerate().take(20) {
+                    if !b.trail {
                         continue;
                     }
-                    let tname = pick_str(b, &["name", "key"]).unwrap_or("Trail");
-                    let rank = pick_i64(b, &["rank"]).unwrap_or((i + 1) as i64);
                     towers.push(format!(
-                        "{} **{tname}** · {}",
-                        v2::rank_chip(rank),
-                        fmt_num(pick_i64(b, &["score", "rawScore"]))
+                        "{} **{}** · {}",
+                        v2::rank_chip(b.rank.unwrap_or((i + 1) as i64)),
+                        b.name,
+                        fmt_num(b.score)
                     ));
                 }
             }
@@ -487,29 +517,43 @@ fn build(
         }
     }
 
-    let footer = source_note.unwrap_or(footer_label);
-    (v2.footer(footer, view.as_of_ms), keep_png, img_name)
+    let as_of = if tab == "map" {
+        raw.get("mapSummary")
+            .and_then(|s| s.get("at"))
+            .and_then(Value::as_i64)
+            .or(pv.as_of_ms)
+    } else {
+        pv.as_of_ms
+    };
+    (v2.footer(footer_label, as_of), images)
 }
 
-pub fn render_player_v2(
-    session: &LookupSession,
-    tab: &str,
-    source_note: Option<&str>,
-    card_png: Option<Vec<u8>>,
-) -> V2Edit {
-    let (v2, png, img_name) = build(session, tab, source_note, card_png);
-    let mut files = Vec::new();
-    if let Some(png) = png {
-        files.push(v2::attachment(png, img_name));
+fn view_field_block(raw: &Value, pairs: &[(&str, &[&str])]) -> String {
+    let mut lines = Vec::new();
+    for (label, keys) in pairs {
+        if let Some(n) = view::pick_i64(raw, keys) {
+            lines.push(format!("**{label}** `{}`", v2::fmt(Some(n))));
+        } else if let Some(s) = view::pick_str(raw, keys) {
+            lines.push(format!("**{label}** `{s}`"));
+        }
     }
-    v2::payload(v2, files, true)
+    if lines.is_empty() {
+        "_No data for this section._".into()
+    } else {
+        lines.join(" · ")
+    }
 }
 
-pub fn edit_player_v2(
-    session: &LookupSession,
-    tab: &str,
-    source_note: Option<&str>,
-    card_png: Option<Vec<u8>>,
-) -> V2Edit {
-    render_player_v2(session, tab, source_note, card_png)
+/// Board rows exposed for the standings card renderer.
+pub fn standings_rows(raw: &Value) -> Vec<BoardRow> {
+    view::player_boards(raw)
+}
+
+pub fn edit_player_v2(session: &LookupSession, tab: &str, images: Images) -> V2Edit {
+    let (v2, images) = build(session, tab, images);
+    let files = images
+        .into_iter()
+        .map(|(name, bytes)| v2::attachment(bytes, &name))
+        .collect();
+    v2::payload(v2, files, true)
 }

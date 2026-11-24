@@ -129,7 +129,9 @@ impl OracleClient {
                 if (200..300).contains(status) {
                     let hint = if body.contains("is_poisoned") && body.contains("true") {
                         " · poisoned notice (still usable)"
-                    } else if body.trim_start().starts_with('{') || body.trim_start().starts_with('[') {
+                    } else if body.trim_start().starts_with('{')
+                        || body.trim_start().starts_with('[')
+                    {
                         " · JSON ok"
                     } else {
                         ""
@@ -171,7 +173,10 @@ impl OracleClient {
             .or(config.as_ref().err())
             .map(|e| e.to_string())
             .unwrap_or_else(|| "no response".into());
-        (false, format!("wosoracle.com unreachable ({key_note}): {err}"))
+        (
+            false,
+            format!("wosoracle.com unreachable ({key_note}): {err}"),
+        )
     }
 
     /// Always true: no credentials are required for the client to exist.

@@ -457,7 +457,6 @@ async fn render_features(
     update_message(ctx, interaction, embed, rows).await
 }
 
-
 // ------------------------------------------------- data-source key panels
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -627,10 +626,14 @@ async fn source_action(
                 ),
             };
             let inputs = vec![CreateActionRow::InputText(
-                serenity::CreateInputText::new(serenity::InputTextStyle::Paragraph, label, "api_key")
-                    .placeholder(placeholder)
-                    .required(true)
-                    .max_length(500),
+                serenity::CreateInputText::new(
+                    serenity::InputTextStyle::Paragraph,
+                    label,
+                    "api_key",
+                )
+                .placeholder(placeholder)
+                .required(true)
+                .max_length(500),
             )];
             let title = match source {
                 Source::WhiteoutStats => "Whiteout Stats API Key",
@@ -640,7 +643,8 @@ async fn source_action(
                 .create_response(
                     &ctx.http,
                     CreateInteractionResponse::Modal(
-                        CreateModal::new(format!("ownermodal:{slug}key:0"), title).components(inputs),
+                        CreateModal::new(format!("ownermodal:{slug}key:0"), title)
+                            .components(inputs),
                     ),
                 )
                 .await?;
@@ -662,7 +666,10 @@ async fn source_action(
                 embeds::warn("Test failed", message)
             };
             interaction
-                .edit_response(&ctx.http, serenity::EditInteractionResponse::new().embed(embed))
+                .edit_response(
+                    &ctx.http,
+                    serenity::EditInteractionResponse::new().embed(embed),
+                )
                 .await?;
             Ok(())
         }

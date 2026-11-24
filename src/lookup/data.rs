@@ -82,7 +82,9 @@ pub async fn fetch_player(
                 .map_err(|_| anyhow::anyhow!("Oracle timed out"))?
                 .map_err(|e| anyhow::anyhow!("Oracle: {e}"))
         } else {
-            Err(anyhow::anyhow!("Oracle needs a numeric player id for direct lookup"))
+            Err(anyhow::anyhow!(
+                "Oracle needs a numeric player id for direct lookup"
+            ))
         }
     };
 

@@ -17,7 +17,7 @@ use serenity::{
     CreateInteractionResponseMessage, EditInteractionResponse, ModalInteraction,
 };
 use sqlx;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::sync::{Mutex, OnceLock};
 use std::time::{Duration, Instant};
 
@@ -11818,8 +11818,195 @@ async fn music_component(
 /// Build a private Lookup view response for a session tab.
 /// Player sessions use Components V2 (same layout as the JS bot).
 /// Alliance / State still use the embed path until those panels are ported.
+/// Collect displayable map cities from a Whiteout Stats map payload.
+fn map_cities_from(map: &serde_json::Value) -> Vec<crate::cards::MapCity> {
+    map.get("cities")
+        .and_then(|v| v.as_array())
+        .map(|cities| {
+            cities
+                .iter()
+                .take(10000)
+                .filter_map(|city| {
+                    Some(crate::cards::MapCity {
+                        x: city
+                            .get("x")?
+                            .as_f64()
+                            .or_else(|| city.get("x")?.as_i64().map(|n| n as f64))?,
+                        y: city
+                            .get("y")?
+                            .as_f64()
+                            .or_else(|| city.get("y")?.as_i64().map(|n| n as f64))?,
+                        alliance_id: crate::lookup::view::pick_str(city, &["aid", "alliance_id"])
+                            .map(str::to_string)
+                            .or_else(|| {
+                                crate::lookup::view::pick_i64(city, &["aid", "alliance_id"])
+                                    .map(|n| n.to_string())
+                            }),
+                        label: crate::lookup::view::pick_str(city, &["nick_name", "name"])
+                            .map(str::to_string),
+                    })
+                })
+                .collect()
+        })
+        .unwrap_or_default()
+}
+
+/// JS-style disambiguation panel for a multi-match search.
+///
+/// Player: `Found N chiefs` + `lookup:player:pick`.
+/// Alliance: `State <kid> — pick an alliance` + `lookup:alliance:pick`.
+fn lookup_choose_edit(
+    session: &crate::lookup::sessions::LookupSession,
+    query: &str,
+) -> crate::ui::v2::V2Edit {
+    use crate::lookup::sessions::Kind;
+    use crate::ui::v2::{SelectOpt, V2};
+
+    let choices = &session.choices;
+    let mut v2 = V2::new().sep(true);
+    match session.kind {
+        Kind::Player => {
+            v2 = v2.title(format!("Found {} chiefs", choices.len()));
+            v2 = v2.text(format!("Pick the chief you meant for **{query}**."));
+            let opts: Vec<SelectOpt> = choices
+                .iter()
+                .filter_map(|r| {
+                    let id = ["uid", "fid", "player_id", "id"].iter().find_map(|k| {
+                        r.get(*k).and_then(|v| {
+                            v.as_str()
+                                .map(str::to_owned)
+                                .or_else(|| v.as_i64().map(|n| n.to_string()))
+                        })
+                    })?;
+                    let label = crate::lookup::view::pick_str(r, &["nick_name", "name"])
+                        .map(str::to_string)
+                        .unwrap_or_else(|| format!("Chief {id}"));
+                    let fid = crate::lookup::view::pick_str(r, &["fid", "uid"]).unwrap_or("");
+                    let mut bits: Vec<String> = Vec::new();
+                    if !fid.is_empty() {
+                        bits.push(format!("ID {fid}"));
+                    }
+                    if let Some(kid) = crate::lookup::view::pick_i64(r, &["kid", "state"]) {
+                        bits.push(format!("State {kid}"));
+                    }
+                    if let Some(power) = crate::lookup::view::pick_i64(r, &["power", "total_power"])
+                    {
+                        bits.push(crate::ui::v2::fmt(Some(power)));
+                    }
+                    if let Some(tag) = crate::lookup::view::pick_str(r, &["alliance_abbr", "abbr"])
+                    {
+                        bits.push(format!("[{tag}]"));
+                    }
+                    Some(SelectOpt {
+                        label: label.chars().take(100).collect(),
+                        value: id.chars().take(100).collect(),
+                        description: if bits.is_empty() {
+                            None
+                        } else {
+                            Some(bits.join(" · ").chars().take(100).collect())
+                        },
+                        is_default: false,
+                    })
+                })
+                .take(25)
+                .collect();
+            v2 = v2.select("lookup:player:pick", "Select a chief…", &opts);
+        }
+        Kind::Alliance => {
+            let kid = session.state.unwrap_or(0);
+            v2 = v2.title(format!("State {kid} — pick an alliance"));
+            let opts: Vec<SelectOpt> = choices
+                .iter()
+                .filter_map(|r| {
+                    let tag = ["abbr", "tag", "alliance_abbr"].iter().find_map(|k| {
+                        r.get(*k).and_then(|v| {
+                            v.as_str()
+                                .map(str::to_owned)
+                                .or_else(|| v.as_i64().map(|n| n.to_string()))
+                        })
+                    })?;
+                    let name =
+                        crate::lookup::view::pick_str(r, &["name", "alliance_name"]).unwrap_or("");
+                    let label = if name.is_empty() {
+                        format!("[{tag}]")
+                    } else {
+                        format!("[{tag}] {name}")
+                    };
+                    let desc = crate::lookup::view::pick_i64(r, &["power", "total_power"])
+                        .map(|n| format!("{} power", crate::ui::v2::fmt(Some(n))));
+                    Some(SelectOpt {
+                        label: label.chars().take(100).collect(),
+                        value: tag.chars().take(100).collect(),
+                        description: desc,
+                        is_default: false,
+                    })
+                })
+                .take(25)
+                .collect();
+            v2 = v2.select("lookup:alliance:pick", "Select an alliance…", &opts);
+        }
+        Kind::State => {
+            v2 = v2.title(session.name.clone());
+            v2 = v2.text("This view is unavailable for the current lookup.");
+        }
+    }
+    crate::ui::v2::payload(v2, Vec::new(), true)
+}
+
+/// Fetch one state leaderboard's rows (JS `getStateRanks` → `loadBoard`).
+async fn load_board_rows(data: &Data, kid: i64, key: &str) -> Option<serde_json::Value> {
+    const SLUGS: &[(&str, &str)] = &[
+        ("alliance_power", "1"),
+        ("alliance_kills", "2"),
+        ("personal_power", "3"),
+        ("power", "3"),
+        ("kill_count", "4"),
+        ("kills", "4"),
+        ("furnace_level", "5"),
+        ("furnace", "5"),
+        ("exploration_stage", "6"),
+        ("hero_power", "7"),
+        ("hero_total_power", "8"),
+        ("troop_power", "9"),
+        ("building_power", "10"),
+        ("research_power", "11"),
+        ("hero_no_equip", "12"),
+        ("hero_equip", "13"),
+        ("chief_gear", "14"),
+        ("chief_charm", "15"),
+        ("pet_power", "16"),
+        ("island_prosperity", "18"),
+        ("transfer_score", "19"),
+        ("labyrinth", "20"),
+        ("land_of_heroes", "21"),
+        ("cave_of_monsters", "22"),
+        ("charm_mine", "23"),
+        ("research_center", "24"),
+        ("gear_forge", "25"),
+        ("gaia_heart", "26"),
+        ("expert_power", "29"),
+        ("master_total_power", "29"),
+    ];
+    let value = data.lookup.state_boards(kid).await.ok()?;
+    let boards = value.get("boards").unwrap_or(&value);
+    let mapped = SLUGS
+        .iter()
+        .find(|(slug, _)| *slug == key)
+        .map(|(_, id)| *id)
+        .unwrap_or(key);
+    let block = boards.get(key).or_else(|| boards.get(mapped))?;
+    let rows = if let Some(rows) = block.get("rows") {
+        rows.clone()
+    } else if block.is_array() {
+        block.clone()
+    } else {
+        return None;
+    };
+    Some(rows)
+}
+
 async fn lookup_view_edit(
-    ctx: &serenity::Context,
+    _ctx: &serenity::Context,
     data: &Data,
     session: &crate::lookup::sessions::LookupSession,
     tab: &str,
@@ -11837,43 +12024,22 @@ async fn lookup_view_edit(
                 }
                 "standings" => {
                     let kid = session.state;
-                    let rows: Vec<crate::cards::StandingRow> = session
-                        .raw
-                        .get("boards")
-                        .or_else(|| session.raw.get("leaderboards"))
-                        .and_then(|v| v.as_array())
-                        .map(|arr| {
-                            arr.iter()
-                                .filter_map(|b| {
-                                    let board = b
-                                        .get("name")
-                                        .or_else(|| b.get("key"))
-                                        .and_then(|v| v.as_str())
-                                        .unwrap_or("Board")
-                                        .to_string();
-                                    let rank = b
-                                        .get("rank")
-                                        .and_then(|v| v.as_i64())
-                                        .map(|r| format!("#{r}"))
-                                        .unwrap_or_else(|| "—".into());
-                                    let score = b
-                                        .get("score")
-                                        .or_else(|| b.get("value"))
-                                        .map(|v| match v {
-                                            serde_json::Value::Number(n) => n.to_string(),
-                                            serde_json::Value::String(s) => s.clone(),
-                                            _ => "—".into(),
-                                        })
-                                        .unwrap_or_else(|| "—".into());
-                                    Some(crate::cards::StandingRow {
-                                        board,
-                                        score,
-                                        rank,
-                                    })
-                                })
-                                .collect()
-                        })
-                        .unwrap_or_default();
+                    let rows: Vec<crate::cards::StandingRow> =
+                        crate::lookup::view::player_boards(&session.raw)
+                            .iter()
+                            .map(|b| crate::cards::StandingRow {
+                                board: b.name.clone(),
+                                score: if b.score.is_some() {
+                                    b.score_label()
+                                } else {
+                                    "—".to_string()
+                                },
+                                rank: b
+                                    .rank
+                                    .map(|r| format!("#{r}"))
+                                    .unwrap_or_else(|| "—".into()),
+                            })
+                            .collect();
                     crate::cards::render_standings_card(&session.name, kid, &rows).ok()
                 }
                 "heroes" => {
@@ -11889,40 +12055,75 @@ async fn lookup_view_edit(
                         .and_then(|v| v.as_bool())
                         .unwrap_or(false);
                     if !gear_private {
-                        let cards = crate::cards::render_loadout_cards(loadout, &data.cfg.oracle_site)
-                            .await;
-                        if let Some(bytes) = cards.chief {
-                            Some(bytes)
-                        } else if let Some(heroes) =
-                            session.raw.get("heroes").and_then(|v| v.as_array())
-                        {
-                            crate::cards::render_arena_lineup(heroes, &data.cfg.oracle_site)
-                                .await
-                                .ok()
-                                .flatten()
-                        } else {
-                            None
-                        }
+                        let cards =
+                            crate::cards::render_loadout_cards(loadout, &data.cfg.oracle_site)
+                                .await;
+                        // The arena lineup is pushed separately as `arena.png`.
+                        cards.chief
                     } else {
                         None
                     }
                 }
                 "progression" => {
-                    let hist = session.raw.get("history").or_else(|| session.raw.get("snapshots"));
-                    let rows: Vec<&serde_json::Value> = hist.and_then(|v| v.as_array()).map(|a| a.iter().collect()).or_else(|| hist.and_then(|v| v.get("history")).and_then(|v| v.as_array()).map(|a| a.iter().collect())).unwrap_or_default();
+                    let mut fetched: Vec<serde_json::Value> = Vec::new();
+                    let mut hist = session
+                        .raw
+                        .get("history")
+                        .or_else(|| session.raw.get("snapshots"));
+                    if hist.is_none() {
+                        // JS lazily fetches the public snapshot feed on first open.
+                        if let Some(uid) =
+                            crate::lookup::view::pick_str(&session.raw, &["uid", "oracle_uid"])
+                        {
+                            if let Ok(rows) = data.lookup.player_history(uid).await {
+                                if !rows.is_empty() {
+                                    fetched = rows;
+                                    hist = None;
+                                }
+                            }
+                        }
+                    }
+                    let rows: Vec<&serde_json::Value> = hist
+                        .and_then(|v| v.as_array())
+                        .map(|a| a.iter().collect())
+                        .or_else(|| {
+                            hist.and_then(|v| v.get("history"))
+                                .and_then(|v| v.as_array())
+                                .map(|a| a.iter().collect())
+                        })
+                        .unwrap_or_else(|| fetched.iter().collect());
                     let mut power_series = Vec::new();
                     let mut kill_series = Vec::new();
                     for row in rows {
-                        let t = row.get("ts").or_else(|| row.get("observed_at")).or_else(|| row.get("timestamp")).or_else(|| row.get("at")).and_then(|v| v.as_i64());
-                        if let Some(p) = row.get("power").or_else(|| row.get("total_power")).and_then(|v| v.as_f64().or_else(|| v.as_i64().map(|n| n as f64))) {
+                        let t = row
+                            .get("ts")
+                            .or_else(|| row.get("observed_at"))
+                            .or_else(|| row.get("timestamp"))
+                            .or_else(|| row.get("at"))
+                            .and_then(|v| v.as_i64());
+                        if let Some(p) = row
+                            .get("power")
+                            .or_else(|| row.get("total_power"))
+                            .and_then(|v| v.as_f64().or_else(|| v.as_i64().map(|n| n as f64)))
+                        {
                             power_series.push(crate::cards::SeriesPoint { v: p, t });
                         }
-                        if let Some(k) = row.get("kills").or_else(|| row.get("total_kills")).and_then(|v| v.as_f64().or_else(|| v.as_i64().map(|n| n as f64))) {
+                        if let Some(k) = row
+                            .get("kills")
+                            .or_else(|| row.get("total_kills"))
+                            .and_then(|v| v.as_f64().or_else(|| v.as_i64().map(|n| n as f64)))
+                        {
                             kill_series.push(crate::cards::SeriesPoint { v: k, t });
                         }
                     }
-                    if power_series.is_empty() && kill_series.is_empty() { None } else {
-                        let as_of = power_series.last().and_then(|p| p.t).or_else(|| kill_series.last().and_then(|p| p.t)).map(|t| t.to_string());
+                    if power_series.is_empty() && kill_series.is_empty() {
+                        None
+                    } else {
+                        let as_of = power_series
+                            .last()
+                            .and_then(|p| p.t)
+                            .or_else(|| kill_series.last().and_then(|p| p.t))
+                            .map(|t| t.to_string());
                         let card = crate::cards::ProgressionCard {
                             name: session.name.clone(),
                             range_label: None,
@@ -11937,41 +12138,211 @@ async fn lookup_view_edit(
                     }
                 }
                 "crowns" => {
-                    let crowns_obj = session.raw.get("crowns").cloned().unwrap_or(serde_json::Value::Null);
-                    let thrones = crowns_obj.get("thrones").and_then(|v| v.as_array()).cloned().unwrap_or_default().into_iter().filter_map(|t| {
-                        let st = t.get("state").or_else(|| t.get("kid")).map(|v| v.as_i64().map(|n| n.to_string()).or_else(|| v.as_str().map(str::to_string)).unwrap_or_default()).unwrap_or_default();
-                        Some(crate::cards::ThroneEntry { state: st, badge: t.get("home").and_then(|v| v.as_bool()).filter(|b| *b).map(|_| "HOME".to_string()), terms: t.get("terms").and_then(|v| v.as_i64()).map(|n| format!("{n} term{}", if n==1 {""} else {"s"})), when: t.get("since").or_else(|| t.get("when")).and_then(|v| v.as_str()).map(str::to_string) })
-                    }).collect::<Vec<_>>();
-                    let reigns = crowns_obj.get("reigns").and_then(|v| v.as_array()).cloned().unwrap_or_default().into_iter().filter_map(|t| {
-                        Some(crate::cards::ReignEntry { date: t.get("date").or_else(|| t.get("day")).and_then(|v| v.as_str()).unwrap_or("").to_string(), kind: t.get("kind").or_else(|| t.get("type")).and_then(|v| v.as_str()).unwrap_or("Reign").to_string(), state: format!("State {}", t.get("kid").or_else(|| t.get("state")).and_then(|v| v.as_i64()).unwrap_or(0)), delta: t.get("delta").and_then(|v| v.as_str()).map(str::to_string) })
-                    }).collect::<Vec<_>>();
+                    let crowns_obj = session
+                        .raw
+                        .get("crowns")
+                        .cloned()
+                        .unwrap_or(serde_json::Value::Null);
+                    let thrones = crowns_obj
+                        .get("thrones")
+                        .and_then(|v| v.as_array())
+                        .cloned()
+                        .unwrap_or_default()
+                        .into_iter()
+                        .map(|t| crate::cards::ThroneEntry {
+                            state: t
+                                .get("state")
+                                .or_else(|| t.get("kid"))
+                                .map(|v| {
+                                    v.as_i64()
+                                        .map(|n| n.to_string())
+                                        .or_else(|| v.as_str().map(str::to_string))
+                                        .unwrap_or_default()
+                                })
+                                .unwrap_or_default(),
+                            badge: t
+                                .get("home")
+                                .and_then(|v| v.as_bool())
+                                .filter(|b| *b)
+                                .map(|_| "HOME".to_string()),
+                            terms: t
+                                .get("terms")
+                                .and_then(|v| v.as_i64())
+                                .map(|n| format!("{n} term{}", if n == 1 { "" } else { "s" })),
+                            when: t
+                                .get("since")
+                                .or_else(|| t.get("when"))
+                                .and_then(|v| v.as_str())
+                                .map(str::to_string),
+                        })
+                        .collect::<Vec<_>>();
+                    let reigns = crowns_obj
+                        .get("reigns")
+                        .and_then(|v| v.as_array())
+                        .cloned()
+                        .unwrap_or_default()
+                        .into_iter()
+                        .map(|t| crate::cards::ReignEntry {
+                            date: t
+                                .get("date")
+                                .or_else(|| t.get("day"))
+                                .and_then(|v| v.as_str())
+                                .unwrap_or("")
+                                .to_string(),
+                            kind: t
+                                .get("kind")
+                                .or_else(|| t.get("type"))
+                                .and_then(|v| v.as_str())
+                                .unwrap_or("Reign")
+                                .to_string(),
+                            state: format!(
+                                "State {}",
+                                t.get("kid")
+                                    .or_else(|| t.get("state"))
+                                    .and_then(|v| v.as_i64())
+                                    .unwrap_or(0)
+                            ),
+                            delta: t.get("delta").and_then(|v| v.as_str()).map(str::to_string),
+                        })
+                        .collect::<Vec<_>>();
                     let card = crate::cards::CrownsCard {
                         name: session.name.clone(),
-                        crowns: crowns_obj.get("count").and_then(|v| v.as_i64()).or_else(|| session.raw.get("crowns").and_then(|v| v.as_i64())),
+                        crowns: crowns_obj
+                            .get("count")
+                            .and_then(|v| v.as_i64())
+                            .or_else(|| session.raw.get("crowns").and_then(|v| v.as_i64())),
                         terms: crowns_obj.get("terms").and_then(|v| v.as_i64()),
                         conquests: crowns_obj.get("conquests").and_then(|v| v.as_i64()),
                         states_ruled: crowns_obj.get("states_ruled").and_then(|v| v.as_i64()),
                         thrones,
                         reigns,
-                        as_of: session.raw.get("updatedAt").and_then(|u| u.get("detail")).and_then(|v| v.as_i64()).map(|t| t.to_string()),
+                        as_of: session
+                            .raw
+                            .get("updatedAt")
+                            .and_then(|u| u.get("detail"))
+                            .and_then(|v| v.as_i64())
+                            .map(|t| t.to_string()),
                     };
                     crate::cards::render_crowns_card(&card).ok()
                 }
+                "map" => {
+                    let state = session.state.unwrap_or(0);
+                    if state == 0 {
+                        None
+                    } else {
+                        match data.lookup.state_map(state).await {
+                            Ok(map) => {
+                                let uid = crate::lookup::view::pick_str(
+                                    &session.raw,
+                                    &["uid", "oracle_uid"],
+                                )
+                                .map(str::to_string);
+                                let fid = crate::lookup::view::pick_str(
+                                    &session.raw,
+                                    &["fid", "player_id"],
+                                )
+                                .map(str::to_string);
+                                let name = crate::lookup::view::pick_str(
+                                    &session.raw,
+                                    &["nick_name", "name", "game_name"],
+                                )
+                                .map(|n| n.to_lowercase());
+                                let city = map.get("cities").and_then(|c| c.as_array()).and_then(
+                                    |cities| {
+                                        cities
+                                            .iter()
+                                            .find(|city| {
+                                                uid.as_ref().is_some_and(|id| {
+                                                    crate::lookup::view::pick_str(city, &["uid"])
+                                                        == Some(id.as_str())
+                                                })
+                                            })
+                                            .or_else(|| {
+                                                cities.iter().find(|city| {
+                                                    fid.as_ref().is_some_and(|id| {
+                                                        crate::lookup::view::pick_str(
+                                                            city,
+                                                            &["fid", "player_id"],
+                                                        ) == Some(id.as_str())
+                                                    })
+                                                })
+                                            })
+                                            .or_else(|| {
+                                                cities.iter().find(|city| {
+                                                    name.as_ref().is_some_and(|n| {
+                                                        crate::lookup::view::pick_str(
+                                                            city,
+                                                            &["nick_name", "name"],
+                                                        )
+                                                        .is_some_and(|v| v.eq_ignore_ascii_case(n))
+                                                    })
+                                                })
+                                            })
+                                    },
+                                );
+                                let x = city
+                                    .and_then(|c| crate::lookup::view::pick_i64(c, &["x", "pos_x"]))
+                                    .or_else(|| {
+                                        crate::lookup::view::pick_i64(&session.raw, &["x", "pos_x"])
+                                    });
+                                let y = city
+                                    .and_then(|c| crate::lookup::view::pick_i64(c, &["y", "pos_y"]))
+                                    .or_else(|| {
+                                        crate::lookup::view::pick_i64(&session.raw, &["y", "pos_y"])
+                                    });
+                                match (x, y) {
+                                    (Some(x), Some(y)) => {
+                                        let cities = map_cities_from(&map);
+                                        crate::cards::render_map_card(&crate::cards::MapCard {
+                                            title: format!("State {state} map"),
+                                            subtitle: format!("{} cities", cities.len()),
+                                            cities,
+                                            alliances: Vec::new(),
+                                            highlight: Some((x as f64, y as f64)),
+                                            focus_alliance_id: None,
+                                            as_of: None,
+                                        })
+                                        .ok()
+                                    }
+                                    _ => None,
+                                }
+                            }
+                            Err(_) => None,
+                        }
+                    }
+                }
                 _ => None,
             };
-            return Ok(crate::lookup::panels::edit_player_v2(
-                session,
-                tab,
-                session.notice.as_deref(),
-                card_png,
-            ));
+            let mut images: Vec<(String, Vec<u8>)> = Vec::new();
+            let file = match tab {
+                "overview" => "player.png",
+                "standings" => "standings.png",
+                "heroes" => "chief-gear.png",
+                "progression" => "progression.png",
+                "crowns" => "crowns.png",
+                "map" => "player-map.png",
+                _ => "",
+            };
+            if let Some(bytes) = card_png {
+                if !file.is_empty() {
+                    images.push((file.to_string(), bytes));
+                }
+            }
+            // JS heroes tab shows the chief gear card *and* the arena lineup.
+            if tab == "heroes" {
+                if let Some(heroes) = session.raw.get("heroes").and_then(|v| v.as_array()) {
+                    if let Ok(Some(bytes)) =
+                        crate::cards::render_arena_lineup(heroes, &data.cfg.oracle_site).await
+                    {
+                        images.push(("arena.png".to_string(), bytes));
+                    }
+                }
+            }
+            Ok(crate::lookup::panels::edit_player_v2(session, tab, images))
         }
         Kind::Alliance => {
             let card_png = if tab == "overview" {
-                let tag = session
-                    .alliance
-                    .clone()
-                    .unwrap_or_else(|| "???".into());
+                let tag = session.alliance.clone().unwrap_or_else(|| "???".into());
                 let name = session.name.clone();
                 let members_n = session
                     .raw
@@ -12002,10 +12373,7 @@ async fn lookup_view_edit(
                                     .unwrap_or("?")
                                     .to_string();
                                 let p = m.get("power").and_then(|v| v.as_i64());
-                                let r = m
-                                    .get("role")
-                                    .and_then(|v| v.as_str())
-                                    .map(str::to_string);
+                                let r = m.get("role").and_then(|v| v.as_str()).map(str::to_string);
                                 (n, p, r)
                             })
                             .collect()
@@ -12044,84 +12412,240 @@ async fn lookup_view_edit(
                     roster,
                 };
                 crate::cards::render_alliance_overview_card(&card).ok()
+            } else if tab == "map" {
+                let aid =
+                    crate::lookup::view::pick_str(&session.raw, &["aid", "alliance_id", "id"])
+                        .map(str::to_string)
+                        .or_else(|| {
+                            session
+                                .raw
+                                .get("alliance")
+                                .and_then(|a| a.get("aid"))
+                                .and_then(|v| v.as_str())
+                                .map(str::to_string)
+                        });
+                match session.state {
+                    Some(state) => match data.lookup.state_map(state).await {
+                        Ok(map) => {
+                            let cities = map_cities_from(&map);
+                            if cities.is_empty() {
+                                None
+                            } else {
+                                crate::cards::render_map_card(&crate::cards::MapCard {
+                                    title: format!("State {state} — Hive map"),
+                                    subtitle: format!(
+                                        "{} cities",
+                                        cities
+                                            .iter()
+                                            .filter(|c| {
+                                                aid.as_deref().is_some_and(|id| {
+                                                    c.alliance_id.as_deref() == Some(id)
+                                                })
+                                            })
+                                            .count()
+                                    ),
+                                    cities,
+                                    alliances: Vec::new(),
+                                    highlight: None,
+                                    focus_alliance_id: aid,
+                                    as_of: None,
+                                })
+                                .ok()
+                            }
+                        }
+                        Err(_) => None,
+                    },
+                    None => None,
+                }
             } else {
                 None
             };
-            return Ok(crate::lookup::panels::edit_alliance_v2(
-                session,
-                tab,
-                session.notice.as_deref(),
-                card_png,
-            ));
+            let mut images: Vec<(String, Vec<u8>)> = Vec::new();
+            let file = match tab {
+                "overview" => "alliance.png",
+                "map" => "alliance-map.png",
+                _ => "",
+            };
+            if let Some(bytes) = card_png {
+                if !file.is_empty() {
+                    images.push((file.to_string(), bytes));
+                }
+            }
+            Ok(crate::lookup::panels::edit_alliance_v2(
+                session, tab, images,
+            ))
         }
         Kind::State => {
             let raw = &session.raw;
-            let kid = session.state.unwrap_or_else(|| raw.get("kid").and_then(|v| v.as_i64()).unwrap_or(0));
+            let kid = session
+                .state
+                .unwrap_or_else(|| raw.get("kid").and_then(|v| v.as_i64()).unwrap_or(0));
             let card_png = match tab {
                 "overview" => {
                     let card = crate::cards::StateOverview {
                         kid,
-                        players: raw.get("player_count").or_else(|| raw.get("players")).and_then(|v| v.as_i64()),
-                        alliances: raw.get("alliance_count").or_else(|| raw.get("alliances")).and_then(|v| v.as_i64()),
-                        power: raw.get("power").or_else(|| raw.get("total_power")).and_then(|v| v.as_i64()),
+                        players: raw
+                            .get("player_count")
+                            .or_else(|| raw.get("players"))
+                            .and_then(|v| v.as_i64()),
+                        alliances: raw
+                            .get("alliance_count")
+                            .or_else(|| raw.get("alliances"))
+                            .and_then(|v| v.as_i64()),
+                        power: raw
+                            .get("power")
+                            .or_else(|| raw.get("total_power"))
+                            .and_then(|v| v.as_i64()),
                         avg_power: raw.get("avg_power").and_then(|v| v.as_i64()),
                         top_power: raw.get("top_power").and_then(|v| v.as_i64()),
                         active_7d: raw.get("active_7d").and_then(|v| v.as_i64()),
-                        health_grade: raw.get("health_grade").and_then(|v| v.as_str()).map(str::to_string),
-                        health_blurb: raw.get("health_blurb").and_then(|v| v.as_str()).map(str::to_string),
+                        health_grade: raw
+                            .get("health_grade")
+                            .and_then(|v| v.as_str())
+                            .map(str::to_string),
+                        health_blurb: raw
+                            .get("health_blurb")
+                            .and_then(|v| v.as_str())
+                            .map(str::to_string),
                         health_components: None,
                     };
                     crate::cards::render_state_overview_card(&card).ok()
                 }
-                "svs" | "battle" => {
-                    let opp = raw.get("matchup").and_then(|m| m.get("opponent")).or_else(|| raw.get("opponent"));
-                    let them_kid = opp.and_then(|o| o.get("kid").or_else(|| o.get("state")).and_then(|v| v.as_i64()));
-                    let rows = raw.get("matchup").and_then(|m| m.get("compare")).and_then(|v| v.as_array()).cloned().unwrap_or_default().into_iter().filter_map(|c| {
-                        Some(crate::cards::StateVsRow {
-                            label: c.get("label").or_else(|| c.get("field")).and_then(|v| v.as_str()).unwrap_or("—").to_string(),
-                            us: c.get("us").map(|v| v.as_i64().map(|n| n.to_string()).or_else(|| v.as_str().map(str::to_string)).unwrap_or_else(|| v.to_string())),
-                            them: c.get("them").map(|v| v.as_i64().map(|n| n.to_string()).or_else(|| v.as_str().map(str::to_string)).unwrap_or_else(|| v.to_string())),
+                "svs" => {
+                    let opp = raw
+                        .get("matchup")
+                        .and_then(|m| m.get("opponent"))
+                        .or_else(|| raw.get("opponent"));
+                    let them_kid = opp.and_then(|o| {
+                        o.get("kid")
+                            .or_else(|| o.get("state"))
+                            .and_then(|v| v.as_i64())
+                    });
+                    let rows = raw
+                        .get("matchup")
+                        .and_then(|m| m.get("compare"))
+                        .and_then(|v| v.as_array())
+                        .cloned()
+                        .unwrap_or_default()
+                        .into_iter()
+                        .map(|c| crate::cards::StateVsRow {
+                            label: c
+                                .get("label")
+                                .or_else(|| c.get("field"))
+                                .and_then(|v| v.as_str())
+                                .unwrap_or("—")
+                                .to_string(),
+                            us: c.get("us").map(|v| {
+                                v.as_i64()
+                                    .map(|n| n.to_string())
+                                    .or_else(|| v.as_str().map(str::to_string))
+                                    .unwrap_or_else(|| v.to_string())
+                            }),
+                            them: c.get("them").map(|v| {
+                                v.as_i64()
+                                    .map(|n| n.to_string())
+                                    .or_else(|| v.as_str().map(str::to_string))
+                                    .unwrap_or_else(|| v.to_string())
+                            }),
                         })
-                    }).collect::<Vec<_>>();
+                        .collect::<Vec<_>>();
                     let card = crate::cards::StateVsCard {
                         season: raw.get("season").and_then(|v| v.as_i64()),
-                        us: crate::cards::StateVsSide { kid: Some(kid), label: Some(format!("State {kid}")) },
-                        them: crate::cards::StateVsSide { kid: them_kid, label: them_kid.map(|k| format!("State {k}")) },
+                        us: crate::cards::StateVsSide {
+                            kid: Some(kid),
+                            label: Some(format!("State {kid}")),
+                        },
+                        them: crate::cards::StateVsSide {
+                            kid: them_kid,
+                            label: them_kid.map(|k| format!("State {k}")),
+                        },
                         rows,
                     };
                     crate::cards::render_state_vs_card(&card).ok()
                 }
                 "history" => {
-                    let entries = raw.get("matchup_history").or_else(|| raw.get("history")).and_then(|v| v.as_array()).cloned().unwrap_or_default();
-                    let rows = entries.iter().map(|e| crate::cards::MatchupRow {
-                        date_label: e.get("date").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-                        opponent_kid: e.get("opponent_kid").or_else(|| e.get("them_kid")).or_else(|| e.get("right_kid")).and_then(|v| v.as_i64()),
-                        prep: e.get("prep").and_then(|v| v.as_str()).map(str::to_string),
-                        castle: e.get("castle").and_then(|v| v.as_str()).map(str::to_string),
-                        king_name: e.get("king_name").and_then(|v| v.as_str()).map(str::to_string),
-                        king_tag: e.get("king_tag").and_then(|v| v.as_str()).map(str::to_string),
-                        king_role: e.get("king_role").and_then(|v| v.as_str()).map(str::to_string),
-                        high_king: e.get("high_king").and_then(|v| v.as_bool()).unwrap_or(false),
-                    }).collect::<Vec<_>>();
+                    let entries = raw
+                        .get("matchup_history")
+                        .or_else(|| raw.get("history"))
+                        .and_then(|v| v.as_array())
+                        .cloned()
+                        .unwrap_or_default();
+                    let rows = entries
+                        .iter()
+                        .map(|e| crate::cards::MatchupRow {
+                            date_label: e
+                                .get("date")
+                                .and_then(|v| v.as_str())
+                                .unwrap_or("")
+                                .to_string(),
+                            opponent_kid: e
+                                .get("opponent_kid")
+                                .or_else(|| e.get("them_kid"))
+                                .or_else(|| e.get("right_kid"))
+                                .and_then(|v| v.as_i64()),
+                            prep: e.get("prep").and_then(|v| v.as_str()).map(str::to_string),
+                            castle: e.get("castle").and_then(|v| v.as_str()).map(str::to_string),
+                            king_name: e
+                                .get("king_name")
+                                .and_then(|v| v.as_str())
+                                .map(str::to_string),
+                            king_tag: e
+                                .get("king_tag")
+                                .and_then(|v| v.as_str())
+                                .map(str::to_string),
+                            king_role: e
+                                .get("king_role")
+                                .and_then(|v| v.as_str())
+                                .map(str::to_string),
+                            high_king: e
+                                .get("high_king")
+                                .and_then(|v| v.as_bool())
+                                .unwrap_or(false),
+                        })
+                        .collect::<Vec<_>>();
                     let card = crate::cards::MatchupHistoryCard {
                         title: format!("State {kid} — Matchup history"),
-                        castles_taken: raw.get("castles_taken").or_else(|| raw.get("taken")).and_then(|v| v.as_i64()),
-                        castles_lost: raw.get("castles_lost").or_else(|| raw.get("lost")).and_then(|v| v.as_i64()),
+                        castles_taken: raw
+                            .get("castles_taken")
+                            .or_else(|| raw.get("taken"))
+                            .and_then(|v| v.as_i64()),
+                        castles_lost: raw
+                            .get("castles_lost")
+                            .or_else(|| raw.get("lost"))
+                            .and_then(|v| v.as_i64()),
                         rows,
                         as_of: None,
                     };
                     crate::cards::render_matchup_history_card(&card).ok()
                 }
                 "prep" => {
-                    let days = raw.get("prep_days").or_else(|| raw.get("prep_points")).and_then(|v| v.as_array()).cloned().unwrap_or_default();
-                    let mapped = days.iter().filter_map(|p| {
-                        Some(crate::cards::PrepDay {
+                    let days = raw
+                        .get("prep_days")
+                        .or_else(|| raw.get("prep_points"))
+                        .and_then(|v| v.as_array())
+                        .cloned()
+                        .unwrap_or_default();
+                    let mapped = days
+                        .iter()
+                        .map(|p| crate::cards::PrepDay {
                             day: p.get("day").and_then(|v| v.as_i64()).unwrap_or(0),
-                            home: p.get("home").or_else(|| p.get("us")).and_then(|v| v.as_f64()).unwrap_or(0.0),
-                            away: p.get("away").or_else(|| p.get("them")).and_then(|v| v.as_f64()).unwrap_or(0.0),
+                            home: p
+                                .get("home")
+                                .or_else(|| p.get("us"))
+                                .and_then(|v| v.as_f64())
+                                .unwrap_or(0.0),
+                            away: p
+                                .get("away")
+                                .or_else(|| p.get("them"))
+                                .and_then(|v| v.as_f64())
+                                .unwrap_or(0.0),
                         })
-                    }).collect::<Vec<_>>();
-                    let opp_kid = raw.get("matchup").and_then(|m| m.get("opponent")).and_then(|o| o.get("kid")).and_then(|v| v.as_i64());
+                        .collect::<Vec<_>>();
+                    let opp_kid = raw
+                        .get("matchup")
+                        .and_then(|m| m.get("opponent"))
+                        .and_then(|o| o.get("kid"))
+                        .and_then(|v| v.as_i64());
                     let card = crate::cards::PrepPointsCard {
                         us_kid: kid,
                         them_kid: opp_kid,
@@ -12133,13 +12657,49 @@ async fn lookup_view_edit(
                     crate::cards::render_prep_points_card(&card).ok()
                 }
                 "appointments" => {
-                    let ministers = raw.get("ministers").and_then(|v| v.as_array()).cloned().unwrap_or_default();
-                    let offenders = raw.get("offenders").and_then(|v| v.as_array()).cloned().unwrap_or_default();
+                    let mut ministers = raw
+                        .get("ministers")
+                        .and_then(|v| v.as_array())
+                        .cloned()
+                        .unwrap_or_default();
+                    let mut offenders = raw
+                        .get("offenders")
+                        .and_then(|v| v.as_array())
+                        .cloned()
+                        .unwrap_or_default();
+                    if ministers.is_empty() && offenders.is_empty() {
+                        // JS lazily loads /kingdoms/<kid>/appointments on first open.
+                        if let Ok(ap) = data.lookup.state_appointments(kid).await {
+                            let ap = lookup_response_data(&ap).clone();
+                            ministers = ap
+                                .get("ministers")
+                                .and_then(|v| v.as_array())
+                                .cloned()
+                                .unwrap_or_default();
+                            offenders = ap
+                                .get("offenders")
+                                .and_then(|v| v.as_array())
+                                .cloned()
+                                .unwrap_or_default();
+                        }
+                    }
                     let map_seat = |m: &serde_json::Value| crate::cards::AppointmentSeat {
-                        role: m.get("role").or_else(|| m.get("title")).and_then(|v| v.as_str()).unwrap_or("?").to_string(),
-                        vacant: m.get("vacant").and_then(|v| v.as_bool()).unwrap_or_else(|| m.get("name").and_then(|v| v.as_str()).is_none()),
+                        role: m
+                            .get("role")
+                            .or_else(|| m.get("title"))
+                            .and_then(|v| v.as_str())
+                            .unwrap_or("?")
+                            .to_string(),
+                        vacant: m
+                            .get("vacant")
+                            .and_then(|v| v.as_bool())
+                            .unwrap_or_else(|| m.get("name").and_then(|v| v.as_str()).is_none()),
                         name: m.get("name").and_then(|v| v.as_str()).map(str::to_string),
-                        alliance_tag: m.get("alliance_tag").or_else(|| m.get("abbr")).and_then(|v| v.as_str()).map(str::to_string),
+                        alliance_tag: m
+                            .get("alliance_tag")
+                            .or_else(|| m.get("abbr"))
+                            .and_then(|v| v.as_str())
+                            .map(str::to_string),
                     };
                     let card = crate::cards::AppointmentsCard {
                         state_id: kid,
@@ -12150,29 +12710,55 @@ async fn lookup_view_edit(
                     crate::cards::render_appointments_card(&card).ok()
                 }
                 "map" => {
-                    let map_src = raw.get("map").unwrap_or(raw);
-                    let cities = map_src.get("cities").and_then(|v| v.as_array()).cloned().unwrap_or_default();
-                    if cities.is_empty() { None } else {
-                        let mut cities_out = Vec::new();
-                        for c in cities.iter().take(50000) {
-                            let x = c.get("x").and_then(|v| v.as_f64()).or_else(|| c.get("x").and_then(|v| v.as_i64()).map(|n| n as f64));
-                            let y = c.get("y").and_then(|v| v.as_f64()).or_else(|| c.get("y").and_then(|v| v.as_i64()).map(|n| n as f64));
-                            if let (Some(x), Some(y)) = (x,y) {
-                                cities_out.push(crate::cards::MapCity { x, y, alliance_id: c.get("aid").or_else(|| c.get("alliance_id")).and_then(|v| v.as_i64().map(|n| n.to_string()).or_else(|| v.as_str().map(str::to_string))), label: c.get("nick_name").or_else(|| c.get("name")).and_then(|v| v.as_str()).map(str::to_string) });
+                    let map_src = raw.get("map").filter(|m| {
+                        m.get("cities")
+                            .and_then(|v| v.as_array())
+                            .map(|a| !a.is_empty())
+                            .unwrap_or(false)
+                    });
+                    let map = match map_src {
+                        Some(m) => Some(m.clone()),
+                        None => data.lookup.state_map(kid).await.ok(),
+                    };
+                    match map {
+                        Some(map) => {
+                            let cities = map_cities_from(&map);
+                            if cities.is_empty() {
+                                None
+                            } else {
+                                let card = crate::cards::MapCard {
+                                    title: format!("State {kid}"),
+                                    subtitle: format!("{} cities", cities.len()),
+                                    cities,
+                                    alliances: Vec::new(),
+                                    highlight: None,
+                                    focus_alliance_id: None,
+                                    as_of: None,
+                                };
+                                crate::cards::render_map_card(&card).ok()
                             }
                         }
-                        let card = crate::cards::MapCard { title: format!("State {kid}"), subtitle: "Location data".into(), cities: cities_out, alliances: Vec::new(), highlight: None, focus_alliance_id: None, as_of: None };
-                        crate::cards::render_map_card(&card).ok()
+                        None => None,
                     }
                 }
                 _ => None,
             };
-            return Ok(crate::lookup::panels::edit_state_v2(
-                session,
-                tab,
-                session.notice.as_deref(),
-                card_png,
-            ));
+            let mut images: Vec<(String, Vec<u8>)> = Vec::new();
+            let file = match tab {
+                "overview" => "state.png",
+                "svs" => "svs.png",
+                "history" => "svs-history.png",
+                "prep" => "prep-points.png",
+                "appointments" => "appointments.png",
+                "map" => "state-map.png",
+                _ => "",
+            };
+            if let Some(bytes) = card_png {
+                if !file.is_empty() {
+                    images.push((file.to_string(), bytes));
+                }
+            }
+            Ok(crate::lookup::panels::edit_state_v2(session, tab, images))
         }
     }
 }
@@ -12355,32 +12941,7 @@ async fn lookup_session_action(
             created: std::time::Instant::now(),
         };
         sessions::set(user, guild_id_of(interaction), selected_session.clone());
-        let edit = match selected_session.kind {
-            sessions::Kind::Player => {
-                let card_png = {
-                    let overview = overview_from_raw(&selected_session.raw);
-                    crate::cards::render_player_overview_card(&overview).await.ok()
-                };
-                crate::lookup::panels::edit_player_v2(
-                    &selected_session,
-                    "overview",
-                    selected_session.notice.as_deref(),
-                    card_png,
-                )
-            }
-            sessions::Kind::Alliance => crate::lookup::panels::edit_alliance_v2(
-                &selected_session,
-                "overview",
-                selected_session.notice.as_deref(),
-                None,
-            ),
-            sessions::Kind::State => crate::lookup::panels::edit_state_v2(
-                &selected_session,
-                "overview",
-                selected_session.notice.as_deref(),
-                None,
-            ),
-        };
+        let edit = lookup_view_edit(ctx, data, &selected_session, "overview").await?;
         edit.apply(&ctx.http, interaction).await?;
         return Ok(());
     }
@@ -12408,16 +12969,7 @@ async fn lookup_session_action(
             created: std::time::Instant::now(),
         };
         sessions::set(user, guild_id_of(interaction), selected_session.clone());
-        let card_png = {
-            let overview = overview_from_raw(&selected_session.raw);
-            crate::cards::render_player_overview_card(&overview).await.ok()
-        };
-        let edit = crate::lookup::panels::edit_player_v2(
-            &selected_session,
-            "overview",
-            selected_session.notice.as_deref(),
-            card_png,
-        );
+        let edit = lookup_view_edit(ctx, data, &selected_session, "overview").await?;
         edit.apply(&ctx.http, interaction).await?;
         return Ok(());
     }
@@ -12429,17 +12981,25 @@ async fn lookup_session_action(
             .or_else(|| {
                 // JS pick sends the actual value (fid/tag); resolve against choices
                 session.choices.iter().position(|row| {
-                    ["fid", "uid", "player_id", "id", "tag", "abbr", "alliance_abbr"]
-                        .iter()
-                        .any(|k| {
-                            row.get(*k)
-                                .and_then(|v| {
-                                    v.as_str()
-                                        .map(str::to_owned)
-                                        .or_else(|| v.as_i64().map(|n| n.to_string()))
-                                })
-                                .is_some_and(|v| v.eq_ignore_ascii_case(value.trim()))
-                        })
+                    [
+                        "fid",
+                        "uid",
+                        "player_id",
+                        "id",
+                        "tag",
+                        "abbr",
+                        "alliance_abbr",
+                    ]
+                    .iter()
+                    .any(|k| {
+                        row.get(*k)
+                            .and_then(|v| {
+                                v.as_str()
+                                    .map(str::to_owned)
+                                    .or_else(|| v.as_i64().map(|n| n.to_string()))
+                            })
+                            .is_some_and(|v| v.eq_ignore_ascii_case(value.trim()))
+                    })
                 })
             })
             .ok_or_else(|| anyhow::anyhow!("that Lookup result is no longer available"))?;
@@ -12521,32 +13081,7 @@ async fn lookup_session_action(
             Kind::State => return Err(anyhow::anyhow!("unexpected state result picker")),
         };
         sessions::set(user, guild_id_of(interaction), selected_session.clone());
-        let edit = match selected_session.kind {
-            sessions::Kind::Player => {
-                let card_png = {
-                    let overview = overview_from_raw(&selected_session.raw);
-                    crate::cards::render_player_overview_card(&overview).await.ok()
-                };
-                crate::lookup::panels::edit_player_v2(
-                    &selected_session,
-                    "overview",
-                    selected_session.notice.as_deref(),
-                    card_png,
-                )
-            }
-            sessions::Kind::Alliance => crate::lookup::panels::edit_alliance_v2(
-                &selected_session,
-                "overview",
-                selected_session.notice.as_deref(),
-                None,
-            ),
-            sessions::Kind::State => crate::lookup::panels::edit_state_v2(
-                &selected_session,
-                "overview",
-                selected_session.notice.as_deref(),
-                None,
-            ),
-        };
+        let edit = lookup_view_edit(ctx, data, &selected_session, "overview").await?;
         edit.apply(&ctx.http, interaction).await?;
         return Ok(());
     }
@@ -12594,6 +13129,12 @@ async fn lookup_session_action(
             session.board = Some(value.clone());
             session.page = 0;
         }
+        if rest == "board" {
+            // A new board needs fresh rows.
+            if let Some(obj) = session.raw.as_object_mut() {
+                obj.remove("boardEntries");
+            }
+        }
     }
     let mut already_deferred = false;
     if rest == "go:state" {
@@ -12619,12 +13160,7 @@ async fn lookup_session_action(
                     created: std::time::Instant::now(),
                 };
                 sessions::set(user, guild_id_of(interaction), state_session.clone());
-                let edit = crate::lookup::panels::edit_state_v2(
-                    &state_session,
-                    "overview",
-                    state_session.notice.as_deref(),
-                    None,
-                );
+                let edit = lookup_view_edit(ctx, data, &state_session, "overview").await?;
                 edit.apply(&ctx.http, interaction).await?;
                 return Ok(());
             }
@@ -12636,12 +13172,9 @@ async fn lookup_session_action(
                 interaction.defer(&ctx.http).await?;
                 already_deferred = true;
             }
-            let tag = crate::wos::normalize_alliance_tag(&tag).unwrap_or_else(|| tag.to_uppercase());
-            let profile = data
-                .lookup
-                .alliance(&tag, session.state)
-                .await
-                .ok();
+            let tag =
+                crate::wos::normalize_alliance_tag(&tag).unwrap_or_else(|| tag.to_uppercase());
+            let profile = data.lookup.alliance(&tag, session.state).await.ok();
             if let Some(profile) = profile {
                 let alliance_session = crate::lookup::sessions::LookupSession {
                     kind: Kind::Alliance,
@@ -12663,12 +13196,42 @@ async fn lookup_session_action(
                     created: std::time::Instant::now(),
                 };
                 sessions::set(user, guild_id_of(interaction), alliance_session.clone());
-                let edit = crate::lookup::panels::edit_alliance_v2(
-                    &alliance_session,
-                    "overview",
-                    alliance_session.notice.as_deref(),
-                    None,
-                );
+                let edit = lookup_view_edit(ctx, data, &alliance_session, "overview").await?;
+                edit.apply(&ctx.http, interaction).await?;
+                return Ok(());
+            }
+        }
+    }
+    // JS player Standings board selects jump into the State panel's board view.
+    if (rest == "board:state" || rest == "board:global") && !value.is_empty() {
+        if let Some(state_id) = session.state {
+            if !already_deferred {
+                interaction.defer(&ctx.http).await?;
+                already_deferred = true;
+            }
+            if let Ok(profile) = data.lookup.state(state_id).await {
+                let mut state_session = crate::lookup::sessions::LookupSession {
+                    kind: Kind::State,
+                    raw: profile.raw.clone(),
+                    name: format!("State #{state_id}"),
+                    state: Some(state_id),
+                    fid: None,
+                    alliance: None,
+                    tab: "boards".into(),
+                    notice: None,
+                    choices: Vec::new(),
+                    board: Some(value.clone()),
+                    page: 0,
+                    map_token: None,
+                    created: std::time::Instant::now(),
+                };
+                if let Some(rows) = load_board_rows(data, state_id, &value).await {
+                    if let Some(obj) = state_session.raw.as_object_mut() {
+                        obj.insert("boardEntries".to_string(), rows);
+                    }
+                }
+                sessions::set(user, guild_id_of(interaction), state_session.clone());
+                let edit = lookup_view_edit(ctx, data, &state_session, "boards").await?;
                 edit.apply(&ctx.http, interaction).await?;
                 return Ok(());
             }
@@ -12676,7 +13239,11 @@ async fn lookup_session_action(
     }
 
     let tab = if let Some(tab) = rest.strip_prefix("tab:") {
-        if tab == "joined" { "members".to_string() } else { tab.to_string() }
+        if tab == "joined" {
+            "members".to_string()
+        } else {
+            tab.to_string()
+        }
     } else if rest == "tab" {
         value
     } else {
@@ -12684,14 +13251,16 @@ async fn lookup_session_action(
             "go:map" => "map".to_string(),
             "go:trail" => "trail".to_string(),
             "go:appointments" => "appointments".to_string(),
-            "go:battle" | "battle" => "svs".to_string(),
+            "go:battle" | "battle" => "battle".to_string(),
             "go:prep" | "prep" => "prep".to_string(),
             "go:history" | "history" => "history".to_string(),
-            "go:president" => "overview".to_string(),
-            "map:back" | "overview:back" | "tl:back" | "svs:back" | "prep:back" | "history:back" => {
-                "overview".to_string()
-            }
+            "go:president" => "note".to_string(),
+            "svs:back" | "prep:back" | "history:back" => "svs".to_string(),
+            "map:back" | "overview:back" | "tl:back" => "overview".to_string(),
             "map:refresh" => {
+                if let Some(obj) = session.raw.as_object_mut() {
+                    obj.remove("mapSummary");
+                }
                 if let Some(state) = session.state {
                     interaction.defer(&ctx.http).await?;
                     already_deferred = true;
@@ -12853,13 +13422,117 @@ async fn lookup_session_action(
         || matches!(
             tab.as_str(),
             "map" | "trail" | "history" | "battle" | "prep" | "note" | "appointments"
-        )
-    {
+        ) {
         tab
     } else {
         "overview".to_string()
     };
+    // JS resets pagination whenever the tab changes (pagers set it explicitly).
+    let is_pager = rest.starts_with("pg:p:")
+        || rest.starts_with("page:p:")
+        || rest.starts_with("tl:pg:p:")
+        || rest == "pg"
+        || rest == "tl:pg";
+    if !is_pager {
+        session.page = 0;
+    }
     session.tab = tab.clone();
+    // JS fetches board rows the first time Rankings opens.
+    if kind == Kind::State && tab == "boards" {
+        let needs = session
+            .raw
+            .get("boardEntries")
+            .and_then(|v| v.as_array())
+            .map(|a| a.is_empty())
+            .unwrap_or(true);
+        if needs {
+            if let Some(kid) = session.state {
+                let key = session.board.clone().unwrap_or_else(|| "3".to_string());
+                if let Some(rows) = load_board_rows(data, kid, &key).await {
+                    if let Some(obj) = session.raw.as_object_mut() {
+                        obj.insert("boardEntries".to_string(), rows);
+                    }
+                }
+            }
+        }
+    }
+    // JS computes the map city counts inline from the map payload; we stash a
+    // small summary so the panel body can render the same text.
+    if tab == "map" && session.raw.get("mapSummary").is_none() {
+        if let Some(kid) = session.state {
+            if let Ok(map) = data.lookup.state_map(kid).await {
+                let cities: Vec<&serde_json::Value> = map
+                    .get("cities")
+                    .and_then(|v| v.as_array())
+                    .map(|a| a.iter().collect())
+                    .unwrap_or_default();
+                let mine = if kind == Kind::Alliance {
+                    let aid =
+                        crate::lookup::view::pick_str(&session.raw, &["aid", "alliance_id", "id"]);
+                    let tag = session.alliance.as_deref().map(str::to_uppercase);
+                    cities
+                        .iter()
+                        .filter(|c| {
+                            let c_aid = crate::lookup::view::pick_str(c, &["aid"]);
+                            let c_tag =
+                                crate::lookup::view::pick_str(c, &["abbr", "tag", "alliance_abbr"])
+                                    .map(str::to_uppercase);
+                            (aid.is_some_and(|a| c_aid == Some(a)))
+                                || (tag
+                                    .as_ref()
+                                    .is_some_and(|t| c_tag.as_deref() == Some(t.as_str())))
+                        })
+                        .count()
+                } else {
+                    cities.len()
+                };
+                let alliances = map
+                    .get("alliances")
+                    .and_then(|v| v.as_array())
+                    .map(|a| a.len())
+                    .unwrap_or_else(|| {
+                        let mut set = std::collections::HashSet::new();
+                        for c in &cities {
+                            if let Some(a) = crate::lookup::view::pick_str(c, &["aid"]) {
+                                set.insert(a.to_string());
+                            }
+                        }
+                        set.len()
+                    });
+                let stats = map.get("stats");
+                let ago = stats
+                    .and_then(|s| s.get("location_updated_ago"))
+                    .and_then(|v| v.as_str())
+                    .map(str::to_string);
+                let at = stats
+                    .and_then(|s| s.get("location_updated_at"))
+                    .and_then(|v| v.as_i64());
+                let summary = serde_json::json!({
+                    "mine": mine,
+                    "cities": cities.len(),
+                    "alliances": alliances,
+                    "ago": ago,
+                    "at": at,
+                });
+                if let Some(obj) = session.raw.as_object_mut() {
+                    obj.insert("mapSummary".to_string(), summary);
+                }
+            }
+        }
+    }
+    // JS lazily loads troop-level data when the tab opens (JS
+    // `loadStateTroopPlayers` / `ensureAllianceTroopLevels`); `tl:refresh`
+    // forces a reload.
+    let tl_refresh = rest == "tl:refresh";
+    if kind == Kind::State
+        && tab == "troopLevel"
+        && (tl_refresh || session.raw.get("tlPlayers").is_none())
+    {
+        enrich_troop_levels(data, &mut session, tl_refresh).await;
+    }
+    if kind == Kind::Alliance && tab == "troopLevel" {
+        enrich_troop_levels(data, &mut session, tl_refresh).await;
+    }
     sessions::set(user, guild_id_of(interaction), session.clone());
     if !already_deferred {
         interaction.defer(&ctx.http).await?;
@@ -12867,6 +13540,147 @@ async fn lookup_session_action(
     let edit = lookup_view_edit(ctx, data, &session, &tab).await?;
     edit.apply(&ctx.http, interaction).await?;
     Ok(())
+}
+
+/// Fill `troopLevels` on player rows (JS `loadStateTroopPlayers` for State,
+/// `ensureAllianceTroopLevels` for Alliance). Uses `data.lookup.player` with
+/// bounded concurrency so the tabs stay responsive.
+async fn enrich_troop_levels(
+    data: &Data,
+    session: &mut crate::lookup::sessions::LookupSession,
+    force: bool,
+) {
+    use crate::lookup::sessions::Kind;
+    use futures::StreamExt;
+    match session.kind {
+        Kind::State => {
+            let Some(kid) = session.state else { return };
+            if !force && session.raw.get("tlPlayers").is_some() {
+                return;
+            }
+            let Ok(st) = data.lookup.state(kid).await else {
+                return;
+            };
+            let root = crate::lookup::view::state_root(&st.raw);
+            let list: Vec<serde_json::Value> = root
+                .get("players")
+                .or_else(|| root.get("top_players"))
+                .and_then(serde_json::Value::as_array)
+                .cloned()
+                .unwrap_or_default();
+            let mut seen = HashSet::new();
+            let ids: Vec<String> = list
+                .iter()
+                .take(200)
+                .filter_map(|p| {
+                    let id = crate::lookup::view::pick_str(p, &["uid", "fid", "chief_id"])
+                        .map(str::to_string)
+                        .or_else(|| {
+                            crate::lookup::view::pick_i64(p, &["uid", "fid", "chief_id"])
+                                .map(|n| n.to_string())
+                        })?;
+                    seen.insert(id.clone()).then_some(id)
+                })
+                .collect();
+            let rows: Vec<serde_json::Value> = futures::stream::iter(ids)
+                .map(|id| async move {
+                    data.lookup.player(&id).await.ok().map(|p| {
+                        let name = p
+                            .name
+                            .clone()
+                            .or_else(|| {
+                                crate::lookup::view::pick_str(&p.raw, &["nick_name", "name"])
+                                    .map(str::to_string)
+                            })
+                            .unwrap_or_else(|| "Unknown".into());
+                        serde_json::json!({
+                            "name": name,
+                            "fid": p.fid.clone().or_else(|| p.uid.clone()),
+                            "score": p.power,
+                            "troopLevels": crate::lookup::view::normalize_troop_levels(&p.raw),
+                            "isAlliance": false,
+                        })
+                    })
+                })
+                .buffer_unordered(8)
+                .collect::<Vec<Option<_>>>()
+                .await
+                .into_iter()
+                .flatten()
+                .collect();
+            if let Some(obj) = session.raw.as_object_mut() {
+                obj.insert("tlPlayers".to_string(), serde_json::Value::Array(rows));
+            }
+        }
+        Kind::Alliance => {
+            if force {
+                // JS deletes `troopLevels`/`troop` before forcing the reload.
+                if let Some(obj) = session.raw.as_object_mut() {
+                    if let Some(roster) = obj
+                        .get_mut("roster")
+                        .and_then(serde_json::Value::as_array_mut)
+                    {
+                        for m in roster {
+                            if let Some(o) = m.as_object_mut() {
+                                o.remove("troopLevels");
+                                o.remove("troop");
+                            }
+                        }
+                    }
+                }
+            }
+            let pending: Vec<(usize, String)> = session
+                .raw
+                .get("roster")
+                .and_then(serde_json::Value::as_array)
+                .map(|a| {
+                    a.iter()
+                        .enumerate()
+                        .filter(|(_, m)| force || m.get("troopLevels").is_none())
+                        .filter_map(|(i, m)| {
+                            let id = crate::lookup::view::pick_str(m, &["fid", "uid"])
+                                .map(str::to_string)
+                                .or_else(|| {
+                                    crate::lookup::view::pick_i64(m, &["fid", "uid"])
+                                        .map(|n| n.to_string())
+                                })?;
+                            Some((i, id))
+                        })
+                        .collect()
+                })
+                .unwrap_or_default();
+            let found: Vec<(usize, serde_json::Value)> = futures::stream::iter(pending)
+                .map(|(i, id)| async move {
+                    data.lookup
+                        .player(&id)
+                        .await
+                        .ok()
+                        .and_then(|p| crate::lookup::view::normalize_troop_levels(&p.raw))
+                        .map(|tl| (i, tl))
+                })
+                .buffer_unordered(8)
+                .collect::<Vec<Option<_>>>()
+                .await
+                .into_iter()
+                .flatten()
+                .collect();
+            if let Some(obj) = session.raw.as_object_mut() {
+                if let Some(roster) = obj
+                    .get_mut("roster")
+                    .and_then(serde_json::Value::as_array_mut)
+                {
+                    for (i, tl) in found {
+                        if let Some(m) = roster.get_mut(i) {
+                            if let Some(o) = m.as_object_mut() {
+                                o.insert("troopLevels".to_string(), tl);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        _ => {}
+    }
 }
 
 fn guild_id_of(interaction: &ComponentInteraction) -> u64 {
@@ -16136,10 +16950,26 @@ async fn deploy_component(
         }
         "lookup" => {
             let mut results: Vec<String> = Vec::new();
-            let panels_to_post: Vec<(db::lookup::PanelKind, &str, fn() -> (serenity::CreateEmbed, Vec<serenity::CreateActionRow>))> = vec![
-                (db::lookup::PanelKind::Player, "Player", panels::lookup_player_panel),
-                (db::lookup::PanelKind::Alliance, "Alliance", panels::lookup_alliance_panel),
-                (db::lookup::PanelKind::State, "State", panels::lookup_state_panel),
+            let panels_to_post: Vec<(
+                db::lookup::PanelKind,
+                &str,
+                fn() -> (serenity::CreateEmbed, Vec<serenity::CreateActionRow>),
+            )> = vec![
+                (
+                    db::lookup::PanelKind::Player,
+                    "Player",
+                    panels::lookup_player_panel,
+                ),
+                (
+                    db::lookup::PanelKind::Alliance,
+                    "Alliance",
+                    panels::lookup_alliance_panel,
+                ),
+                (
+                    db::lookup::PanelKind::State,
+                    "State",
+                    panels::lookup_state_panel,
+                ),
             ];
             for (kind, label, build) in panels_to_post {
                 let (embed, rows) = build();
@@ -16152,7 +16982,8 @@ async fn deploy_component(
                 {
                     Ok(message) => {
                         db::lookup::set_channel(&data.db, guild_id, Some(channel_id.get())).await?;
-                        db::lookup::set_panel(&data.db, guild_id, kind, Some(message.id.get())).await?;
+                        db::lookup::set_panel(&data.db, guild_id, kind, Some(message.id.get()))
+                            .await?;
                         results.push(format!("✅ {label}"));
                     }
                     Err(err) => results.push(format!("❌ {label}: {}", crate::error::public(&err))),
@@ -17764,13 +18595,8 @@ async fn lookup_player_modal(
                 created: std::time::Instant::now(),
             };
             sessions::set(interaction.user.id.get(), guild, session.clone());
-            let (embed, rows, _) = sessions::render(ctx, data, &session, "choose").await;
-            interaction
-                .edit_response(
-                    &ctx.http,
-                    EditInteractionResponse::new().embed(embed).components(rows),
-                )
-                .await?;
+            let edit = lookup_choose_edit(&session, &query);
+            edit.apply_token(&ctx.http, &interaction.token).await?;
             return Ok(());
         }
     }
@@ -17894,32 +18720,7 @@ async fn lookup_player_modal(
             created: std::time::Instant::now(),
         };
         sessions::set(interaction.user.id.get(), guild, session.clone());
-        let edit = match session.kind {
-            Kind::Player => {
-                let card_png = {
-                    let overview = overview_from_raw(&session.raw);
-                    crate::cards::render_player_overview_card(&overview).await.ok()
-                };
-                crate::lookup::panels::edit_player_v2(
-                    &session,
-                    "overview",
-                    session.notice.as_deref(),
-                    card_png,
-                )
-            }
-            Kind::Alliance => crate::lookup::panels::edit_alliance_v2(
-                &session,
-                "overview",
-                session.notice.as_deref(),
-                None,
-            ),
-            Kind::State => crate::lookup::panels::edit_state_v2(
-                &session,
-                "overview",
-                session.notice.as_deref(),
-                None,
-            ),
-        };
+        let edit = lookup_view_edit(ctx, data, &session, "overview").await?;
         edit.apply_token(&ctx.http, &interaction.token).await?;
         return Ok(());
     }
@@ -18265,13 +19066,8 @@ async fn lookup_alliance_modal(
             created: std::time::Instant::now(),
         };
         sessions::set(interaction.user.id.get(), guild, session.clone());
-        let (embed, rows, _) = sessions::render(ctx, data, &session, "choose").await;
-        interaction
-            .edit_response(
-                &ctx.http,
-                EditInteractionResponse::new().embed(embed).components(rows),
-            )
-            .await?;
+        let edit = lookup_choose_edit(&session, &query);
+        edit.apply_token(&ctx.http, &interaction.token).await?;
         return Ok(());
     }
     let raw = candidates
@@ -18396,10 +19192,8 @@ async fn lookup_alliance_modal(
     };
 
     let mut files: Vec<serenity::CreateAttachment> = Vec::new();
-    let mut alliance_card_png: Option<Vec<u8>> = None;
     if let Some(card) = alliance_card {
         if let Ok(bytes) = crate::cards::render_alliance_overview_card(&card) {
-            alliance_card_png = Some(bytes.clone());
             files.push(serenity::CreateAttachment::bytes(bytes, "alliance.png"));
         }
     }
@@ -18421,12 +19215,7 @@ async fn lookup_alliance_modal(
             created: std::time::Instant::now(),
         };
         sessions::set(interaction.user.id.get(), guild, session.clone());
-        let edit = crate::lookup::panels::edit_alliance_v2(
-            &session,
-            "overview",
-            session.notice.as_deref(),
-            alliance_card_png,
-        );
+        let edit = lookup_view_edit(ctx, data, &session, "overview").await?;
         edit.apply_token(&ctx.http, &interaction.token).await?;
         return Ok(());
     }
@@ -18499,10 +19288,8 @@ async fn lookup_state_modal(
     };
 
     let mut files: Vec<serenity::CreateAttachment> = Vec::new();
-    let mut state_card_png: Option<Vec<u8>> = None;
     if let Some(card) = state_card {
         if let Ok(bytes) = crate::cards::render_state_overview_card(&card) {
-            state_card_png = Some(bytes.clone());
             files.push(serenity::CreateAttachment::bytes(bytes, "state.png"));
         }
     }
@@ -18528,12 +19315,7 @@ async fn lookup_state_modal(
             guild_of(interaction)?,
             session.clone(),
         );
-        let edit = crate::lookup::panels::edit_state_v2(
-            &session,
-            "overview",
-            session.notice.as_deref(),
-            state_card_png,
-        );
+        let edit = lookup_view_edit(ctx, data, &session, "overview").await?;
         edit.apply_token(&ctx.http, &interaction.token).await?;
         return Ok(());
     }

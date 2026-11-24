@@ -125,7 +125,8 @@ impl V2 {
     }
 
     pub fn footer_raw(self, str: impl AsRef<str>) -> Self {
-        self.sep(true).text(format!("-# {BRAND} · {}", str.as_ref()))
+        self.sep(true)
+            .text(format!("-# {BRAND} · {}", str.as_ref()))
     }
 
     pub fn buttons(mut self, defs: &[ButtonDef]) -> Self {

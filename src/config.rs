@@ -113,7 +113,6 @@ pub struct Config {
     pub oracle_api: String,
     pub oracle_codes_url: String,
 
-
     pub giftcode_sync_minutes: u64,
     pub lookup_sync_minutes: u64,
 

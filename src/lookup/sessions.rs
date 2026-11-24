@@ -842,7 +842,7 @@ pub async fn render(
                             .map(str::to_string)
                             .or_else(|| {
                                 pick_i64(row, &["value", "score", "power"])
-                                    .map(|n| theme::compact_number(n))
+                                    .map(theme::compact_number)
                             })
                             .unwrap_or_else(|| "—".into());
                         let rank = pick_i64(row, &["rank", "kingdom_rank"])
@@ -894,24 +894,24 @@ pub async fn render(
                 let pages = total.div_ceil(15).max(1);
                 if pages > 1 {
                     let last = pages.saturating_sub(1);
-                        let prev = session.page.saturating_sub(1);
-                        let next = (session.page + 1).min(last);
-                        rows.push(CreateActionRow::Buttons(vec![
-                            action_button(
-                                &format!("lookup:state:pg:p:{prev}:prev"),
-                                "Previous",
-                                "◀️",
-                                serenity::ButtonStyle::Secondary,
-                            )
-                            .disabled(session.page == 0),
-                            action_button(
-                                &format!("lookup:state:pg:p:{next}:next"),
-                                format!("Page {} / {pages}", session.page + 1),
-                                "▶️",
-                                serenity::ButtonStyle::Secondary,
-                            )
-                            .disabled(session.page + 1 >= pages),
-                        ]));
+                    let prev = session.page.saturating_sub(1);
+                    let next = (session.page + 1).min(last);
+                    rows.push(CreateActionRow::Buttons(vec![
+                        action_button(
+                            &format!("lookup:state:pg:p:{prev}:prev"),
+                            "Previous",
+                            "◀️",
+                            serenity::ButtonStyle::Secondary,
+                        )
+                        .disabled(session.page == 0),
+                        action_button(
+                            &format!("lookup:state:pg:p:{next}:next"),
+                            format!("Page {} / {pages}", session.page + 1),
+                            "▶️",
+                            serenity::ButtonStyle::Secondary,
+                        )
+                        .disabled(session.page + 1 >= pages),
+                    ]));
                 }
             }
         }

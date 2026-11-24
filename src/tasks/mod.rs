@@ -158,7 +158,10 @@ fn spawn_player_roster_refresh(ctx: serenity::Context, data: Data) {
                             Err(crate::oracle::OracleError::RateLimited) => {
                                 failed += 1;
                                 retry_soon = true;
-                                tracing::warn!(guild_id, "scheduled roster refresh: Oracle rate limited");
+                                tracing::warn!(
+                                    guild_id,
+                                    "scheduled roster refresh: Oracle rate limited"
+                                );
                                 break;
                             }
                             Err(err) => {
