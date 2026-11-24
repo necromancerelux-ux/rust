@@ -12359,11 +12359,27 @@ async fn lookup_session_action(
         edit.apply(&ctx.http, interaction).await?;
         return Ok(());
     }
-    if rest == "candidate" && !value.is_empty() {
+    if (rest == "candidate" || rest == "pick") && !value.is_empty() {
         interaction.defer(&ctx.http).await?;
         let selected_index = value
             .strip_prefix("candidate:")
             .and_then(|index| index.parse::<usize>().ok())
+            .or_else(|| {
+                // JS pick sends the actual value (fid/tag); resolve against choices
+                session.choices.iter().position(|row| {
+                    ["fid", "uid", "player_id", "id", "tag", "abbr", "alliance_abbr"]
+                        .iter()
+                        .any(|k| {
+                            row.get(*k)
+                                .and_then(|v| {
+                                    v.as_str()
+                                        .map(str::to_owned)
+                                        .or_else(|| v.as_i64().map(|n| n.to_string()))
+                                })
+                                .is_some_and(|v| v.eq_ignore_ascii_case(value.trim()))
+                        })
+                })
+            })
             .ok_or_else(|| anyhow::anyhow!("that Lookup result is no longer available"))?;
         let selected = session
             .choices
@@ -12606,9 +12622,11 @@ async fn lookup_session_action(
             "go:map" => "map".to_string(),
             "go:trail" => "trail".to_string(),
             "go:appointments" => "appointments".to_string(),
-            "go:battle" => "svs".to_string(),
-            "go:prep" => "boards".to_string(),
-            "map:back" | "overview:back" | "tl:back" | "svs:back" | "prep:back" => {
+            "go:battle" | "battle" => "svs".to_string(),
+            "go:prep" | "prep" => "prep".to_string(),
+            "go:history" | "history" => "history".to_string(),
+            "go:president" => "overview".to_string(),
+            "map:back" | "overview:back" | "tl:back" | "svs:back" | "prep:back" | "history:back" => {
                 "overview".to_string()
             }
             "map:refresh" => {
@@ -12770,8 +12788,10 @@ async fn lookup_session_action(
         }
     };
     let tab = if sessions::tabs(kind).iter().any(|(key, _)| *key == tab)
-        || tab == "map"
-        || tab == "trail"
+        || matches!(
+            tab.as_str(),
+            "map" | "trail" | "history" | "battle" | "prep" | "note" | "appointments"
+        )
     {
         tab
     } else {

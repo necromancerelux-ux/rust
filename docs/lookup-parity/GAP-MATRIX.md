@@ -57,7 +57,7 @@ Status key: ✅ done · 🟡 partial · ❌ missing / mismatched
 | Footer | `-# OmniCore · <label> <t:...:R>` | `v2.rs footer()` | 🟡 | Verify exact format |
 | Tab dropdown (player/state) | `ui.select` with placeholder=current tab label, options default selected | `V2::select` exists; panels need to use it correctly | 🟡 | |
 | Tab buttons (alliance) | `ui.tabButtons` active=Primary | `V2::tab_buttons` exists | 🟡 | |
-| Pager IDs | `prefix:p:<target>:<tag>` (`first/prev/next/last/noop`) | Rust `v2::pager` uses `prefix:p:tag:target` and `prefix:noop` | ❌ | **ID format mismatch** |
+| Pager IDs | `prefix:p:<target>:<tag>` (`first/prev/next/last/noop`) | Rust emits JS format; handler accepts JS/legacy/`page:p` | ✅ | |
 | Image names | `player.png`, `standings.png`, `chief-gear.png`, `progression.png`, `crowns.png`, `player-map.png`, `alliance.png`, `state.png`, etc. | Mixed across sessions/panels | ❌ | Audit per tab |
 | Edit payload | clears attachments, sets `IS_COMPONENTS_V2` | clears content/embeds, sets flags | ✅ | Recent fix |
 | Ephemeral private results | JS uses `flags` with Ephemeral+V2 for replies; edits V2 | Rust V2Edit has ephemeral | 🟡 | Verify all flows |
