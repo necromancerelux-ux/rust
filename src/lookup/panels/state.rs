@@ -102,6 +102,7 @@ fn build(
 ) -> (V2, Option<Vec<u8>>, &'static str) {
     let tab = valid_tab(tab);
     let raw = &session.raw;
+    let view = crate::lookup::view::state_view(raw);
     let opts: Vec<SelectOpt> = STATE_TABS
         .iter()
         .map(|(k, l)| SelectOpt {
@@ -430,7 +431,7 @@ fn build(
     }
 
     let footer = source_note.unwrap_or(footer_label);
-    (v2.footer(footer, None), keep_png, img_name)
+    (v2.footer(footer, view.as_of_ms), keep_png, img_name)
 }
 
 pub fn render_state_v2(

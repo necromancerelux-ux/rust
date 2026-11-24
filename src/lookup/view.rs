@@ -107,3 +107,49 @@ pub fn player_view(raw: &Value) -> PlayerView {
         as_of_ms,
     }
 }
+
+#[derive(Debug, Clone, Default)]
+pub struct AllianceView {
+    pub tag: String,
+    pub name: String,
+    pub state_id: Option<i64>,
+    pub power: Option<i64>,
+    pub kills: Option<i64>,
+    pub members: Option<i64>,
+    pub as_of_ms: Option<i64>,
+}
+
+pub fn alliance_view(raw: &Value) -> AllianceView {
+    let a = raw.get("alliance").or_else(|| raw.get("info")).unwrap_or(raw);
+    AllianceView {
+        tag: pick_str(a, &["abbr","tag","alliance_abbr"]).unwrap_or("").to_string(),
+        name: pick_str(a, &["name","alliance_name"]).unwrap_or("").to_string(),
+        state_id: pick_i64(a, &["kid","state_id","state"]),
+        power: pick_i64(a, &["power","total_power"]),
+        kills: pick_i64(a, &["kills","total_kills"]),
+        members: pick_i64(a, &["member_count","members","count"]).or_else(|| raw.get("roster").and_then(Value::as_array).map(|a| a.len() as i64)),
+        as_of_ms: ts_ms(a, &["updated_at","detail_updated_at","fetched_at"]),
+    }
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct StateView {
+    pub id: Option<i64>,
+    pub name: Option<String>,
+    pub players: Option<i64>,
+    pub alliances: Option<i64>,
+    pub power: Option<i64>,
+    pub as_of_ms: Option<i64>,
+}
+
+pub fn state_view(raw: &Value) -> StateView {
+    let st = raw.get("state").or_else(|| raw.get("kingdom")).unwrap_or(raw);
+    StateView {
+        id: pick_i64(st, &["kid","state_id","id"]),
+        name: pick_str(st, &["name"]).map(str::to_string),
+        players: pick_i64(st, &["player_count","players","tracked"]),
+        alliances: pick_i64(st, &["alliance_count","alliances"]),
+        power: pick_i64(st, &["power","total_power"]),
+        as_of_ms: ts_ms(st, &["updated_at","detail_updated_at","fetched_at"]),
+    }
+}

@@ -79,6 +79,7 @@ fn build(
     let tab = valid_tab(tab);
     let tabs = tabs_as_v2();
     let raw = &session.raw;
+    let view = crate::lookup::view::alliance_view(raw);
     let mut v2 = V2::new()
         .tab_buttons("lookup:alliance:tab", &tabs, tab, 4)
         .sep(true);
@@ -438,7 +439,7 @@ fn build(
     }
 
     let footer = source_note.unwrap_or("Lookup");
-    (v2.footer(footer, None), keep_png)
+    (v2.footer(footer, view.as_of_ms), keep_png)
 }
 
 pub fn render_alliance_v2(
