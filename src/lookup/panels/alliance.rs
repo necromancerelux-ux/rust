@@ -25,7 +25,7 @@ fn tabs_as_v2() -> Vec<Tab> {
 }
 
 fn valid_tab(tab: &str) -> &str {
-    if ALLIANCE_TABS.iter().any(|(k, _)| *k == tab) {
+    if ALLIANCE_TABS.iter().any(|(k, _)| *k == tab) || tab == "map" {
         tab
     } else {
         "overview"
@@ -264,6 +264,16 @@ fn build(
                 if total_pages > 1 {
                     v2 = v2.pager("lookup:alliance:pg", page, total_pages);
                 }
+                let member_opts: Vec<SelectOpt> = list.iter().filter_map(|row| {
+                    let fid = pick_str(row, &["fid", "chief_id", "id"]).or_else(|| pick_i64(row, &["fid", "id"]).map(|n| n.to_string()).as_deref().map(|_| "")).and_then(|_| None::<String>);
+                    let fid = pick_str(row, &["fid", "chief_id", "id"]).map(|s| s.to_string()).or_else(|| pick_i64(row, &["fid", "chief_id", "id"]).map(|n| n.to_string()));
+                    let fid = fid?;
+                    let name = pick_str(row, &["name", "username", "nick_name", "game_name"]).unwrap_or("Unknown");
+                    Some(SelectOpt { label: name.chars().take(100).collect(), value: fid.chars().take(100).collect(), description: None, is_default: false })
+                }).take(25).collect();
+                if !member_opts.is_empty() {
+                    v2 = v2.select("lookup:alliance:player", "Open a player.", &member_opts);
+                }
                 // Custom footer with page counts (matches JS footerRaw)
                 return (
                     v2.footer_raw(format!(
@@ -380,8 +390,21 @@ fn build(
             } else {
                 v2 = v2.text(slice.join("\n"));
                 if total_pages > 1 {
-                    v2 = v2.pager("lookup:alliance:pg", page, total_pages);
+                    v2 = v2.pager("lookup:alliance:tl:pg", page, total_pages);
                 }
+                let member_opts: Vec<SelectOpt> = list.iter().filter_map(|row| {
+                    let fid = pick_str(row, &["fid", "chief_id", "id"]).map(|s| s.to_string()).or_else(|| pick_i64(row, &["fid", "chief_id", "id"]).map(|n| n.to_string()));
+                    let fid = fid?;
+                    let name = pick_str(row, &["name", "username", "nick_name", "game_name"]).unwrap_or("Unknown");
+                    Some(SelectOpt { label: name.chars().take(100).collect(), value: fid.chars().take(100).collect(), description: None, is_default: false })
+                }).take(25).collect();
+                if !member_opts.is_empty() {
+                    v2 = v2.select("lookup:alliance:player", "Open a player.", &member_opts);
+                }
+                v2 = v2.buttons(&[
+                    ButtonDef { id: "lookup:alliance:tl:refresh".into(), label: "Refresh troop levels".into(), emoji: Some("🔄".into()), ..Default::default() },
+                    ButtonDef { id: "lookup:alliance:tl:back".into(), label: "Back to overview".into(), emoji: Some("⬅️".into()), ..Default::default() },
+                ]);
             }
         }
         "notice" => {
@@ -392,6 +415,21 @@ fn build(
                 .or_else(|| pick_str(raw, &["notice", "announcement", "message"]))
                 .unwrap_or("_No alliance notice on file._");
             v2 = v2.text(notice);
+        }
+        "map" => {
+            v2 = v2.title(if session.name.trim().is_empty() { "Map".into() } else { format!("{} — Map", session.name) });
+            if keep_png.is_some() {
+                v2 = v2.image("alliance-map.png");
+            } else {
+                v2 = v2.text("_Map overlay will appear when location data is available._");
+            }
+            if let Some(notice) = &session.notice {
+                v2 = v2.text(notice.clone());
+            }
+            v2 = v2.buttons(&[
+                ButtonDef { id: "lookup:alliance:map:back".into(), label: "Back to overview".into(), emoji: Some("⬅️".into()), ..Default::default() },
+                ButtonDef { id: "lookup:alliance:map:refresh".into(), label: "Refresh map".into(), emoji: Some("🔄".into()), ..Default::default() },
+            ]);
         }
         _ => {
             v2 = v2.title(&session.name);

@@ -226,6 +226,15 @@ fn build(
                 if total_pages > 1 {
                     v2 = v2.pager("lookup:state:pg", page, total_pages);
                 }
+                let player_opts: Vec<SelectOpt> = list.iter().filter_map(|row| {
+                    let fid = pick_str(row, &["fid","chief_id","id"]).map(|s|s.to_string()).or_else(|| pick_i64(row, &["fid","chief_id","id"]).map(|n|n.to_string()));
+                    let fid=fid?;
+                    let name = pick_str(row, &["name","nick_name","username"]).unwrap_or("Unknown");
+                    Some(SelectOpt{label:name.chars().take(100).collect(), value:fid.chars().take(100).collect(), description:None, is_default:false})
+                }).take(25).collect();
+                if !player_opts.is_empty() {
+                    v2 = v2.select("lookup:state:player", "Open a player.", &player_opts);
+                }
             }
         }
         "alliances" => {
@@ -265,6 +274,15 @@ fn build(
                 v2 = v2.text(slice.join("\n"));
                 if total_pages > 1 {
                     v2 = v2.pager("lookup:state:pg", page, total_pages);
+                }
+                let alliance_opts: Vec<SelectOpt> = list.iter().filter_map(|row| {
+                    let tag = pick_str(row, &["tag","abbr","alliance_abbr"]).unwrap_or("");
+                    if tag.is_empty() { return None; }
+                    let name = pick_str(row, &["name","alliance_name"]).unwrap_or(tag);
+                    Some(SelectOpt{label:format!("[{tag}] {name}").chars().take(100).collect(), value:tag.chars().take(100).collect(), description:None, is_default:false})
+                }).take(25).collect();
+                if !alliance_opts.is_empty() {
+                    v2 = v2.select("lookup:state:alliance", "Open an alliance.", &alliance_opts);
                 }
             }
         }
