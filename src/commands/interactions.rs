@@ -12149,6 +12149,22 @@ async fn lookup_view_edit(
                     };
                     crate::cards::render_appointments_card(&card).ok()
                 }
+                "map" => {
+                    let map_src = raw.get("map").unwrap_or(raw);
+                    let cities = map_src.get("cities").and_then(|v| v.as_array()).cloned().unwrap_or_default();
+                    if cities.is_empty() { None } else {
+                        let mut cities_out = Vec::new();
+                        for c in cities.iter().take(50000) {
+                            let x = c.get("x").and_then(|v| v.as_f64()).or_else(|| c.get("x").and_then(|v| v.as_i64()).map(|n| n as f64));
+                            let y = c.get("y").and_then(|v| v.as_f64()).or_else(|| c.get("y").and_then(|v| v.as_i64()).map(|n| n as f64));
+                            if let (Some(x), Some(y)) = (x,y) {
+                                cities_out.push(crate::cards::MapCity { x, y, alliance_id: c.get("aid").or_else(|| c.get("alliance_id")).and_then(|v| v.as_i64().map(|n| n.to_string()).or_else(|| v.as_str().map(str::to_string))), label: c.get("nick_name").or_else(|| c.get("name")).and_then(|v| v.as_str()).map(str::to_string) });
+                            }
+                        }
+                        let card = crate::cards::MapCard { title: format!("State {kid}"), subtitle: "Location data".into(), cities: cities_out, alliances: Vec::new(), highlight: None, focus_alliance_id: None, as_of: None };
+                        crate::cards::render_map_card(&card).ok()
+                    }
+                }
                 _ => None,
             };
             return Ok(crate::lookup::panels::edit_state_v2(
