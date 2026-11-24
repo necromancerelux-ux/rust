@@ -293,7 +293,11 @@ impl V2Edit {
             .enumerate()
             .map(|(id, file)| json!({ "id": id, "filename": file.filename }))
             .collect();
+        // Message edits keep existing content/embeds unless they are explicitly
+        // emptied. IS_COMPONENTS_V2 forbids both, so clear them here.
         let body = json!({
+            "content": "",
+            "embeds": [],
             "components": self.components,
             "flags": flags,
             "attachments": attachments,
