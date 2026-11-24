@@ -171,30 +171,16 @@ fn build(
                 v2 = v2.image(img_name);
             } else {
                 // Text fallback when no card was rendered
-                let fid = session.fid.as_deref().unwrap_or("—");
-                let state = session
-                    .state
-                    .map(|s| format!("S{s}"))
-                    .unwrap_or_else(|| "—".into());
-                let alliance = session
-                    .alliance
-                    .as_deref()
-                    .map(|t| format!("[{t}]"))
-                    .unwrap_or_else(|| "—".into());
-                v2 = v2.text(format!(
-                    "**FID** `{fid}` · **State** `{state}` · **Alliance** `{alliance}`"
-                ));
-                v2 = v2.text(field_block(
-                    raw,
-                    &[
-                        ("Power", &["power", "total_power", "totalPower"]),
-                        ("Kills", &["kills", "total_kills", "totalKills"]),
-                        (
-                            "Furnace",
-                            &["furnace_level", "town_hall_level", "townHallLevel", "level"],
-                        ),
-                    ],
-                ));
+                let fid = session.fid.as_deref().or(view.fid.as_deref()).unwrap_or("â€”");
+                let state_txt = session.state.or(view.state_id).map(|s| format!("S{s}")).unwrap_or_else(|| "â€”".into());
+                let alliance_txt = session.alliance.as_deref().or(view.alliance_tag.as_deref()).map(|t| format!("[{t}]")).unwrap_or_else(|| "â€”".into());
+                let role = if view.role.trim().is_empty() { "â€”".to_string() } else { view.role.clone() };
+                v2 = v2.text(format!("**FID** `{fid}` Â· **State** `{state_txt}` Â· **Alliance** `{alliance_txt}` Â· **Role** `{role}`"));
+                let mut bits = Vec::new();
+                if let Some(p) = view.power { bits.push(format!("**Power** `{}`", v2::fmt(Some(p)))); }
+                if let Some(k) = view.kills { bits.push(format!("**Kills** `{}`", v2::fmt(Some(k)))); }
+                if let Some(f) = view.furnace { bits.push(format!("**Furnace** `FC {f}`")); }
+                if !bits.is_empty() { v2 = v2.text(bits.join(" Â· ")); }
             }
 
             // Action buttons matching JS order & labels
