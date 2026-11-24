@@ -11908,63 +11908,52 @@ async fn lookup_view_edit(
                     }
                 }
                 "progression" => {
-                    let points: Vec<crate::cards::SeriesPoint> = session
-                        .raw
-                        .get("history")
-                        .and_then(|v| v.as_array())
-                        .map(|arr| {
-                            arr.iter()
-                                .filter_map(|row| {
-                                    let power = row
-                                        .get("power")
-                                        .or_else(|| row.get("total_power"))
-                                        .and_then(|v| {
-                                            v.as_f64().or_else(|| v.as_i64().map(|n| n as f64))
-                                        });
-                                    let ts = row
-                                        .get("ts")
-                                        .or_else(|| row.get("timestamp"))
-                                        .or_else(|| row.get("as_of"))
-                                        .and_then(|v| v.as_i64());
-                                    power.map(|p| crate::cards::SeriesPoint { v: p, t: ts })
-                                })
-                                .collect()
-                        })
-                        .unwrap_or_default();
-                    if points.is_empty() {
-                        None
-                    } else {
+                    let hist = session.raw.get("history").or_else(|| session.raw.get("snapshots"));
+                    let rows: Vec<&serde_json::Value> = hist.and_then(|v| v.as_array()).map(|a| a.iter().collect()).or_else(|| hist.and_then(|v| v.get("history")).and_then(|v| v.as_array()).map(|a| a.iter().collect())).unwrap_or_default();
+                    let mut power_series = Vec::new();
+                    let mut kill_series = Vec::new();
+                    for row in rows {
+                        let t = row.get("ts").or_else(|| row.get("observed_at")).or_else(|| row.get("timestamp")).or_else(|| row.get("at")).and_then(|v| v.as_i64());
+                        if let Some(p) = row.get("power").or_else(|| row.get("total_power")).and_then(|v| v.as_f64().or_else(|| v.as_i64().map(|n| n as f64))) {
+                            power_series.push(crate::cards::SeriesPoint { v: p, t });
+                        }
+                        if let Some(k) = row.get("kills").or_else(|| row.get("total_kills")).and_then(|v| v.as_f64().or_else(|| v.as_i64().map(|n| n as f64))) {
+                            kill_series.push(crate::cards::SeriesPoint { v: k, t });
+                        }
+                    }
+                    if power_series.is_empty() && kill_series.is_empty() { None } else {
+                        let as_of = power_series.last().and_then(|p| p.t).or_else(|| kill_series.last().and_then(|p| p.t)).map(|t| t.to_string());
                         let card = crate::cards::ProgressionCard {
                             name: session.name.clone(),
                             range_label: None,
-                            power_snaps: Some(points.len() as i64),
-                            kill_snaps: None,
-                            power_series: points,
-                            kill_series: Vec::new(),
+                            power_snaps: Some(power_series.len() as i64),
+                            kill_snaps: Some(kill_series.len() as i64),
+                            power_series,
+                            kill_series,
                             milestones: Vec::new(),
-                            as_of: None,
+                            as_of,
                         };
                         crate::cards::render_progression_card(&card).ok()
                     }
                 }
                 "crowns" => {
+                    let crowns_obj = session.raw.get("crowns").cloned().unwrap_or(serde_json::Value::Null);
+                    let thrones = crowns_obj.get("thrones").and_then(|v| v.as_array()).cloned().unwrap_or_default().into_iter().filter_map(|t| {
+                        let st = t.get("state").or_else(|| t.get("kid")).map(|v| v.as_i64().map(|n| n.to_string()).or_else(|| v.as_str().map(str::to_string)).unwrap_or_default()).unwrap_or_default();
+                        Some(crate::cards::ThroneEntry { state: st, badge: t.get("home").and_then(|v| v.as_bool()).filter(|b| *b).map(|_| "HOME".to_string()), terms: t.get("terms").and_then(|v| v.as_i64()).map(|n| format!("{n} term{}", if n==1 {""} else {"s"})), when: t.get("since").or_else(|| t.get("when")).and_then(|v| v.as_str()).map(str::to_string) })
+                    }).collect::<Vec<_>>();
+                    let reigns = crowns_obj.get("reigns").and_then(|v| v.as_array()).cloned().unwrap_or_default().into_iter().filter_map(|t| {
+                        Some(crate::cards::ReignEntry { date: t.get("date").or_else(|| t.get("day")).and_then(|v| v.as_str()).unwrap_or("").to_string(), kind: t.get("kind").or_else(|| t.get("type")).and_then(|v| v.as_str()).unwrap_or("Reign").to_string(), state: format!("State {}", t.get("kid").or_else(|| t.get("state")).and_then(|v| v.as_i64()).unwrap_or(0)), delta: t.get("delta").and_then(|v| v.as_str()).map(str::to_string) })
+                    }).collect::<Vec<_>>();
                     let card = crate::cards::CrownsCard {
                         name: session.name.clone(),
-                        crowns: session
-                            .raw
-                            .get("crowns")
-                            .or_else(|| session.raw.get("crown_count"))
-                            .and_then(|v| v.as_i64()),
-                        terms: None,
-                        conquests: session
-                            .raw
-                            .get("conquests")
-                            .or_else(|| session.raw.get("kok"))
-                            .and_then(|v| v.as_i64()),
-                        states_ruled: None,
-                        thrones: Vec::new(),
-                        reigns: Vec::new(),
-                        as_of: None,
+                        crowns: crowns_obj.get("count").and_then(|v| v.as_i64()).or_else(|| session.raw.get("crowns").and_then(|v| v.as_i64())),
+                        terms: crowns_obj.get("terms").and_then(|v| v.as_i64()),
+                        conquests: crowns_obj.get("conquests").and_then(|v| v.as_i64()),
+                        states_ruled: crowns_obj.get("states_ruled").and_then(|v| v.as_i64()),
+                        thrones,
+                        reigns,
+                        as_of: session.raw.get("updatedAt").and_then(|u| u.get("detail")).and_then(|v| v.as_i64()).map(|t| t.to_string()),
                     };
                     crate::cards::render_crowns_card(&card).ok()
                 }
@@ -12066,44 +12055,101 @@ async fn lookup_view_edit(
             ));
         }
         Kind::State => {
-            let card_png = if tab == "overview" {
-                let kid = session.state.unwrap_or(0);
-                let card = crate::cards::StateOverview {
-                    kid,
-                    players: session
-                        .raw
-                        .get("player_count")
-                        .or_else(|| session.raw.get("players"))
-                        .or_else(|| session.raw.get("tracked_players"))
-                        .and_then(|v| v.as_i64()),
-                    alliances: session
-                        .raw
-                        .get("alliance_count")
-                        .or_else(|| session.raw.get("alliances"))
-                        .and_then(|v| v.as_i64()),
-                    power: session
-                        .raw
-                        .get("power")
-                        .or_else(|| session.raw.get("total_power"))
-                        .and_then(|v| v.as_i64()),
-                    avg_power: session.raw.get("avg_power").and_then(|v| v.as_i64()),
-                    top_power: session.raw.get("top_power").and_then(|v| v.as_i64()),
-                    active_7d: session.raw.get("active_7d").and_then(|v| v.as_i64()),
-                    health_grade: session
-                        .raw
-                        .get("health_grade")
-                        .and_then(|v| v.as_str())
-                        .map(str::to_string),
-                    health_blurb: session
-                        .raw
-                        .get("health_blurb")
-                        .and_then(|v| v.as_str())
-                        .map(str::to_string),
-                    health_components: None,
-                };
-                crate::cards::render_state_overview_card(&card).ok()
-            } else {
-                None
+            let raw = &session.raw;
+            let kid = session.state.unwrap_or_else(|| raw.get("kid").and_then(|v| v.as_i64()).unwrap_or(0));
+            let card_png = match tab {
+                "overview" => {
+                    let card = crate::cards::StateOverview {
+                        kid,
+                        players: raw.get("player_count").or_else(|| raw.get("players")).and_then(|v| v.as_i64()),
+                        alliances: raw.get("alliance_count").or_else(|| raw.get("alliances")).and_then(|v| v.as_i64()),
+                        power: raw.get("power").or_else(|| raw.get("total_power")).and_then(|v| v.as_i64()),
+                        avg_power: raw.get("avg_power").and_then(|v| v.as_i64()),
+                        top_power: raw.get("top_power").and_then(|v| v.as_i64()),
+                        active_7d: raw.get("active_7d").and_then(|v| v.as_i64()),
+                        health_grade: raw.get("health_grade").and_then(|v| v.as_str()).map(str::to_string),
+                        health_blurb: raw.get("health_blurb").and_then(|v| v.as_str()).map(str::to_string),
+                        health_components: None,
+                    };
+                    crate::cards::render_state_overview_card(&card).ok()
+                }
+                "svs" | "battle" => {
+                    let opp = raw.get("matchup").and_then(|m| m.get("opponent")).or_else(|| raw.get("opponent"));
+                    let them_kid = opp.and_then(|o| o.get("kid").or_else(|| o.get("state")).and_then(|v| v.as_i64()));
+                    let rows = raw.get("matchup").and_then(|m| m.get("compare")).and_then(|v| v.as_array()).cloned().unwrap_or_default().into_iter().filter_map(|c| {
+                        Some(crate::cards::StateVsRow {
+                            label: c.get("label").or_else(|| c.get("field")).and_then(|v| v.as_str()).unwrap_or("—").to_string(),
+                            us: c.get("us").map(|v| v.as_i64().map(|n| n.to_string()).or_else(|| v.as_str().map(str::to_string)).unwrap_or_else(|| v.to_string())),
+                            them: c.get("them").map(|v| v.as_i64().map(|n| n.to_string()).or_else(|| v.as_str().map(str::to_string)).unwrap_or_else(|| v.to_string())),
+                        })
+                    }).collect::<Vec<_>>();
+                    let card = crate::cards::StateVsCard {
+                        season: raw.get("season").and_then(|v| v.as_i64()),
+                        us: crate::cards::StateVsSide { kid: Some(kid), label: Some(format!("State {kid}")) },
+                        them: crate::cards::StateVsSide { kid: them_kid, label: them_kid.map(|k| format!("State {k}")) },
+                        rows,
+                    };
+                    crate::cards::render_state_vs_card(&card).ok()
+                }
+                "history" => {
+                    let entries = raw.get("matchup_history").or_else(|| raw.get("history")).and_then(|v| v.as_array()).cloned().unwrap_or_default();
+                    let rows = entries.iter().map(|e| crate::cards::MatchupRow {
+                        date_label: e.get("date").and_then(|v| v.as_str()).unwrap_or("").to_string(),
+                        opponent_kid: e.get("opponent_kid").or_else(|| e.get("them_kid")).or_else(|| e.get("right_kid")).and_then(|v| v.as_i64()),
+                        prep: e.get("prep").and_then(|v| v.as_str()).map(str::to_string),
+                        castle: e.get("castle").and_then(|v| v.as_str()).map(str::to_string),
+                        king_name: e.get("king_name").and_then(|v| v.as_str()).map(str::to_string),
+                        king_tag: e.get("king_tag").and_then(|v| v.as_str()).map(str::to_string),
+                        king_role: e.get("king_role").and_then(|v| v.as_str()).map(str::to_string),
+                        high_king: e.get("high_king").and_then(|v| v.as_bool()).unwrap_or(false),
+                    }).collect::<Vec<_>>();
+                    let card = crate::cards::MatchupHistoryCard {
+                        title: format!("State {kid} — Matchup history"),
+                        castles_taken: raw.get("castles_taken").or_else(|| raw.get("taken")).and_then(|v| v.as_i64()),
+                        castles_lost: raw.get("castles_lost").or_else(|| raw.get("lost")).and_then(|v| v.as_i64()),
+                        rows,
+                        as_of: None,
+                    };
+                    crate::cards::render_matchup_history_card(&card).ok()
+                }
+                "prep" => {
+                    let days = raw.get("prep_days").or_else(|| raw.get("prep_points")).and_then(|v| v.as_array()).cloned().unwrap_or_default();
+                    let mapped = days.iter().filter_map(|p| {
+                        Some(crate::cards::PrepDay {
+                            day: p.get("day").and_then(|v| v.as_i64()).unwrap_or(0),
+                            home: p.get("home").or_else(|| p.get("us")).and_then(|v| v.as_f64()).unwrap_or(0.0),
+                            away: p.get("away").or_else(|| p.get("them")).and_then(|v| v.as_f64()).unwrap_or(0.0),
+                        })
+                    }).collect::<Vec<_>>();
+                    let opp_kid = raw.get("matchup").and_then(|m| m.get("opponent")).and_then(|o| o.get("kid")).and_then(|v| v.as_i64());
+                    let card = crate::cards::PrepPointsCard {
+                        us_kid: kid,
+                        them_kid: opp_kid,
+                        prep_us: raw.get("prep_us").and_then(|v| v.as_f64()),
+                        prep_them: raw.get("prep_them").and_then(|v| v.as_f64()),
+                        days: mapped,
+                        as_of: None,
+                    };
+                    crate::cards::render_prep_points_card(&card).ok()
+                }
+                "appointments" => {
+                    let ministers = raw.get("ministers").and_then(|v| v.as_array()).cloned().unwrap_or_default();
+                    let offenders = raw.get("offenders").and_then(|v| v.as_array()).cloned().unwrap_or_default();
+                    let map_seat = |m: &serde_json::Value| crate::cards::AppointmentSeat {
+                        role: m.get("role").or_else(|| m.get("title")).and_then(|v| v.as_str()).unwrap_or("?").to_string(),
+                        vacant: m.get("vacant").and_then(|v| v.as_bool()).unwrap_or_else(|| m.get("name").and_then(|v| v.as_str()).is_none()),
+                        name: m.get("name").and_then(|v| v.as_str()).map(str::to_string),
+                        alliance_tag: m.get("alliance_tag").or_else(|| m.get("abbr")).and_then(|v| v.as_str()).map(str::to_string),
+                    };
+                    let card = crate::cards::AppointmentsCard {
+                        state_id: kid,
+                        ministers: ministers.iter().map(map_seat).collect(),
+                        offenders: offenders.iter().map(map_seat).collect(),
+                        as_of: None,
+                    };
+                    crate::cards::render_appointments_card(&card).ok()
+                }
+                _ => None,
             };
             return Ok(crate::lookup::panels::edit_state_v2(
                 session,
