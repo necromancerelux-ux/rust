@@ -126,13 +126,13 @@ fn build(
 ) -> (V2, Option<Vec<u8>>, &'static str) {
     let tab = valid_tab(tab);
     let raw = &session.raw;
-    let name = if session.name.trim().is_empty() {
-        session
-            .fid
-            .clone()
-            .unwrap_or_else(|| "Player".into())
-    } else {
+    let view = crate::lookup::view::player_view(raw);
+    let name = if !session.name.trim().is_empty() {
         session.name.clone()
+    } else if !view.name.trim().is_empty() && view.name != "Unknown" {
+        view.name.clone()
+    } else {
+        session.fid.clone().unwrap_or_else(|| "Player".into())
     };
 
     // Main tab dropdown (JS uses select whose placeholder shows the current tab)
@@ -199,7 +199,9 @@ fn build(
 
             // Action buttons matching JS order & labels
             let mut buttons = Vec::new();
-            if let Some(state) = session.state {
+            let state_id = session.state.or(view.state_id);
+            let alliance_tag = session.alliance.clone().or(view.alliance_tag.clone());
+            if let Some(state) = state_id {
                 buttons.push(ButtonDef {
                     id: "lookup:player:go:state".into(),
                     label: format!("S{state}"),
@@ -207,7 +209,7 @@ fn build(
                     ..Default::default()
                 });
             }
-            if let Some(tag) = session.alliance.as_deref() {
+            if let Some(tag) = alliance_tag.as_deref() {
                 buttons.push(ButtonDef {
                     id: "lookup:player:go:alliance".into(),
                     label: format!("[{tag}] Alliance"),
@@ -507,7 +509,7 @@ fn build(
     }
 
     let footer = source_note.unwrap_or(footer_label);
-    (v2.footer(footer, None), keep_png, img_name)
+    (v2.footer(footer, view.as_of_ms), keep_png, img_name)
 }
 
 pub fn render_player_v2(

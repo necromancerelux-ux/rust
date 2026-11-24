@@ -12,6 +12,7 @@ pub mod panels;
 pub mod sessions;
 pub mod troop_levels;
 mod types;
+pub mod view;
 
 pub use client::LookupClient;
 pub use data::{fetch_player, PlayerBundle, Source as DataSource};
