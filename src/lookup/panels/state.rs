@@ -12,9 +12,8 @@
 //! Tabs: Overview · State vs State · Rankings · Alliances · Troop Level · Appointments
 //! Extra: map (via button)
 
-use poise::serenity_prelude as serenity;
 use serde_json::Value;
-use serenity::{CreateAttachment, CreateInteractionResponseMessage, EditInteractionResponse};
+use crate::ui::v2::V2Edit;
 
 use crate::lookup::sessions::LookupSession;
 use crate::ui::v2::{self, ButtonDef, SelectOpt, V2};
@@ -408,13 +407,13 @@ pub fn render_state_v2(
     tab: &str,
     source_note: Option<&str>,
     card_png: Option<Vec<u8>>,
-) -> (CreateInteractionResponseMessage, Vec<CreateAttachment>) {
+) -> V2Edit {
     let (v2, png, img_name) = build(session, tab, source_note, card_png);
     let mut files = Vec::new();
     if let Some(png) = png {
         files.push(v2::attachment(png, img_name));
     }
-    (v2::payload(v2, files.clone(), true), files)
+    v2::payload(v2, files, true)
 }
 
 pub fn edit_state_v2(
@@ -422,11 +421,6 @@ pub fn edit_state_v2(
     tab: &str,
     source_note: Option<&str>,
     card_png: Option<Vec<u8>>,
-) -> EditInteractionResponse {
-    let (v2, png, img_name) = build(session, tab, source_note, card_png);
-    let mut files = Vec::new();
-    if let Some(png) = png {
-        files.push(v2::attachment(png, img_name));
-    }
-    v2::edit_response(v2, files)
+) -> V2Edit {
+    render_state_v2(session, tab, source_note, card_png)
 }

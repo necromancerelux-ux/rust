@@ -11823,7 +11823,7 @@ async fn lookup_view_edit(
     data: &Data,
     session: &crate::lookup::sessions::LookupSession,
     tab: &str,
-) -> anyhow::Result<EditInteractionResponse> {
+) -> anyhow::Result<crate::ui::v2::V2Edit> {
     use crate::lookup::sessions::Kind;
 
     match session.kind {
@@ -12327,7 +12327,7 @@ async fn lookup_session_action(
                 None,
             ),
         };
-        interaction.edit_response(&ctx.http, edit).await?;
+        edit.apply(&ctx.http, interaction).await?;
         return Ok(());
     }
     if rest == "candidate" && !value.is_empty() {
@@ -12440,7 +12440,7 @@ async fn lookup_session_action(
                 None,
             ),
         };
-        interaction.edit_response(&ctx.http, edit).await?;
+        edit.apply(&ctx.http, interaction).await?;
         return Ok(());
     }
     if rest.starts_with("pg:p:") {
@@ -12643,12 +12643,8 @@ async fn lookup_session_action(
     if !already_deferred {
         interaction.defer(&ctx.http).await?;
     }
-    interaction
-        .edit_response(
-            &ctx.http,
-            lookup_view_edit(ctx, data, &session, &tab).await?,
-        )
-        .await?;
+    let edit = lookup_view_edit(ctx, data, &session, &tab).await?;
+    edit.apply(&ctx.http, interaction).await?;
     Ok(())
 }
 
@@ -17689,7 +17685,7 @@ async fn lookup_player_modal(
                 None,
             ),
         };
-        interaction.edit_response(&ctx.http, edit).await?;
+        edit.apply_token(&ctx.http, &interaction.token).await?;
         return Ok(());
     }
 
@@ -18210,7 +18206,7 @@ async fn lookup_alliance_modal(
                 None,
             ),
         };
-        interaction.edit_response(&ctx.http, edit).await?;
+        edit.apply_token(&ctx.http, &interaction.token).await?;
         return Ok(());
     }
 
