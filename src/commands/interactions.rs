@@ -12210,9 +12210,9 @@ async fn lookup_component(
                 || other.starts_with("alliance:")
                 || other.starts_with("state:") =>
         {
-            if other == "state:alliance:search" || other == "player:go:alliance" {
+            if other == "state:alliance:search" {
                 let inputs = vec![
-                    CreateActionRow::InputText(components::short("state", "State number")),
+                    CreateActionRow::InputText(components::short("state_id", "State number")),
                     CreateActionRow::InputText(
                         components::short("query", "Alliance tag or name (optional)")
                             .required(false),
@@ -12221,11 +12221,7 @@ async fn lookup_component(
                 return interaction
                     .create_response(
                         &ctx.http,
-                        modal(
-                            "lookup:alliance_search_modal",
-                            "Find alliance in a state",
-                            inputs,
-                        ),
+                        modal("lookup:alliance:modal", "Search Alliance", inputs),
                     )
                     .await
                     .map_err(Into::into);
@@ -12323,6 +12319,43 @@ async fn lookup_session_action(
                 None,
             ),
         };
+        edit.apply(&ctx.http, interaction).await?;
+        return Ok(());
+    }
+    if (rest == "player" || rest == "member") && !value.is_empty() {
+        interaction.defer(&ctx.http).await?;
+        let fid = value.trim().to_string();
+        let profile = data
+            .lookup
+            .player(&fid)
+            .await
+            .map_err(|err| anyhow::anyhow!("{}", crate::error::public(&err)))?;
+        let selected_session = crate::lookup::sessions::LookupSession {
+            kind: Kind::Player,
+            raw: profile.raw.clone(),
+            name: profile.name.clone().unwrap_or_else(|| fid.clone()),
+            state: profile.state,
+            fid: profile.fid.clone().or(Some(fid)),
+            alliance: profile.alliance_abbr.clone(),
+            tab: "overview".into(),
+            notice: None,
+            choices: Vec::new(),
+            board: None,
+            page: 0,
+            map_token: None,
+            created: std::time::Instant::now(),
+        };
+        sessions::set(user, guild_id_of(interaction), selected_session.clone());
+        let card_png = {
+            let overview = overview_from_raw(&selected_session.raw);
+            crate::cards::render_player_overview_card(&overview).await.ok()
+        };
+        let edit = crate::lookup::panels::edit_player_v2(
+            &selected_session,
+            "overview",
+            selected_session.notice.as_deref(),
+            card_png,
+        );
         edit.apply(&ctx.http, interaction).await?;
         return Ok(());
     }
@@ -12439,12 +12472,43 @@ async fn lookup_session_action(
         edit.apply(&ctx.http, interaction).await?;
         return Ok(());
     }
-    if rest.starts_with("pg:p:") {
-        session.page = match rest.strip_prefix("pg:p:").unwrap_or("") {
-            "prev" => session.page.saturating_sub(1),
-            "next" => session.page.saturating_add(1),
-            _ => session.page,
-        };
+    if rest.starts_with("pg:p:") || rest.starts_with("page:p:") {
+        let tail = rest
+            .strip_prefix("pg:p:")
+            .or_else(|| rest.strip_prefix("page:p:"))
+            .unwrap_or("");
+        let parts: Vec<&str> = tail.split(':').collect();
+        // JS: p:<target>:<tag>, old Rust: p:<tag>:<target>, simple: p:prev|next
+        if let Some(n) = parts.first().and_then(|v| v.parse::<usize>().ok()) {
+            session.page = n;
+        } else if let Some(n) = parts.get(1).and_then(|v| v.parse::<usize>().ok()) {
+            session.page = n;
+        } else {
+            session.page = match parts.first().copied().unwrap_or("") {
+                "prev" => session.page.saturating_sub(1),
+                "next" => session.page.saturating_add(1),
+                "first" => 0,
+                "last" => usize::MAX / 4, // clamped during render
+                _ => session.page,
+            };
+        }
+    }
+    if rest.starts_with("tl:pg:p:") {
+        let tail = rest.strip_prefix("tl:pg:p:").unwrap_or("");
+        let parts: Vec<&str> = tail.split(':').collect();
+        if let Some(n) = parts.first().and_then(|v| v.parse::<usize>().ok()) {
+            session.page = n;
+        } else if let Some(n) = parts.get(1).and_then(|v| v.parse::<usize>().ok()) {
+            session.page = n;
+        } else {
+            session.page = match parts.first().copied().unwrap_or("") {
+                "prev" => session.page.saturating_sub(1),
+                "next" => session.page.saturating_add(1),
+                "first" => 0,
+                "last" => usize::MAX / 4,
+                _ => session.page,
+            };
+        }
     }
     if rest == "board" || rest == "sort" {
         // board: rankings board key; sort: alliance members sort key (power|furnace|role|name)
@@ -12454,6 +12518,85 @@ async fn lookup_session_action(
         }
     }
     let mut already_deferred = false;
+    if rest == "go:state" {
+        if let Some(state_id) = session.state {
+            if !already_deferred {
+                interaction.defer(&ctx.http).await?;
+                already_deferred = true;
+            }
+            if let Ok(profile) = data.lookup.state(state_id).await {
+                let state_session = crate::lookup::sessions::LookupSession {
+                    kind: Kind::State,
+                    raw: profile.raw.clone(),
+                    name: format!("State #{state_id}"),
+                    state: Some(state_id),
+                    fid: None,
+                    alliance: None,
+                    tab: "overview".into(),
+                    notice: None,
+                    choices: Vec::new(),
+                    board: None,
+                    page: 0,
+                    map_token: None,
+                    created: std::time::Instant::now(),
+                };
+                sessions::set(user, guild_id_of(interaction), state_session.clone());
+                let edit = crate::lookup::panels::edit_state_v2(
+                    &state_session,
+                    "overview",
+                    state_session.notice.as_deref(),
+                    None,
+                );
+                edit.apply(&ctx.http, interaction).await?;
+                return Ok(());
+            }
+        }
+    }
+    if rest == "go:alliance" {
+        if let Some(tag) = session.alliance.clone() {
+            if !already_deferred {
+                interaction.defer(&ctx.http).await?;
+                already_deferred = true;
+            }
+            let tag = crate::wos::normalize_alliance_tag(&tag).unwrap_or_else(|| tag.to_uppercase());
+            let profile = data
+                .lookup
+                .alliance(&tag, session.state)
+                .await
+                .ok();
+            if let Some(profile) = profile {
+                let alliance_session = crate::lookup::sessions::LookupSession {
+                    kind: Kind::Alliance,
+                    raw: profile.raw.clone(),
+                    name: format!(
+                        "[{}] {}",
+                        profile.abbr,
+                        profile.name.as_deref().unwrap_or("Alliance")
+                    ),
+                    state: profile.state.or(session.state),
+                    fid: None,
+                    alliance: Some(profile.abbr),
+                    tab: "overview".into(),
+                    notice: None,
+                    choices: Vec::new(),
+                    board: None,
+                    page: 0,
+                    map_token: None,
+                    created: std::time::Instant::now(),
+                };
+                sessions::set(user, guild_id_of(interaction), alliance_session.clone());
+                let edit = crate::lookup::panels::edit_alliance_v2(
+                    &alliance_session,
+                    "overview",
+                    alliance_session.notice.as_deref(),
+                    None,
+                );
+                edit.apply(&ctx.http, interaction).await?;
+                return Ok(());
+            }
+        }
+    }
+
     let tab = if let Some(tab) = rest.strip_prefix("tab:") {
         tab.to_string()
     } else if rest == "tab" {

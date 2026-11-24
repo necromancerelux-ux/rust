@@ -228,8 +228,9 @@ impl V2 {
     pub fn pager(self, prefix: &str, page: usize, total: usize) -> Self {
         let last = total.saturating_sub(1);
         let page = page.min(last);
+        // JS parity: prefix:p:<target>:<tag>
         let mk = |tag: &str, target: usize, label: &str, disabled: bool| ButtonDef {
-            id: format!("{prefix}:p:{tag}:{target}"),
+            id: format!("{prefix}:p:{target}:{tag}"),
             label: label.to_string(),
             style: Some(serenity::ButtonStyle::Secondary),
             disabled,
