@@ -166,12 +166,15 @@ fn build(
                 v2 = v2.text(lines.join(" · "));
             }
             if session.state.is_some() {
-                v2 = v2.buttons(&[ButtonDef {
-                    id: "lookup:state:go:map".into(),
-                    label: "Map".into(),
-                    emoji: Some("🗺️".into()),
-                    ..Default::default()
-                }]);
+                v2 = v2.buttons(&[
+                    ButtonDef { id: "lookup:state:go:map".into(), label: "Open map".into(), emoji: Some("🗺️".into()), ..Default::default() },
+                    ButtonDef { id: "lookup:state:go:appointments".into(), label: "Appointments".into(), ..Default::default() },
+                    ButtonDef { id: "lookup:state:go:history".into(), label: "Matchup history".into(), ..Default::default() },
+                ]);
+                v2 = v2.buttons(&[
+                    ButtonDef { id: "lookup:state:go:battle".into(), label: "State vs State".into(), ..Default::default() },
+                    ButtonDef { id: "lookup:state:go:prep".into(), label: "Prep points".into(), ..Default::default() },
+                ]);
             }
         }
         "svs" => {
@@ -226,6 +229,16 @@ fn build(
                 if total_pages > 1 {
                     v2 = v2.pager("lookup:state:pg", page, total_pages);
                 }
+                let board_opts: Vec<SelectOpt> = [
+                    ("1","Alliance Power"),("2","Alliance Kills"),("3","Personal Power"),("4","Kill Count"),
+                    ("5","Furnace Level"),("6","Exploration Stage"),("7","Hero Power"),("8","Hero's Total Power"),
+                    ("9","Troop Power"),("10","Building Power"),("11","Research Power"),("12","Hero Power Without Equip"),
+                    ("13","Hero Equip Power"),("14","Chief Gear Power"),("15","Chief Charm Power"),("16","Pet Power"),
+                    ("18","Island Prosperity"),("19","State Transfer Score"),("20","The Labyrinth"),("21","Land of Heroes"),
+                    ("22","Cave of Monsters"),("23","Charm Mine"),("24","Research Center"),("25","Gear Forge"),
+                    ("26","Gaia Heart"),("29","Total Expert Power"),
+                ].into_iter().map(|(v,l)| SelectOpt { label: l.into(), value: v.into(), description: None, is_default: session.board.as_deref() == Some(v) }).collect();
+                v2 = v2.select("lookup:state:board", "Select a leaderboard.", &board_opts);
                 let player_opts: Vec<SelectOpt> = list.iter().filter_map(|row| {
                     let fid = pick_str(row, &["fid","chief_id","id"]).map(|s|s.to_string()).or_else(|| pick_i64(row, &["fid","chief_id","id"]).map(|n|n.to_string()));
                     let fid=fid?;
