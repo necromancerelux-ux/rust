@@ -15,4 +15,4 @@ mod types;
 
 pub use client::LookupClient;
 pub use data::{fetch_player, PlayerBundle, Source as DataSource};
-pub use types::PlayerProfile;
+pub use types::{AllianceProfile, PlayerProfile};

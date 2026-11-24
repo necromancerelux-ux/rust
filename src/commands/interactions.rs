@@ -12274,9 +12274,11 @@ async fn lookup_session_action(
     };
     if kind == Kind::State && rest == "alliance" && !value.is_empty() {
         interaction.defer(&ctx.http).await?;
+        let tag = crate::wos::normalize_alliance_tag(&value)
+            .unwrap_or_else(|| value.trim().to_uppercase());
         let profile = data
             .lookup
-            .alliance(&value, session.state)
+            .alliance(&tag, session.state)
             .await
             .map_err(|err| anyhow::anyhow!("{}", crate::error::public(&err)))?;
         let selected_session = crate::lookup::sessions::LookupSession {
@@ -12373,16 +12375,22 @@ async fn lookup_session_action(
                 }
             }
             Kind::Alliance => {
-                let tag = ["tag", "abbr", "alliance_abbr"]
+                let raw_tag = ["tag", "abbr", "alliance_abbr"]
                     .iter()
                     .find_map(|key| selected.get(*key).and_then(serde_json::Value::as_str))
-                    .map(str::to_owned)
                     .ok_or_else(|| anyhow::anyhow!("that Alliance result has no alliance tag"))?;
-                let profile = data
-                    .lookup
-                    .alliance(&tag, session.state)
-                    .await
-                    .map_err(|err| anyhow::anyhow!("{}", crate::error::public(&err)))?;
+                let tag = crate::wos::normalize_alliance_tag(raw_tag)
+                    .unwrap_or_else(|| raw_tag.trim().to_uppercase());
+                // The search result is already a usable profile. A second detail
+                // lookup can 404 (stale search index, renamed tag, kid mismatch),
+                // so fall back to the selected row instead of failing the click.
+                let profile = match data.lookup.alliance(&tag, session.state).await {
+                    Ok(profile) => profile,
+                    Err(err) => {
+                        tracing::debug!(error = %err, %tag, "alliance detail lookup failed; using selected search result");
+                        crate::lookup::AllianceProfile::from_value(&tag, &selected)
+                    }
+                };
                 crate::lookup::sessions::LookupSession {
                     kind,
                     raw: profile.raw.clone(),
