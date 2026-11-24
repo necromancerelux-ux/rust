@@ -167,11 +167,16 @@ fn build(
                 v2 = v2.text(lines.join(" · "));
             }
             if session.state.is_some() {
-                v2 = v2.buttons(&[
+                let mut row1 = vec![
                     ButtonDef { id: "lookup:state:go:map".into(), label: "Open map".into(), emoji: Some("🗺️".into()), ..Default::default() },
                     ButtonDef { id: "lookup:state:go:appointments".into(), label: "Appointments".into(), ..Default::default() },
                     ButtonDef { id: "lookup:state:go:history".into(), label: "Matchup history".into(), ..Default::default() },
-                ]);
+                ];
+                let pres = raw.get("president").and_then(|p| p.get("name").or_else(|| p.get("nick_name"))).and_then(|v| v.as_str());
+                if let Some(name) = pres {
+                    row1.push(ButtonDef { id: "lookup:state:go:president".into(), label: format!("President - {}", &name.chars().take(40).collect::<String>()), ..Default::default() });
+                }
+                v2 = v2.buttons(&row1);
                 v2 = v2.buttons(&[
                     ButtonDef { id: "lookup:state:go:battle".into(), label: "State vs State".into(), ..Default::default() },
                     ButtonDef { id: "lookup:state:go:prep".into(), label: "Prep points".into(), ..Default::default() },
