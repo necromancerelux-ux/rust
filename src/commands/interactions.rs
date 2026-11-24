@@ -18157,8 +18157,10 @@ async fn lookup_alliance_modal(
     };
 
     let mut files: Vec<serenity::CreateAttachment> = Vec::new();
+    let mut alliance_card_png: Option<Vec<u8>> = None;
     if let Some(card) = alliance_card {
         if let Ok(bytes) = crate::cards::render_alliance_overview_card(&card) {
+            alliance_card_png = Some(bytes.clone());
             files.push(serenity::CreateAttachment::bytes(bytes, "alliance.png"));
         }
     }
@@ -18180,32 +18182,12 @@ async fn lookup_alliance_modal(
             created: std::time::Instant::now(),
         };
         sessions::set(interaction.user.id.get(), guild, session.clone());
-        let edit = match session.kind {
-            Kind::Player => {
-                let card_png = {
-                    let overview = overview_from_raw(&session.raw);
-                    crate::cards::render_player_overview_card(&overview).await.ok()
-                };
-                crate::lookup::panels::edit_player_v2(
-                    &session,
-                    "overview",
-                    session.notice.as_deref(),
-                    card_png,
-                )
-            }
-            Kind::Alliance => crate::lookup::panels::edit_alliance_v2(
-                &session,
-                "overview",
-                session.notice.as_deref(),
-                None,
-            ),
-            Kind::State => crate::lookup::panels::edit_state_v2(
-                &session,
-                "overview",
-                session.notice.as_deref(),
-                None,
-            ),
-        };
+        let edit = crate::lookup::panels::edit_alliance_v2(
+            &session,
+            "overview",
+            session.notice.as_deref(),
+            alliance_card_png,
+        );
         edit.apply_token(&ctx.http, &interaction.token).await?;
         return Ok(());
     }
@@ -18277,8 +18259,10 @@ async fn lookup_state_modal(
     };
 
     let mut files: Vec<serenity::CreateAttachment> = Vec::new();
+    let mut state_card_png: Option<Vec<u8>> = None;
     if let Some(card) = state_card {
         if let Ok(bytes) = crate::cards::render_state_overview_card(&card) {
+            state_card_png = Some(bytes.clone());
             files.push(serenity::CreateAttachment::bytes(bytes, "state.png"));
         }
     }
@@ -18304,14 +18288,13 @@ async fn lookup_state_modal(
             guild_of(interaction)?,
             session.clone(),
         );
-        let (session_embed, rows, _) = sessions::render(ctx, data, &session, "overview").await;
-        let mut edit = EditInteractionResponse::new()
-            .embed(session_embed)
-            .components(rows);
-        for file in files {
-            edit = edit.new_attachment(file);
-        }
-        interaction.edit_response(&ctx.http, edit).await?;
+        let edit = crate::lookup::panels::edit_state_v2(
+            &session,
+            "overview",
+            session.notice.as_deref(),
+            state_card_png,
+        );
+        edit.apply_token(&ctx.http, &interaction.token).await?;
         return Ok(());
     }
 
