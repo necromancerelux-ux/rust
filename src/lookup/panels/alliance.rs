@@ -75,7 +75,7 @@ fn build(
     tab: &str,
     source_note: Option<&str>,
     card_png: Option<Vec<u8>>,
-) -> (V2, Option<Vec<u8>>) {
+) -> (V2, Option<Vec<u8>>, &'static str) {
     let tab = valid_tab(tab);
     let tabs = tabs_as_v2();
     let raw = &session.raw;
@@ -284,6 +284,7 @@ fn build(
                         list.len()
                     )),
                     keep_png,
+                    "alliance.png",
                 );
             }
         }
@@ -439,7 +440,8 @@ fn build(
     }
 
     let footer = source_note.unwrap_or("Lookup");
-    (v2.footer(footer, view.as_of_ms), keep_png)
+    let img_name = if tab == "map" { "alliance-map.png" } else { "alliance.png" };
+    (v2.footer(footer, view.as_of_ms), keep_png, img_name)
 }
 
 pub fn render_alliance_v2(
@@ -448,10 +450,10 @@ pub fn render_alliance_v2(
     source_note: Option<&str>,
     card_png: Option<Vec<u8>>,
 ) -> V2Edit {
-    let (v2, png) = build(session, tab, source_note, card_png);
+    let (v2, png, img_name) = build(session, tab, source_note, card_png);
     let mut files = Vec::new();
     if let Some(png) = png {
-        files.push(v2::attachment(png, "alliance.png"));
+        files.push(v2::attachment(png, img_name));
     }
     v2::payload(v2, files, true)
 }
