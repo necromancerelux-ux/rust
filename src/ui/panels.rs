@@ -2261,6 +2261,47 @@ pub fn lookup_state(view: &StateView) -> (CreateEmbed, Vec<CreateActionRow>) {
 }
 
 /// Public search panel — deployed to a channel from /settings → Lookup.
+/// JS-parity public search panels (one per lookup type).
+pub fn lookup_player_panel() -> (CreateEmbed, Vec<CreateActionRow>) {
+    let embed = embeds::brand("🔎 Player Lookup")
+        .color(serenity::Colour(0x3B_A3_E0))
+        .description(
+            "Search players by **ID** or **in-game name**.\n\n• Private results — only you see them\n• Overview • Standings • Heroes & Gear • Progression • Crowns",
+        );
+    let rows = vec![components::row(vec![components::primary(
+        "lookup:player:search",
+        "🔎 Search Player",
+    )])];
+    (embed, rows)
+}
+
+pub fn lookup_alliance_panel() -> (CreateEmbed, Vec<CreateActionRow>) {
+    let embed = embeds::brand("🏰 Alliance Lookup")
+        .color(serenity::Colour(0x3B_A3_E0))
+        .description(
+            "Search alliances by **State** then pick a tag.\n\n• Private results — only you see them\n• Overview • Members • Furnace • Notice",
+        );
+    let rows = vec![components::row(vec![components::primary(
+        "lookup:alliance:search",
+        "🛡️ Search Alliance",
+    )])];
+    (embed, rows)
+}
+
+pub fn lookup_state_panel() -> (CreateEmbed, Vec<CreateActionRow>) {
+    let embed = embeds::brand("🗺️ State Lookup")
+        .color(serenity::Colour(0x3B_A3_E0))
+        .description(
+            "Enter a **State number** to see its overview.\n\n• Private results — only you see them\n• Overview • State vs State • Rankings • Alliances",
+        );
+    let rows = vec![components::row(vec![components::primary(
+        "lookup:state:search",
+        "🗺️ Search State",
+    )])];
+    (embed, rows)
+}
+
+/// Legacy combined panel (kept for compatibility).
 pub fn lookup_public_panel() -> (CreateEmbed, Vec<CreateActionRow>) {
     let embed = embeds::brand(format!("{} WoS Lookup", icons::LOOKUP))
         .color(colors::INFO)

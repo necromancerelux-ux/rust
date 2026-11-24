@@ -2,3 +2,4 @@
 .env
 rust.zip
 gh-login.txt
+*.zip

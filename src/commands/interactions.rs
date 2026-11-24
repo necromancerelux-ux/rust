@@ -12126,22 +12126,22 @@ async fn lookup_component(
         .map(|id| id.get())
         .ok_or_else(|| anyhow::anyhow!("lookup only works inside a server"))?;
     match action {
-        "player_search" => {
+        "player_search" | "player:search" => {
             let inputs = vec![CreateActionRow::InputText(components::short(
-                "query",
-                "FID or in-game name",
+                "player_id",
+                "Player ID or name",
             ))];
             interaction
                 .create_response(
                     &ctx.http,
-                    modal("lookup:player_modal", "Player lookup", inputs),
+                    modal("lookup:player:modal", "Search Player", inputs),
                 )
                 .await?;
             Ok(())
         }
-        "alliance_search" => {
+        "alliance_search" | "alliance:search" => {
             let inputs = vec![
-                CreateActionRow::InputText(components::short("state", "State number")),
+                CreateActionRow::InputText(components::short("state_id", "State number")),
                 CreateActionRow::InputText(
                     components::short("query", "Alliance tag or name (optional)").required(false),
                 ),
@@ -12149,24 +12149,20 @@ async fn lookup_component(
             interaction
                 .create_response(
                     &ctx.http,
-                    modal(
-                        "lookup:alliance_search_modal",
-                        "Find alliance in a state",
-                        inputs,
-                    ),
+                    modal("lookup:alliance:modal", "Search Alliance", inputs),
                 )
                 .await?;
             Ok(())
         }
-        "state_search" => {
+        "state_search" | "state:search" => {
             let inputs = vec![CreateActionRow::InputText(components::short(
-                "state",
+                "state_id",
                 "State number",
             ))];
             interaction
                 .create_response(
                     &ctx.http,
-                    modal("lookup:state_modal", "State overview", inputs),
+                    modal("lookup:state:modal", "Search State", inputs),
                 )
                 .await?;
             Ok(())
@@ -15914,27 +15910,36 @@ async fn deploy_component(
             .await
         }
         "lookup" => {
-            let (embed, rows) = panels::lookup_public_panel();
-            let message = channel_id
-                .send_message(
-                    &ctx.http,
-                    serenity::CreateMessage::new().embed(embed).components(rows),
-                )
-                .await?;
-            db::lookup::set_channel(&data.db, guild_id, Some(channel_id.get())).await?;
-            db::lookup::set_panel(
-                &data.db,
-                guild_id,
-                db::lookup::PanelKind::Player,
-                Some(message.id.get()),
-            )
-            .await?;
+            let mut results: Vec<String> = Vec::new();
+            let panels_to_post: Vec<(db::lookup::PanelKind, &str, fn() -> (serenity::CreateEmbed, Vec<serenity::CreateActionRow>))> = vec![
+                (db::lookup::PanelKind::Player, "Player", panels::lookup_player_panel),
+                (db::lookup::PanelKind::Alliance, "Alliance", panels::lookup_alliance_panel),
+                (db::lookup::PanelKind::State, "State", panels::lookup_state_panel),
+            ];
+            for (kind, label, build) in panels_to_post {
+                let (embed, rows) = build();
+                match channel_id
+                    .send_message(
+                        &ctx.http,
+                        serenity::CreateMessage::new().embed(embed).components(rows),
+                    )
+                    .await
+                {
+                    Ok(message) => {
+                        db::lookup::set_channel(&data.db, guild_id, Some(channel_id.get())).await?;
+                        db::lookup::set_panel(&data.db, guild_id, kind, Some(message.id.get())).await?;
+                        results.push(format!("✅ {label}"));
+                    }
+                    Err(err) => results.push(format!("❌ {label}: {}", crate::error::public(&err))),
+                }
+            }
             reply(
                 ctx,
                 interaction,
                 embeds::ok(format!(
-                    "Lookup panels deployed in <#{}>.",
-                    channel_id.get()
+                    "Lookup panels in <#{}>:\n{}",
+                    channel_id.get(),
+                    results.join("\n")
                 )),
                 Vec::new(),
                 true,
@@ -16226,12 +16231,16 @@ async fn route_modal(
         "player:limits_modal" => player_limits_modal(ctx, data, interaction).await,
         "player:rolecap_modal" => player_rolecap_modal(ctx, data, interaction).await,
         "player:usercap_modal" => player_usercap_modal(ctx, data, interaction).await,
-        "lookup:player_modal" => lookup_player_modal(ctx, data, interaction).await,
-        "lookup:alliance_search_modal" => {
+        "lookup:player_modal" | "lookup:player:modal" => {
+            lookup_player_modal(ctx, data, interaction).await
+        }
+        "lookup:alliance_search_modal" | "lookup:alliance:modal" => {
             lookup_alliance_search_modal(ctx, data, interaction).await
         }
         "lookupmodal:apikey" => lookup_apikey_modal(ctx, data, interaction).await,
-        "lookup:state_modal" => lookup_state_modal(ctx, data, interaction).await,
+        "lookup:state_modal" | "lookup:state:modal" => {
+            lookup_state_modal(ctx, data, interaction).await
+        }
         "settings:leveling_xp_modal" => leveling_xp_modal(ctx, data, interaction).await,
         "settings:leveling_message_modal" => leveling_message_modal(ctx, data, interaction).await,
         "settings:leveling_cleanup_modal" => leveling_cleanup_modal(ctx, data, interaction).await,
@@ -17488,8 +17497,9 @@ async fn lookup_player_modal(
     interaction: &ModalInteraction,
 ) -> anyhow::Result<()> {
     let guild = guild_of(interaction)?;
-    let query =
-        trimmed(interaction, "query").ok_or_else(|| anyhow::anyhow!("enter a FID or name"))?;
+    let query = trimmed(interaction, "query")
+        .or_else(|| trimmed(interaction, "player_id"))
+        .ok_or_else(|| anyhow::anyhow!("enter a FID or name"))?;
     defer_modal(ctx, interaction).await?;
 
     // Exact IDs are resolved directly. Name searches retain all meaningful
@@ -17980,8 +17990,12 @@ async fn lookup_alliance_modal(
     interaction: &ModalInteraction,
 ) -> anyhow::Result<()> {
     let guild = guild_of(interaction)?;
-    let state = trimmed(interaction, "state").and_then(|value| value.parse::<i64>().ok());
-    let query = trimmed(interaction, "query").or_else(|| trimmed(interaction, "abbr"));
+    let state = trimmed(interaction, "state")
+        .or_else(|| trimmed(interaction, "state_id"))
+        .and_then(|value| value.parse::<i64>().ok());
+    let query = trimmed(interaction, "query")
+        .or_else(|| trimmed(interaction, "alliance_id"))
+        .or_else(|| trimmed(interaction, "abbr"));
     let state = state.ok_or_else(|| anyhow::anyhow!("enter a valid state number first"))?;
     let query = query.unwrap_or_default();
     defer_modal(ctx, interaction).await?;
@@ -18214,6 +18228,7 @@ async fn lookup_state_modal(
     interaction: &ModalInteraction,
 ) -> anyhow::Result<()> {
     let state = trimmed(interaction, "state")
+        .or_else(|| trimmed(interaction, "state_id"))
         .ok_or_else(|| anyhow::anyhow!("enter a state number"))?
         .parse::<i64>()
         .map_err(|_| anyhow::anyhow!("state numbers are numeric"))?;
