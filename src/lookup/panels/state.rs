@@ -148,23 +148,17 @@ fn build(
             if keep_png.is_some() {
                 v2 = v2.image(img_name);
             } else {
-                let power = pick_i64(raw, &["power", "total_power"]);
-                let players = pick_i64(raw, &["player_count", "players", "tracked_players"]);
-                let alliances = pick_i64(raw, &["alliance_count", "alliances"]);
+                let power = pick_i64(raw, &["power", "total_power"]).or(view.power);
+                let players = pick_i64(raw, &["player_count", "players", "tracked_players"]).or(view.players);
+                let alliances = pick_i64(raw, &["alliance_count", "alliances"]).or(view.alliances);
                 let mut lines = Vec::new();
-                if let Some(p) = power {
-                    lines.push(format!("**Power** `{}`", v2::fmt(Some(p))));
-                }
-                if let Some(n) = players {
-                    lines.push(format!("**Players** `{n}`"));
-                }
-                if let Some(n) = alliances {
-                    lines.push(format!("**Alliances** `{n}`"));
-                }
-                if lines.is_empty() {
-                    lines.push("_State overview will fill when upstream data is present._".into());
-                }
-                v2 = v2.text(lines.join(" · "));
+                if let Some(p) = power { lines.push(format!("**Power** `{}`", v2::fmt(Some(p)))); }
+                if let Some(n) = players { lines.push(format!("**Players** `{n}`")); }
+                if let Some(n) = alliances { lines.push(format!("**Alliances** `{n}`")); }
+                if let Some(season) = view.season { lines.push(format!("**Season** `S{season}`")); }
+                if let Some(pres) = view.president.as_deref() { lines.push(format!("**President** `{pres}`")); }
+                if lines.is_empty() { lines.push("_State overview will fill when upstream data is present._".into()); }
+                v2 = v2.text(lines.join(" Â· "));
             }
             if session.state.is_some() {
                 let mut row1 = vec![

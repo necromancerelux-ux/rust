@@ -71,6 +71,8 @@ pub struct PlayerView {
     pub role: String,
     pub power: Option<i64>,
     pub kills: Option<i64>,
+    pub likes: Option<i64>,
+    pub total_like: Option<i64>,
     pub furnace: Option<i64>,
     pub town_center: Option<i64>,
     pub vip: Option<i64>,
@@ -81,6 +83,7 @@ pub struct PlayerView {
     pub gear_privacy_message: Option<String>,
     pub x: Option<i64>,
     pub y: Option<i64>,
+    pub position: Option<String>,
     pub last_power_change_ms: Option<i64>,
     pub as_of_ms: Option<i64>,
 }
@@ -101,6 +104,13 @@ pub fn player_view(raw: &Value) -> PlayerView {
     let gear_privacy = r.get("gearPrivacy").or_else(|| r.get("gear_privacy")).and_then(Value::as_bool).unwrap_or(false);
     let gear_privacy_message = pick_str(r, &["gearPrivacyMessage","gear_privacy_message"]).map(str::to_string)
         .or_else(|| gear_privacy.then(|| "Chief Gear privacy is active — this chief is hiding their equipment.".to_string()));
+    let pos = r.get("pos").or_else(|| r.get("position"));
+    let position = pos.and_then(|p| {
+        if let Some(s) = p.as_str() { let t=s.trim(); if !t.is_empty() { return Some(t.to_string()); } }
+        let x = p.get("x").and_then(|v| v.as_i64().or_else(|| v.as_str().and_then(|s| s.parse().ok())));
+        let y = p.get("y").and_then(|v| v.as_i64().or_else(|| v.as_str().and_then(|s| s.parse().ok())));
+        match (x,y) { (Some(x),Some(y)) => Some(format!("{x}:{y}")), _ => None }
+    }).or_else(|| match (pick_i64(r,&["x"]), pick_i64(r,&["y"])) { (Some(x),Some(y)) => Some(format!("{x}:{y}")), _ => None });
     PlayerView {
         name: pick_str(r, &["nick_name","name","game_name","username"]).unwrap_or("Unknown").to_string(),
         fid: pick_str(r, &["fid","chief_id"]).map(str::to_string).or_else(|| pick_i64(r, &["fid","chief_id"]).map(|n| n.to_string())),
@@ -112,6 +122,8 @@ pub fn player_view(raw: &Value) -> PlayerView {
         role: role_label(role_num),
         power: pick_i64(r, &["power"]),
         kills: pick_i64(r, &["kills"]),
+        likes: pick_i64(r, &["likes","like"]),
+        total_like: pick_i64(r, &["total_like","total_likes"]),
         furnace: pick_i64(r, &["stove_lv","furnace_level","furnace","level"]),
         town_center: pick_i64(r, &["town_center_level","townCenter"]),
         vip: pick_i64(r, &["vip","vip_level"]),
@@ -122,6 +134,7 @@ pub fn player_view(raw: &Value) -> PlayerView {
         gear_privacy_message,
         x: pick_i64(r, &["x"]),
         y: pick_i64(r, &["y"]),
+        position,
         last_power_change_ms: ts_ms(r, &["stats_updated_at","last_power_change_at"]),
         as_of_ms,
     }
@@ -135,6 +148,8 @@ pub struct AllianceView {
     pub power: Option<i64>,
     pub kills: Option<i64>,
     pub members: Option<i64>,
+    pub leader: Option<String>,
+    pub notice: Option<String>,
     pub as_of_ms: Option<i64>,
 }
 
@@ -147,6 +162,8 @@ pub fn alliance_view(raw: &Value) -> AllianceView {
         power: pick_i64(a, &["power","total_power"]),
         kills: pick_i64(a, &["kills","total_kills"]),
         members: pick_i64(a, &["member_count","members","count"]).or_else(|| raw.get("roster").and_then(Value::as_array).map(|a| a.len() as i64)),
+        leader: pick_str(a, &["leader_name","leader"]).map(str::to_string),
+        notice: pick_str(a, &["notice","announcement","message"]).map(str::to_string).or_else(|| raw.get("notice").and_then(Value::as_str).map(str::to_string)),
         as_of_ms: ts_ms(a, &["updated_at","detail_updated_at","fetched_at"]),
     }
 }
@@ -158,17 +175,24 @@ pub struct StateView {
     pub players: Option<i64>,
     pub alliances: Option<i64>,
     pub power: Option<i64>,
+    pub president: Option<String>,
+    pub season: Option<i64>,
     pub as_of_ms: Option<i64>,
 }
 
 pub fn state_view(raw: &Value) -> StateView {
     let st = raw.get("state").or_else(|| raw.get("kingdom")).unwrap_or(raw);
+    let pres = raw.get("president").or_else(|| st.get("president"));
+    let president = pres.and_then(|p| pick_str(p, &["name","nick_name","username"]).map(str::to_string))
+        .or_else(|| pick_str(st, &["president_name","president"]).map(str::to_string));
     StateView {
         id: pick_i64(st, &["kid","state_id","id"]),
         name: pick_str(st, &["name"]).map(str::to_string),
         players: pick_i64(st, &["player_count","players","tracked"]),
         alliances: pick_i64(st, &["alliance_count","alliances"]),
         power: pick_i64(st, &["power","total_power"]),
+        president,
+        season: pick_i64(st, &["season","season_id"]),
         as_of_ms: ts_ms(st, &["updated_at","detail_updated_at","fetched_at"]),
     }
 }

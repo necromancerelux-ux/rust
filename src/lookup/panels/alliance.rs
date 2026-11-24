@@ -99,34 +99,17 @@ fn build(
             if keep_png.is_some() {
                 v2 = v2.image("alliance.png");
             } else {
-                let state = session
-                    .state
-                    .map(|s| format!("S{s}"))
-                    .unwrap_or_else(|| "—".into());
-                let tag = session.alliance.as_deref().unwrap_or("—");
-                let power = pick_i64(raw, &["power", "total_power", "power_rank"]);
-                let kills = pick_i64(raw, &["kills", "total_kills"]);
-                let members_n =
-                    pick_i64(raw, &["member_count", "members_count", "tracked_members"]).or_else(
-                        || {
-                            let m = members(raw);
-                            if m.is_empty() {
-                                None
-                            } else {
-                                Some(m.len() as i64)
-                            }
-                        },
-                    );
-                let mut lines = vec![format!("**Tag** `[{tag}]` · **State** `{state}`")];
-                if let Some(p) = power {
-                    lines.push(format!("**Power** `{}`", v2::fmt(Some(p))));
-                }
-                if let Some(k) = kills {
-                    lines.push(format!("**Kills** `{}`", v2::fmt(Some(k))));
-                }
-                if let Some(n) = members_n {
-                    lines.push(format!("**Members** `{n}`"));
-                }
+                let state = session.state.or(view.state_id).map(|s| format!("S{s}")).unwrap_or_else(|| "â€”".into());
+                let tag = session.alliance.as_deref().filter(|s| !s.is_empty()).unwrap_or(&view.tag);
+                let tag = if tag.is_empty() { "â€”" } else { tag };
+                let power = pick_i64(raw, &["power", "total_power", "power_rank"]).or(view.power);
+                let kills = pick_i64(raw, &["kills", "total_kills"]).or(view.kills);
+                let members_n = pick_i64(raw, &["member_count", "members_count", "tracked_members"]).or(view.members).or_else(|| { let m = members(raw); if m.is_empty() { None } else { Some(m.len() as i64) } });
+                let mut lines = vec![format!("**Tag** `[{tag}]` Â· **State** `{state}`")];
+                if let Some(p) = power { lines.push(format!("**Power** `{}`", v2::fmt(Some(p)))); }
+                if let Some(k) = kills { lines.push(format!("**Kills** `{}`", v2::fmt(Some(k)))); }
+                if let Some(n) = members_n { lines.push(format!("**Members** `{n}`")); }
+                if let Some(leader) = view.leader.as_deref() { lines.push(format!("**Leader** `{leader}`")); }
                 v2 = v2.text(lines.join("\n"));
             }
             let mut buttons = Vec::new();
