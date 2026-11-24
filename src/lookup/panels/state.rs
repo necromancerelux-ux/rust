@@ -14,9 +14,7 @@
 
 use poise::serenity_prelude as serenity;
 use serde_json::Value;
-use serenity::{
-    CreateAttachment, CreateInteractionResponseMessage, EditInteractionResponse, MessageFlags,
-};
+use serenity::{CreateAttachment, CreateInteractionResponseMessage, EditInteractionResponse};
 
 use crate::lookup::sessions::LookupSession;
 use crate::ui::v2::{self, ButtonDef, SelectOpt, V2};
@@ -78,7 +76,7 @@ fn pick_i64(raw: &Value, keys: &[&str]) -> Option<i64> {
     None
 }
 
-fn list_key(raw: &Value, keys: &[&str]) -> Vec<&Value> {
+fn list_key<'a>(raw: &'a Value, keys: &[&str]) -> Vec<&'a Value> {
     for k in keys {
         if let Some(arr) = raw.get(*k).and_then(Value::as_array) {
             return arr.iter().collect();
@@ -426,11 +424,9 @@ pub fn edit_state_v2(
     card_png: Option<Vec<u8>>,
 ) -> EditInteractionResponse {
     let (v2, png, img_name) = build(session, tab, source_note, card_png);
-    let mut response = EditInteractionResponse::new()
-        .flags(MessageFlags::IS_COMPONENTS_V2)
-        .components(vec![v2.into_component()]);
+    let mut files = Vec::new();
     if let Some(png) = png {
-        response = response.new_attachment(v2::attachment(png, img_name));
+        files.push(v2::attachment(png, img_name));
     }
-    response
+    v2::edit_response(v2, files)
 }

@@ -11889,14 +11889,14 @@ async fn lookup_view_edit(
                         .and_then(|v| v.as_bool())
                         .unwrap_or(false);
                     if !gear_private {
-                        let cards =
-                            crate::cards::render_loadout_cards(loadout, &session.raw).await;
+                        let cards = crate::cards::render_loadout_cards(loadout, &data.cfg.oracle_site)
+                            .await;
                         if let Some(bytes) = cards.chief {
                             Some(bytes)
                         } else if let Some(heroes) =
                             session.raw.get("heroes").and_then(|v| v.as_array())
                         {
-                            crate::cards::render_arena_lineup(heroes, &session.raw)
+                            crate::cards::render_arena_lineup(heroes, &data.cfg.oracle_site)
                                 .await
                                 .ok()
                                 .flatten()

@@ -2,7 +2,7 @@
 
 use poise::serenity_prelude as serenity;
 use serde_json::Value;
-use serenity::{CreateAttachment, CreateInteractionResponseMessage, EditInteractionResponse, MessageFlags};
+use serenity::{CreateAttachment, CreateInteractionResponseMessage, EditInteractionResponse};
 
 use crate::lookup::sessions::LookupSession;
 use crate::ui::v2::{self, ButtonDef, SelectOpt, Tab, V2};
@@ -425,11 +425,9 @@ pub fn edit_alliance_v2(
     card_png: Option<Vec<u8>>,
 ) -> EditInteractionResponse {
     let (v2, png) = build(session, tab, source_note, card_png);
-    let mut response = EditInteractionResponse::new()
-        .flags(MessageFlags::IS_COMPONENTS_V2)
-        .components(vec![v2.into_component()]);
+    let mut files = Vec::new();
     if let Some(png) = png {
-        response = response.new_attachment(v2::attachment(png, "alliance.png"));
+        files.push(v2::attachment(png, "alliance.png"));
     }
-    response
+    v2::edit_response(v2, files)
 }

@@ -1,30 +1,18 @@
-//! Discord Components V2 helpers — Rust mirror of the JS `lookup/ui/v2.js`.
+//! Rich Lookup panel helpers — Rust mirror of the JS `lookup/ui/v2.js`.
 //!
-//! Layout target (matches the JS bot 1:1):
-//!
-//! ```text
-//! ┃ [ tab buttons / tab dropdown ]
-//! ┃ ───────────────
-//! ┃ ## Title
-//! ┃ body text / rendered image card
-//! ┃ [ dropdown ]  [ pager « ‹ 1/4 › » ]  [ link buttons ]
-//! ┃ ───────────────
-//! ┃ -# OmniCore · data as of <relative time>
-//! ```
-//!
-//! Everything lives inside **one** [`CreateContainer`] so the left accent bar
-//! spans the whole message. Messages must be sent with
-//! [`MessageFlags::IS_COMPONENTS_V2`] (no top-level content/embeds).
-//!
-//! Requires Serenity 0.12.5+ with the `builder` feature (already enabled).
+//! Serenity 0.12 (the version pinned by this crate) does not expose Discord's
+//! Components V2 builders (`CreateComponent`, `CreateContainer`, text
+//! displays, media galleries, `MessageFlags::IS_COMPONENTS_V2`, ...). To keep
+//! the project building on the stable toolchain, this module renders the same
+//! panel layout with the classic message primitives that Serenity 0.12 does
+//! support: message content (Discord markdown) plus action rows. The public
+//! API is unchanged, so every panel keeps working.
 
 use poise::serenity_prelude as serenity;
 use serenity::{
-    ButtonStyle, Colour, CreateActionRow, CreateAttachment, CreateButton, CreateComponent,
-    CreateContainer, CreateContainerComponent, CreateInteractionResponseMessage,
-    CreateMediaGallery, CreateMediaGalleryItem, CreateSelectMenu, CreateSelectMenuKind,
-    CreateSelectMenuOption, CreateSeparator, CreateTextDisplay, MessageFlags,
-    SeparatorSpacingSize,
+    ButtonStyle, CreateActionRow, CreateAttachment, CreateButton,
+    CreateInteractionResponseMessage, CreateSelectMenu, CreateSelectMenuKind,
+    CreateSelectMenuOption, EditInteractionResponse, ReactionType,
 };
 
 /// Light-blue accent bar used by the JS reference panels.
@@ -32,13 +20,14 @@ pub const ACCENT: u32 = 0x3B_A3_E0;
 pub const BRAND: &str = "OmniCore";
 
 // ---------------------------------------------------------------------------
-// Container builder (mutable accumulator, same shape as the JS helpers)
+// Panel builder (mutable accumulator, same shape as the JS helpers)
 // ---------------------------------------------------------------------------
 
-/// Accumulates V2 components that will become a single accented container.
+/// Accumulates panel text and interactive rows into a single message.
 #[derive(Default)]
 pub struct V2 {
-    parts: Vec<CreateContainerComponent<'static>>,
+    lines: Vec<String>,
+    rows: Vec<CreateActionRow>,
 }
 
 impl V2 {
@@ -46,23 +35,12 @@ impl V2 {
         Self::default()
     }
 
-    /// Finish into a top-level container with the shared accent colour.
-    pub fn into_container(self) -> CreateContainer<'static> {
-        CreateContainer::new(self.parts).accent_color(Colour::new(ACCENT))
-    }
-
-    /// Finish as the single top-level component Discord expects.
-    pub fn into_component(self) -> CreateComponent<'static> {
-        CreateComponent::Container(self.into_container())
-    }
-
     // ---- content ----------------------------------------------------------
 
     pub fn text(mut self, content: impl AsRef<str>) -> Self {
         let s: String = content.as_ref().chars().take(3900).collect();
         if !s.trim().is_empty() {
-            self.parts
-                .push(CreateContainerComponent::TextDisplay(CreateTextDisplay::new(s)));
+            self.lines.push(s);
         }
         self
     }
@@ -72,20 +50,15 @@ impl V2 {
     }
 
     pub fn sep(mut self, divider: bool) -> Self {
-        self.parts.push(CreateContainerComponent::Separator(
-            CreateSeparator::new()
-                .divider(divider)
-                .spacing(SeparatorSpacingSize::Small),
-        ));
+        if divider {
+            self.lines.push("━━━━━━━━━━━━━━━━━━━━".to_string());
+        }
         self
     }
 
     /// Image card from an attachment name (`attachment://name`).
     pub fn image(mut self, name: &str) -> Self {
-        let url = format!("attachment://{name}");
-        self.parts.push(CreateContainerComponent::MediaGallery(
-            CreateMediaGallery::new(vec![CreateMediaGalleryItem::new(url)]),
-        ));
+        self.lines.push(format!("![image](attachment://{name})"));
         self
     }
 
@@ -123,13 +96,11 @@ impl V2 {
                 b = b.disabled(true);
             }
             if let Some(emoji) = d.emoji.as_ref() {
-                b = b.emoji(emoji.as_str());
+                b = b.emoji(ReactionType::Unicode(emoji.clone()));
             }
             row_btns.push(b);
         }
-        self.parts.push(CreateContainerComponent::ActionRow(
-            CreateActionRow::Buttons(row_btns),
-        ));
+        self.rows.push(CreateActionRow::Buttons(row_btns));
         self
     }
 
@@ -180,14 +151,9 @@ impl V2 {
         if options.is_empty() {
             return self;
         }
-        let menu = CreateSelectMenu::new(
-            id,
-            CreateSelectMenuKind::String { options },
-        )
-        .placeholder(placeholder.chars().take(150).collect::<String>());
-        self.parts.push(CreateContainerComponent::ActionRow(
-            CreateActionRow::SelectMenu(menu),
-        ));
+        let menu = CreateSelectMenu::new(id, CreateSelectMenuKind::String { options })
+            .placeholder(placeholder.chars().take(150).collect::<String>());
+        self.rows.push(CreateActionRow::SelectMenu(menu));
         self
     }
 
@@ -216,40 +182,65 @@ impl V2 {
             mk("last", last, "»", page >= last),
         ])
     }
+
+    // ---- finalisation -----------------------------------------------------
+
+    /// Split into message content (max 2000 chars) and action rows (max 5).
+    pub fn into_parts(self) -> (String, Vec<CreateActionRow>) {
+        let content: String = self.lines.join("\n").chars().take(2000).collect();
+        let mut rows = self.rows;
+        rows.truncate(5);
+        (content, rows)
+    }
+
+    pub fn apply(
+        self,
+        msg: CreateInteractionResponseMessage,
+    ) -> CreateInteractionResponseMessage {
+        let (content, rows) = self.into_parts();
+        msg.content(content).components(rows)
+    }
+
+    pub fn apply_edit(self, response: EditInteractionResponse) -> EditInteractionResponse {
+        let (content, rows) = self.into_parts();
+        response.content(content).components(rows)
+    }
 }
 
 // ---------------------------------------------------------------------------
 // Payload helpers
 // ---------------------------------------------------------------------------
 
-/// Build a reply payload with `IS_COMPONENTS_V2` (+ optional Ephemeral).
+/// Build a reply payload (+ optional Ephemeral).
 pub fn payload(
     v2: V2,
     files: Vec<CreateAttachment>,
     ephemeral: bool,
 ) -> CreateInteractionResponseMessage {
-    let mut flags = MessageFlags::IS_COMPONENTS_V2;
-    if ephemeral {
-        flags |= MessageFlags::EPHEMERAL;
-    }
-    let mut msg = CreateInteractionResponseMessage::new()
-        .flags(flags)
-        .components(vec![v2.into_component()]);
+    let msg = CreateInteractionResponseMessage::new().ephemeral(ephemeral);
+    let mut msg = v2.apply(msg);
     for f in files {
         msg = msg.add_file(f);
     }
     msg
 }
 
-/// For edit/update — keeps IS_COMPONENTS_V2; Ephemeral cannot be toggled later.
+/// Same as [`payload`], but for edit/update responses.
 pub fn edit_payload(v2: V2, files: Vec<CreateAttachment>) -> CreateInteractionResponseMessage {
-    let mut msg = CreateInteractionResponseMessage::new()
-        .flags(MessageFlags::IS_COMPONENTS_V2)
-        .components(vec![v2.into_component()]);
+    let mut msg = v2.apply(CreateInteractionResponseMessage::new());
     for f in files {
         msg = msg.add_file(f);
     }
     msg
+}
+
+/// Build an edit response from a panel and its attachments.
+pub fn edit_response(v2: V2, files: Vec<CreateAttachment>) -> EditInteractionResponse {
+    let mut response = v2.apply_edit(EditInteractionResponse::new());
+    for f in files {
+        response = response.new_attachment(f);
+    }
+    response
 }
 
 pub fn attachment(bytes: Vec<u8>, name: &str) -> CreateAttachment {
