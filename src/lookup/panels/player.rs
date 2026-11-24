@@ -311,15 +311,8 @@ fn build(
             if keep_png.is_some() {
                 v2 = v2.image(img_name);
             } else {
-                let gear_private = raw
-                    .get("gearPrivacy")
-                    .or_else(|| raw.get("gear_privacy"))
-                    .and_then(Value::as_bool)
-                    .unwrap_or(false);
-                if gear_private {
-                    v2 = v2.text(
-                        "🔒 Chief Gear privacy is active — equipment is hidden on the public site.",
-                    );
+                if view.gear_privacy {
+                    v2 = v2.text(view.gear_privacy_message.clone().unwrap_or_else(|| "Chief Gear privacy is active — equipment is hidden on the public site.".to_string()));
                 } else {
                     v2 = v2.text(field_block(
                         raw,

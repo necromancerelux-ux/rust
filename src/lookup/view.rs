@@ -72,8 +72,16 @@ pub struct PlayerView {
     pub power: Option<i64>,
     pub kills: Option<i64>,
     pub furnace: Option<i64>,
+    pub town_center: Option<i64>,
+    pub vip: Option<i64>,
+    pub vip_active: Option<bool>,
+    pub tg_level: Option<i64>,
+    pub tg_label: Option<String>,
+    pub gear_privacy: bool,
+    pub gear_privacy_message: Option<String>,
     pub x: Option<i64>,
     pub y: Option<i64>,
+    pub last_power_change_ms: Option<i64>,
     pub as_of_ms: Option<i64>,
 }
 
@@ -90,6 +98,9 @@ pub fn player_view(raw: &Value) -> PlayerView {
         .or_else(|| alliance.and_then(|a| pick_str(a, &["name"]).map(str::to_string)));
     let role_num = pick_i64(r, &["alliance_rank","rank"])
         .or_else(|| alliance.and_then(|a| pick_i64(a, &["rank"])));
+    let gear_privacy = r.get("gearPrivacy").or_else(|| r.get("gear_privacy")).and_then(Value::as_bool).unwrap_or(false);
+    let gear_privacy_message = pick_str(r, &["gearPrivacyMessage","gear_privacy_message"]).map(str::to_string)
+        .or_else(|| gear_privacy.then(|| "Chief Gear privacy is active — this chief is hiding their equipment.".to_string()));
     PlayerView {
         name: pick_str(r, &["nick_name","name","game_name","username"]).unwrap_or("Unknown").to_string(),
         fid: pick_str(r, &["fid","chief_id"]).map(str::to_string).or_else(|| pick_i64(r, &["fid","chief_id"]).map(|n| n.to_string())),
@@ -101,9 +112,17 @@ pub fn player_view(raw: &Value) -> PlayerView {
         role: role_label(role_num),
         power: pick_i64(r, &["power"]),
         kills: pick_i64(r, &["kills"]),
-        furnace: pick_i64(r, &["stove_lv","furnace_level","town_center_level","furnace","level"]),
+        furnace: pick_i64(r, &["stove_lv","furnace_level","furnace","level"]),
+        town_center: pick_i64(r, &["town_center_level","townCenter"]),
+        vip: pick_i64(r, &["vip","vip_level"]),
+        vip_active: r.get("vip_active").or_else(|| r.get("vipActive")).and_then(Value::as_bool),
+        tg_level: pick_i64(r, &["tg_level","tgLevel"]),
+        tg_label: pick_str(r, &["tg_label","level_label","tgLabel"]).map(str::to_string),
+        gear_privacy,
+        gear_privacy_message,
         x: pick_i64(r, &["x"]),
         y: pick_i64(r, &["y"]),
+        last_power_change_ms: ts_ms(r, &["stats_updated_at","last_power_change_at"]),
         as_of_ms,
     }
 }
